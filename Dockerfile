@@ -1,5 +1,5 @@
 # We're using Debian Slim Buster image
-FROM python:3.8.4-slim-buster
+FROM python:3.9.0-slim-buster
 
 ENV PIP_NO_CACHE_DIR 1
 
@@ -66,19 +66,16 @@ RUN pip3 install --upgrade pip setuptools
 
 
 # Copy Python Requirements to /root/nana
-RUN git clone https://github.com/pokurt/Nana-Remix.git /root/nana
-WORKDIR /root/nana
+WORKDIR /app/
 
-#Copy config file to /root/nana/nana
-COPY ./nana/config.example.py ./nana/config.py* /root/nana/nana/
-
-#Copy credentials google drive to /root/nana
-COPY ./README.md ./client_secrets.json* /root/nana/
-
-ENV PATH="/home/userbot/bin:$PATH"
+ENV ENV True
 
 # Install requirements
+COPY requirements.txt .
 RUN pip3 install -U -r requirements.txt
+
+# copy the content of the local src directory to the working directory
+COPY . .
 
 # Starting Worker
 CMD ["python3","-m","nana"]
