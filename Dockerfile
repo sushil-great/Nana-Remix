@@ -5,6 +5,8 @@ ENV PIP_NO_CACHE_DIR 1
 
 RUN sed -i.bak 's/us-west-2\.ec2\.//' /etc/apt/sources.list
 
+WORKDIR /app/
+
 # Installing Required Packages
 RUN apt update && apt upgrade -y && \
     apt install --no-install-recommends -y \
@@ -65,17 +67,17 @@ RUN apt update && apt upgrade -y && \
 RUN pip3 install --upgrade pip setuptools
 
 
-# Copy Python Requirements to /root/nana
-WORKDIR /app/
-
-ENV ENV True
-
-# Install requirements
+# copy the dependencies file to the working directory
 COPY requirements.txt .
-RUN pip3 install -U -r requirements.txt
+
+# install dependencies
+RUN pip install -r requirements.txt
 
 # copy the content of the local src directory to the working directory
 COPY . .
+
+ENV ENV true
+
 
 # Starting Worker
 CMD ["python3","-m","nana"]
