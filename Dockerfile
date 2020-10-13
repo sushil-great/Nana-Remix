@@ -12,7 +12,6 @@ RUN apt update && apt upgrade -y && \
     apt install --no-install-recommends -y \
     debian-keyring \
     debian-archive-keyring \
-    build-dep \
     bash \
     bzip2 \
     curl \
@@ -36,7 +35,6 @@ RUN apt update && apt upgrade -y && \
     libcurl4-openssl-dev \
     libxml2-dev \
     libxslt1-dev \
-    libxslt-dev \
     python3-pip \
     python3-requests \
     python3-sqlalchemy \
