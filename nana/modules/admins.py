@@ -1,9 +1,7 @@
 import asyncio
 import time
 from emoji import get_emoji_regexp
-import os
 
-from pyrogram.raw import functions
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
 from pyrogram.errors import (
@@ -69,6 +67,20 @@ __Supported pin types__: `alert`, `notify`, `loud`
 -> `delacc` or `delacc clean`
 Checks Group for deleted accounts & clean them
 """
+
+custom_rank = ""
+messages = ""
+media = ""
+stickers = ""
+animations = ""
+games = ""
+inlinebots = ""
+webprev = ""
+polls = ""
+info = ""
+invite = ""
+pin = ""
+perm = ""
 
 # Mute permissions
 mute_permission = ChatPermissions(
@@ -190,7 +202,6 @@ async def pin_message(client, message):
 @app.on_message(filters.user(AdminSettings) & filters.command("mute", Command))
 async def mute_hammer(client, message):
     if message.chat.type in ['group', 'supergroup']:
-        chat_id = message.chat.id
         can_mute = await admin_check(message)
         if can_mute:
             try:
@@ -223,7 +234,6 @@ async def mute_hammer(client, message):
 @app.on_message(filters.user(AdminSettings) & filters.command("unmute", Command))
 async def unmute(client, message):
     if message.chat.type in ['group', 'supergroup']:
-        chat_id = message.chat.id
         can_unmute = await admin_check(message)
         if can_unmute:
             try:
@@ -236,10 +246,6 @@ async def unmute(client, message):
                 await edrep(message, text='must give a user to unmute')
                 return
             try:
-                get_mem = await client.get_chat_member(
-                        chat_id,
-                        user_id
-                        )
                 await client.restrict_chat_member(
                     chat_id=message.chat.id,
                     user_id=user_id,
@@ -391,8 +397,6 @@ async def unban_usr(client, message):
 async def promote_usr(client, message):
     if message.chat.type in ["group", "supergroup"]:
         cmd = message.command
-        custom_rank = ""
-        chat_id = message.chat.id
         can_promo = await admin_check(message)
         if can_promo:
             try:
@@ -410,7 +414,7 @@ async def promote_usr(client, message):
             if user_id:
                 try:
                     await client.promote_chat_member(
-                        chat_id,
+                        message.chat.id,
                         user_id,
                         can_change_info=True,
                         can_delete_messages=True,
@@ -420,7 +424,7 @@ async def promote_usr(client, message):
                     )
 
                     await asyncio.sleep(2)
-                    await client.set_administrator_title(chat_id, user_id, custom_rank)
+                    await client.set_administrator_title(message.chat.id, user_id, custom_rank)
                     await message.delete()
                 except UsernameInvalid:
                     await edrep(message, text=tld('user_invalid'))
@@ -504,18 +508,6 @@ async def lock_permission(client, message):
         if not is_admin:
             await message.delete()
             return
-        messages = ""
-        media = ""
-        stickers = ""
-        animations = ""
-        games = ""
-        inlinebots = ""
-        webprev = ""
-        polls = ""
-        info = ""
-        invite = ""
-        pin = ""
-        perm = ""
         lock_type = " ".join(cmd[1:])
         chat_id = message.chat.id
         if not lock_type:
@@ -837,12 +829,10 @@ async def deleted_clean(client, message):
     clean_tag = " ".join(cmd[1:])
     rm_delaccs = "clean" in clean_tag
     can_clean = await admin_check(message)
-
     del_stats = "`no deleted accounts found in this chat`"
 
     del_users = 0
     if rm_delaccs:
-
         if can_clean:
             await edrep(message, text="`cleaning deleted accounts from this chat..`")
             del_admins = 0
@@ -850,12 +840,10 @@ async def deleted_clean(client, message):
             async for member in client.iter_chat_members(chat_id):
 
                 if member.user.is_deleted:
-
                     try:
                         await client.kick_chat_member(
                             chat_id, member.user.id, int(time.time() + 45)
                         )
-
                     except UserAdminInvalid:
                         del_users -= 1
                         del_admins += 1
@@ -878,28 +866,9 @@ async def deleted_clean(client, message):
             await edrep(message, text=tld('denied_permission'))
 
     else:
-
         async for member in client.iter_chat_members(chat_id):
             if member.user.is_deleted:
                 del_users += 1
         if del_users > 0:
             del_stats = f"`Found` **{del_users}** `deleted accounts in this chat.`"
         await edrep(message, text=del_stats)
-
-
-@app.on_message(filters.user(AdminSettings) & filters.command("recents", Command))
-async def recent_actions(client, message):
-    full_log = await client.send(
-        functions.channels.GetAdminLog(
-            channel=await app.resolve_peer(message.chat.id),
-            q="",
-            max_id=0,
-            min_id=0,
-            limit=0,
-        )
-    )
-    with open(f"nana/downloads/recent_actions_{message.chat.id}.txt", "w", encoding="utf8") as log_file:
-        log_file.write(str(full_log))
-    await message.delete()
-    await client.send_document(message.chat.id, log_file)
-    os.remove(log_file)
