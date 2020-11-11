@@ -7,6 +7,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN sed -i.bak 's/us-west-2\.ec2\.//' /etc/apt/sources.list
 
+WORKDIR /app/
+
 # Installing Required Packages
 RUN apt update && apt upgrade -y && \
     apt install --no-install-recommends -y \
@@ -43,17 +45,14 @@ RUN apt update && apt upgrade -y && \
     libopus-dev \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp
 
-RUN git clone https://git.mannu.me/pokurt/Nana-Remix.git /root/nana
-
-WORKDIR /root/nana
+# copy the dependencies file to the working directory
+COPY requirements.txt .
 
 # install dependencies
-RUN pip3 install -U -r requirements.txt
+RUN pip3 install -r requirements.txt
 
-RUN rm -rf README.md
-
-ENV PATH="/home/userbot/bin:$PATH"
-
+# copy the content of the local src directory to the working directory
+COPY . .
 
 # Starting Worker
 CMD ["python3","-m","nana"]
