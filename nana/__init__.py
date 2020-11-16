@@ -1,4 +1,5 @@
 """The initial start of Nana-Remix."""
+
 import logging
 import os
 import sys
@@ -71,11 +72,10 @@ if ENV:
 
     try:
         TEST_DEVELOP = bool(os.environ.get('TEST_DEVELOP', False))
-        if TEST_DEVELOP:
-            BOT_SESSION = os.environ.get('BOT_SESSION', None)
-            APP_SESSION = os.environ.get('APP_SESSION', None)
-        else:
+        if not TEST_DEVELOP:
             raise AttributeError
+        BOT_SESSION = os.environ.get('BOT_SESSION', None)
+        APP_SESSION = os.environ.get('APP_SESSION', None)
     except AttributeError:
         pass
 

@@ -2,7 +2,6 @@ import os
 from asyncio import sleep, gather
 
 from pyrogram.raw import functions
-from pyrogram import utils
 from pyrogram import filters
 
 from nana import app, Command, DB_AVAILABLE, AdminSettings, edrep
@@ -55,49 +54,15 @@ Creates message link to a message
 profile_photo = "nana/downloads/pfp.jpg"
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("link", Command))
-async def link_message(client, message):
-    if message.chat.type == "private" and message.chat.type ==  "bot":
-        await message.delete()
-        return
-    else:
-        if message.reply_to_message:
-            b = message.reply_to_message.message_id
-        else:
-            b = message.message_id
-        a = utils.get_channel_id(message.chat.id)
-        await edrep(message, text=f'https://t.me/c/{a}/{b}')
-
-
-@app.on_message(filters.user(AdminSettings) & filters.command(["e", "edit"], Command))
-async def edit_text(client, message):
-    cmd = message.command
-    teks = ""
-    if len(cmd) > 1:
-        teks = " ".join(cmd[1:])
-    rep = message.reply_to_message
-    if rep.text:
-        await message.delete()
-        await client.edit_message_text(message.chat.id, message.reply_to_message.message_id, teks)
-        return
-    elif rep.photo or rep.video or rep.audio or rep.voice or rep.sticker or rep.animation:
-        await message.delete()
-        await client.edit_message_caption(message.chat.id, message.reply_to_message.message_id, teks)
-    else:
-        await edrep(message, text='`reply to a message to edit caption`')
-        await sleep(3)
-        await message.delete()
-
-
-
 @app.on_message(filters.user(AdminSettings) & filters.command("setpfp", Command))
 async def set_pfp(client, message):
     replied = message.reply_to_message
-    if (replied and replied.media and (
+    if (
+        replied and replied.media and (
             replied.photo or (
-            replied.document and "image" in replied.document.mime_type
-    )
-    )
+                replied.document and "image" in replied.document.mime_type
+            )
+        )
     ):
         await client.download_media(
             message=replied,
@@ -156,9 +121,11 @@ async def clone(client, message):
     t = await client.send(functions.users.GetFullUser(id=await client.resolve_peer(t['id'])))
     p_file = functions.account
     await client.send(
-        p_file.UpdateProfile(first_name=t['user']['first_name'] if t['user']['first_name'] is not None else "",
-                             last_name=t['user']['last_name'] if t['user']['last_name'] is not None else "",
-                             about=t['about'] if t['about'] is not None else ""))
+        p_file.UpdateProfile(
+            first_name=t['user']['first_name'] if t['user']['first_name'] is not None else "",
+            last_name=t['user']['last_name'] if t['user']['last_name'] is not None else "",
+            about=t['about'] if t['about'] is not None else "")
+        )
     await edrep(message, text="`New identity has changed!`")
     await sleep(5)
     await message.delete()
@@ -167,15 +134,13 @@ async def clone(client, message):
 @app.on_message(filters.user(AdminSettings) & filters.command("revert", Command))
 async def revert(client, message):
     first_name, last_name, bio = restore_identity()
-
-    await client.send(functions.account.UpdateProfile(first_name=first_name if first_name is not None else "",
-                                                      last_name=last_name if last_name is not None else "",
-                                                      about=bio if bio is not None else ""))
-
-    photos = await app.get_profile_photos("me")
-
-    await app.delete_profile_photos(photos[0].file_id)
-
+    await client.send(functions.account.UpdateProfile(
+        first_name=first_name if first_name is not None else "",
+        last_name=last_name if last_name is not None else "",
+        about=bio if bio is not None else "")
+    )
+    photos = await client.get_profile_photos("me")
+    await client.delete_profile_photos(photos[0].file_id)
     await edrep(message, text="`Identity Reverted`")
     await sleep(5)
     await message.delete()

@@ -6,7 +6,13 @@ import git
 import os
 from datetime import datetime
 from pyrogram import errors, __version__
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, InlineQueryResultArticle, InlineQueryResultPhoto
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputTextMessageContent,
+    InlineQueryResultArticle,
+    InlineQueryResultPhoto,
+)
 from pyrogram.errors import PeerIdInvalid
 from platform import python_version
 
@@ -369,21 +375,6 @@ async def inline_query_handler(client, query):
                 title="Fabourites",
                 description="Anime",
                 input_message_content=InputTextMessageContent("**No favourites yet!**", parse_mode="markdown")))
-        await client.answer_inline_query(query.id,
-                                        results=answers,
-                                        cache_time=0
-                                        )
-
-    elif string.split()[0] == "cat":
-        image = f"https://d2ph5fj80uercy.cloudfront.net/0{random.randint(1, 6)}/cat{random.randint(0,4999)}.jpg"
-        buttons = [[InlineKeyboardButton("Source", url="https://thiscatdoesnotexist.com/"), InlineKeyboardButton("Refresh", callback_data='cat_pic')]]
-        answers.append(InlineQueryResultPhoto(
-                caption='Hi I like you too >~<',
-                photo_url=image,
-                parse_mode="markdown",
-                title="Cursed Cat",
-                description="Cursed Cat",
-                reply_markup=InlineKeyboardMarkup(buttons)))
         await client.answer_inline_query(query.id,
                                         results=answers,
                                         cache_time=0

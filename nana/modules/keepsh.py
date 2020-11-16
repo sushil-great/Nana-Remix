@@ -10,18 +10,18 @@ from pyrogram import filters
 from nana import app, Command, log, AdminSettings, edrep
 from .downloads import download_file_from_tg, name_file, humanbytes
 
-__MODULE__ = "transfer sh"
+__MODULE__ = "Keep.sh"
 __HELP__ = """
-Mirror any telegram file to transfer.sh
+Mirror any telegram file to keep.sh
 
 ──「 **Transfer telegram file** 」──
--> `tfsh`
-Reply to telegram file for mirroring to transfer.sh 
+-> `keepsh`
+Reply to telegram file for mirroring to keep.sh 
 
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("tfsh", Command))
+@app.on_message(filters.user(AdminSettings) & filters.command("keepsh", Command))
 async def tfsh(client, message):
     if not message.reply_to_message:
         await edrep(message, text="`Reply to any file telegram message!`")
@@ -34,19 +34,18 @@ async def tfsh(client, message):
     os.rename(r'nana/downloads/{}'.format(name), r'nana/downloads/{}'.format(name_file_upload))
     print(name_file_upload)
     await edrep(message, text=
-        await send_to_transfersh("nana/downloads/{}".format(name_file_upload), message, name_file_upload))
+        await send_to_keepsh("nana/downloads/{}".format(name_file_upload), message, name_file_upload))
     os.remove("nana/downloads/{}".format(name_file_upload))
     return
 
-
-async def send_to_transfersh(file, message, name):
-    """send file to transfersh, retrieve download link"""
+async def send_to_keepsh(file, message, name):
+    """send file to keepsh, retrieve download link"""
     size_of_file = get_size(file)
     final_date = get_date_in_two_weeks()
     file_name = os.path.basename(file)
 
     await edrep(message, text="\nSending file: {} (size of the file: {})".format(file_name, size_of_file))
-    url = 'https://transfer.sh/{}'.format(name)
+    url = 'https://free.keep.sh/{}'.format(name)
     c = pycurl.Curl()
     c.setopt(c.URL, url)
 
@@ -61,7 +60,6 @@ async def send_to_transfersh(file, message, name):
         c.close()
     f.close()
     return "`Success!\nwill be saved till {}`\n{}".format(final_date, download_link)
-
 
 def get_size(file):
     """

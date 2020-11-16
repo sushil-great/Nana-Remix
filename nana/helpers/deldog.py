@@ -1,6 +1,6 @@
 import aiohttp
 
-async def deldog(message, data):
+async def deldog(data):
     BASE_URL = 'https://nekobin.com'
     async with aiohttp.ClientSession() as session:
         async with session.post(f'{BASE_URL}/api/documents', json={"content":data}, timeout=3) as response:

@@ -65,8 +65,10 @@ async def ss_web(client, message):
     else:
         r = f"http://api.screenshotlayer.com/api/capture?access_key={screenshotlayer_API}&url={teks}&fullpage=0"
 
-    await client.send_photo(message.chat.id, photo=r, caption=capt,
-                               reply_to_message_id=message.message_id
-                               )
+    await client.send_photo(
+        message.chat.id, photo=r,
+        caption=capt,
+        reply_to_message_id=message.message_id
+    )
     os.remove("nana/cache/web.png")
     await client.send_chat_action(message.chat.id, action="cancel")

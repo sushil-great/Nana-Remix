@@ -61,14 +61,6 @@ async def stk(chat, photo):
         await app.send_sticker(chat, photo)
 
 
-async def vid(chat, video, caption=None):
-    await app.send_video(chat, video, caption)
-
-
-async def pic(chat, photo, caption=None):
-    await app.send_photo(chat, photo, caption)
-
-
 async def aexec(code, client, message):
     exec(
         f'async def __aexec(client, message): ' +
@@ -226,7 +218,7 @@ async def terminal(client, message):
 @app.on_message(filters.user(AdminSettings) & filters.command(["log"], Command))
 async def log(_client, message):
     f = open("nana/logs/error.log", "r")
-    data = await deldog(message, f.read())
+    data = await deldog(f.read())
     await edrep(message, text=f"`Your recent logs stored here : `{data}", disable_web_page_preview=True)
 
 
