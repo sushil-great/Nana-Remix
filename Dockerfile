@@ -13,6 +13,8 @@ RUN pacman -Syu --noconfirm \
     libjpeg6-turbo \
     libwebp \
     python-lxml \
+    neofetch \
+    fakeroot \
     postgresql \
     python-psycopg2 \
     libpqxx \
