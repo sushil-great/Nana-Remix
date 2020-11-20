@@ -29,6 +29,10 @@
       "description": "To use this userbot, get your development API hash from https://my.telegram.org/apps.",
       "value": ""
     },
+    "ASSISTANT_BOT_TOKEN": {
+      "description": "Go to t.me/BotFather , Create a Bot and Copy its Token here.",
+      "value": ""
+    },
     "Owner": {
       "description": "Go to some bot such as Rose and check your id there.",
       "value": ""
@@ -112,10 +116,6 @@
     "lydia_api": {
       "description": "(optional) Fill in your Coffeehouse API, get one from https://coffeehouse.intellivoid.net",
       "value": "False",
-      "required": false
-    },
-    "bitly_token": {
-      "description": "(optional) Sign in to https://http://app.bitly.com/, then open Profile Settings -> Generic Access Token.",
       "required": false
     },
     "remove_bg_api": {

@@ -33,7 +33,6 @@ class Config():
 	screenshotlayer_API = ""  # Register free here: https://screenshotlayer.com/
 	gdrive_credentials = "" # JSON output
 	sw_api = "" # Read docs in docs.spamwat.ch
-	bitly_token = ""  # register here : bitly.com
 	lydia_api = "" #get from https://coffeehouse.intellivoid.net
 	remove_bg_api = "" # Get from https://remove.bg
 	HEROKU_API = ""  # if you're using heroku this field must filled, get from here : https://dashboard.heroku.com/account
