@@ -35,8 +35,8 @@ async def print_web(client, message):
     capt = f"Website: `{teks}`"
     await client.send_chat_action(message.chat.id, action="upload_photo")
     web_photo = f"https://api.thumbnail.ws/api/{thumbnail_API}/thumbnail/get?url={teks}&width=1280"
-    await client.send_photo(message.chat.id, photo=web_photo, caption=capt,
-                            reply_to_message_id=message.message_id)
+    await message.delete()
+    await client.send_photo(message.chat.id, photo=web_photo, caption=capt)
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("ss", Command))
@@ -64,11 +64,10 @@ async def ss_web(client, message):
         r = f"http://api.screenshotlayer.com/api/capture?access_key={screenshotlayer_API}&url={teks}&fullpage=1"
     else:
         r = f"http://api.screenshotlayer.com/api/capture?access_key={screenshotlayer_API}&url={teks}&fullpage=0"
-
+    await message.delete()
     await client.send_photo(
         message.chat.id, photo=r,
-        caption=capt,
-        reply_to_message_id=message.message_id
+        caption=capt
     )
     os.remove("nana/cache/web.png")
     await client.send_chat_action(message.chat.id, action="cancel")

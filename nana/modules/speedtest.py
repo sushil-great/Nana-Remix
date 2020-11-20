@@ -47,7 +47,7 @@ async def speedtestxyz_callback(client, query):
 
 @app.on_message(filters.user(AdminSettings) & filters.command("speedtest", Command))
 async def google_search(client, message):
-    x = await client.get_inline_bot_results(f"{BotUsername}", f"speedtest")
+    x = await client.get_inline_bot_results(f"{BotUsername}", "speedtest")
     await message.delete()
     await client.send_inline_bot_result(chat_id=message.chat.id,
                                         query_id=x.query_id,

@@ -1,4 +1,3 @@
-import math
 import asyncio
 import re
 
@@ -8,7 +7,7 @@ from nana import app, Command, AdminSettings, BotUsername, edrep, Owner, setbot
 from nana.helpers.PyroHelpers import ReplyCheck
 from nana.helpers.sauce import airing_sauce, character_sauce, manga_sauce
 from nana.modules.database import anime_db as sql
-from nana.assistant.__main__ import dynamic_data_filter
+
 
 
 __MODULE__ = "Anilist"
@@ -174,7 +173,7 @@ async def manga_search(client, message):
 
 @app.on_message(filters.user(AdminSettings) & filters.command("favourite", Command))
 async def favourite_animelist(client, message):
-    x = await client.get_inline_bot_results(f"{BotUsername}", f"favourite")
+    x = await client.get_inline_bot_results(f"{BotUsername}", "favourite")
     await message.delete()
     await client.send_inline_bot_result(chat_id=message.chat.id,
                                         query_id=x.query_id,
@@ -194,7 +193,7 @@ async def remfav_callback(_, __, query):
 
 
 @setbot.on_callback_query(filters.create(addfav_callback))
-async def add_favorite(client, query):
+async def add_favorite(_, query):
     if query.from_user.id in AdminSettings:
         match = query.data.split("_")[1]
         add = sql.add_fav(Owner, match)
@@ -207,7 +206,7 @@ async def add_favorite(client, query):
 
 
 @setbot.on_callback_query(filters.create(remfav_callback))
-async def rem_favorite(client, query):
+async def rem_favorite(_, query):
     if query.from_user.id in AdminSettings:
         sql.remove_fav(Owner)
         await setbot.edit_inline_text(query.inline_message_id,'Removed from Favourites')

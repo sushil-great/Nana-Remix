@@ -5,16 +5,16 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from nana.tr_engine.strings import tld
-from nana import (app,
-                  setbot,
-                  AdminSettings,
-                  DB_AVAILABLE,
-                  USERBOT_VERSION,
-                  ASSISTANT_VERSION,
-                  BotUsername,
-                  Owner,
-                  OwnerName,
-                  NANA_IMG)
+from nana import (
+    app,
+    setbot,
+    AdminSettings,
+    DB_AVAILABLE,
+    USERBOT_VERSION,
+    ASSISTANT_VERSION,
+    BotUsername,
+    OwnerName,
+    NANA_IMG)
 
 if DB_AVAILABLE:
     from nana.modules.database.chats_db import get_all_chats
@@ -22,29 +22,29 @@ if DB_AVAILABLE:
 
 @setbot.on_message(filters.private & ~filters.user(AdminSettings))
 async def un_auth(_client, message):
-    if message.chat.id is not AdminSettings:
-        msg = f"""
+    if message.chat.id is AdminSettings:
+        return
+
+    msg = f"""
 Hi {message.chat.first_name},
 You must be looking forward on how I work.
 In that case I can give you helpful links to self host me on your own.
 Here are some links for you
         """
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "Documentation", url="https://aman-a.gitbook.io/nana-remix/"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "Repository", url="https://github.com/pokurt/Nana-Remix"
-                ),
-                InlineKeyboardButton("Support", url="https://t.me/nanabotsupport"),
-            ],
-        ]
-        await message.reply(msg, reply_markup=InlineKeyboardMarkup(buttons))
-    else:
-        return
+    buttons = [
+        [
+            InlineKeyboardButton(
+                "Documentation", url="https://aman-a.gitbook.io/nana-remix/"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "Repository", url="https://github.com/pokurt/Nana-Remix"
+            ),
+            InlineKeyboardButton("Support", url="https://t.me/nanabotsupport"),
+        ],
+    ]
+    await message.reply(msg, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["start"]))

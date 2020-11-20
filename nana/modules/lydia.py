@@ -93,11 +93,7 @@ async def chat_bot(client, message):
 async def check_message(_client, message):
     if message.chat.type == 'private':
         return True
-    else:
-        if message.text.lower() == f"@{OwnerUsername}":
-            return True
-        if message.reply_to_message:
-            if message.reply_to_message.from_user.id == Owner:
-                return True
-            else:
-                return False
+    if message.text.lower() == f"@{OwnerUsername}":
+        return True
+    if message.reply_to_message:
+        return message.reply_to_message.from_user.id == Owner

@@ -5,13 +5,10 @@ import subprocess
 import sys
 import traceback
 from io import StringIO
-from platform import python_version
 
-import requests
 from pyrogram import filters
-import pyrogram as p
 
-from nana import Command, logging, app, edrep, AdminSettings
+from nana import Command, app, edrep, AdminSettings
 from nana.helpers.deldog import deldog
 from nana.helpers.parser import mention_markdown
 from nana.helpers.aiohttp_helper import AioHttp
@@ -50,20 +47,9 @@ Reveal Self Destruct photo untouched, 'self' tag will reveal it in Saved Message
 """
 
 
-async def stk(chat, photo):
-    if "http" in photo:
-        r = requests.get(photo, stream=True)
-        with open("nana/cache/stiker.png", "wb") as stikr:
-            shutil.copyfileobj(r.raw, stikr)
-        await app.send_sticker(chat, "nana/cache/stiker.png")
-        os.remove("nana/cache/stiker.png")
-    else:
-        await app.send_sticker(chat, photo)
-
-
 async def aexec(code, client, message):
     exec(
-        f'async def __aexec(client, message): ' +
+        'async def __aexec(client, message): ' +
         ''.join(f'\n {l}' for l in code.split('\n'))
     )
     return await locals()['__aexec'](client, message)

@@ -76,16 +76,15 @@ async def separate_sed(sed_string):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.regex("^s/(.*?)"))
-async def sed_msg(client, message):
+async def sed_msg(_, message):
     sed_result = await separate_sed("s/" + message.text)
     if sed_result:
-        if message.reply_to_message:
-            to_fix = message.reply_to_message.text
-            if to_fix is None:
-                to_fix = message.reply_to_message.caption
-            if to_fix is None:
-                return
-        else:
+        if not message.reply_to_message:
+            return
+        to_fix = message.reply_to_message.text
+        if to_fix is None:
+            to_fix = message.reply_to_message.caption
+        if to_fix is None:
             return
         repl, repl_with, flags = sed_result
         if not repl:

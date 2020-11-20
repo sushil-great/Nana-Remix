@@ -71,23 +71,30 @@ async def help_button(_client, query):
     back_match = re.match(r"help_back", query.data)
     if mod_match:
         module = mod_match.group(1)
-        text = "This is help for the module **{}**:\n".format(HELP_COMMANDS[module].__MODULE__) \
-               + HELP_COMMANDS[module].__HELP__
+        text = "This is help for the module **{}**:\n".format(
+            HELP_COMMANDS[module].__MODULE__) \
+            + HELP_COMMANDS[module].__HELP__
 
-        await query.message.edit(text=text,
-                                 reply_markup=InlineKeyboardMarkup(
-                                     [[InlineKeyboardButton(text="Back", callback_data="help_back")]]))
+        await query.message.edit(
+            text=text,
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text="Back", callback_data="help_back")]]
+            )
+        )
 
     elif back_match:
-        await query.message.edit(text=tld("help_str").format(", ".join(Command)),
-                                 reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELP_COMMANDS, "help")))
+        await query.message.edit(
+            text=tld("help_str").format(", ".join(Command)),
+                                reply_markup=InlineKeyboardMarkup(paginate_modules(
+                                    0, HELP_COMMANDS, "help"))
+                                )
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["stats"]) & (filters.group | filters.private))
 async def stats(_client, message):
     text = "**Here is your current stats**\n"
     if DB_AVAILABLE:
-        text += "<b>Notes:</b> `{} notes`\n".format(len(get_all_selfnotes(message.from_user.id)))
+        text += "<b>Notes:</b> `{} notes`\n".format(len(get_all_selfnotes(message.from_user.id) or ''))
         text += "<b>Group joined:</b> `{} groups`\n".format(len(get_all_chats()))
     stk = await app.send(functions.messages.GetAllStickers(hash=0))
     all_sets = stk.sets

@@ -14,7 +14,7 @@ from pyrogram.errors import (
 )
 
 from nana import app, Command, AdminSettings, edrep
-from nana.helpers.admincheck import admin_check, is_sudoadmin
+from nana.helpers.admincheck import admin_check
 from nana.tr_engine.strings import tld
 
 

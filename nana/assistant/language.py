@@ -1,5 +1,5 @@
 from nana.modules.database.lang_db import switch_to_locale, prev_locale
-from nana.tr_engine.strings import tld, LANGUAGES
+from nana.tr_engine.strings import tld
 from nana.tr_engine.list_locale import list_locales
 import re
 

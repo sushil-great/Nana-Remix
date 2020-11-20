@@ -16,17 +16,3 @@ async def admin_check(message: Message) -> bool:
     ]
     # https://git.colinshark.de/PyroBot/PyroBot/src/branch/master/pyrobot/modules/admin.py#L69
     return check_status.status in admin_strings
-
-
-async def is_sudoadmin(message: Message) -> bool:
-    client = message._client
-    check_user = await client.get_chat_member(message.chat.id, message.from_user.id)
-    user_type = check_user.status
-    if user_type == "member":
-        return False
-    if user_type == "administrator":
-        add_adminperm = check_user.can_promote_members
-        if add_adminperm:
-            return True
-        return False
-    return True

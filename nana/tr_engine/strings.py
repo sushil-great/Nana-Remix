@@ -12,7 +12,7 @@ strings = {
 }
 
 
-def tld(t, show_none=True):
+def tld(t, _show_none=True):
     LANGUAGE = prev_locale(Owner)
 
     if LANGUAGE:

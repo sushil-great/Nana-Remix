@@ -1,5 +1,4 @@
 from pyrogram.types import User
-from inspect import getfullargspec
 
 
 def ReplyCheck(message):
@@ -14,11 +13,9 @@ def ReplyCheck(message):
 def GetUserMentionable(user: User):
     "Get mentionable text of a user."
     if user.username:
-        username = "@{}".format(user.username)
+        return "@{}".format(user.username)
+    if user.last_name:
+        name_string = "{} {}".format(user.first_name, user.last_name)
     else:
-        if user.last_name:
-            name_string = "{} {}".format(user.first_name, user.last_name)
-        else:
-            name_string = "{}".format(user.first_name)
-        username = "<a href='tg://user?id={}'>{}</a>".format(user.id, name_string)
-    return username
+        name_string = "{}".format(user.first_name)
+    return "<a href='tg://user?id={}'>{}</a>".format(user.id, name_string)

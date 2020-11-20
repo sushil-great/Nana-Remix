@@ -155,16 +155,16 @@ async def tracemoe_rs(client, message):
         if dis_loc:
             tracemoe = tracemoepy.async_trace.Async_Trace()
             if message_.video:
-                search = await tracemoe.search(img_file, encode=True)
+                search = await tracemoe.search(img_file, upload_file = True)
                 os.remove(img_file)
             else:
-                search = await tracemoe.search(dis_loc, encode=True)
+                search = await tracemoe.search(dis_loc, upload_file = True)
             os.remove(dis_loc)
             result = search['docs'][0]
             ms_g = f"**Title**: {result['title_english']}" \
-                  f"\n**Similarity**: {result['similarity']*100}"\
-                  f"\n**Episode**: {result['episode']}"
-            preview = await tracemoe.video_preview(search)
+                f"\n**Similarity**: {result['similarity']*100}"\
+                f"\n**Episode**: {result['episode']}"
+            preview = await tracemoe.natural_preview(search)
             with open('preview.mp4', 'wb') as f:
                 f.write(preview)
             await message.delete()

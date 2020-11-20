@@ -17,7 +17,7 @@ Returns the Date and Time for a selected country
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("time", Command))
-async def grabTime(client, message):
+async def grabTime(_, message):
     if not time_country:
         await message.delete()
         return

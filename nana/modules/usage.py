@@ -13,10 +13,12 @@ heroku_api = "https://api.heroku.com"
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("usage", Command))
-async def usage(client, message):
-    useragent = ('Mozilla/5.0 (Linux; Android 10; SM-G975F) '
-                 'AppleWebKit/537.36 (KHTML, like Gecko) '
-                 'Chrome/80.0.3987.149 Mobile Safari/537.36')
+async def usage(_, message):
+    useragent = (
+        'Mozilla/5.0 (Linux; Android 10; SM-G975F) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/80.0.3987.149 Mobile Safari/537.36'
+    )
     u_id = Heroku.account().id
     headers = {
         'User-Agent': useragent,

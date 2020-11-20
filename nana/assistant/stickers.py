@@ -4,7 +4,7 @@
 import asyncio
 from .settings import get_text_settings, get_button_settings
 from pyrogram import filters
-from pyrogram.types import ReplyKeyboardMarkup, Message
+from pyrogram.types import ReplyKeyboardMarkup
 
 from nana import setbot, AdminSettings, DB_AVAILABLE, app, Owner, NANA_IMG
 from nana.assistant.database.stickers_db import set_sticker_set, set_stanim_set
@@ -16,7 +16,7 @@ TODEL = {}
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["setsticker"]))
-async def get_stickers(client, message):
+async def get_stickers(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
         return
@@ -35,7 +35,7 @@ async def get_stickers(client, message):
     USER_SET["type"] = 1
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["setanimation"]))
-async def get_stickers_animation(client, message):
+async def get_stickers_animation(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
         return
@@ -53,15 +53,14 @@ async def get_stickers_animation(client, message):
     USER_SET[message.from_user.id] = msg.message_id
     USER_SET["type"] = 2
 
-def get_stickerlist(client,message):
+def get_stickerlist(_,message):
     if not DB_AVAILABLE:
         return
     global TEMP_KEYBOARD, USER_SET
     if message.from_user and message.from_user.id in list(USER_SET):
         return True
-    else:
-        TEMP_KEYBOARD = []
-        USER_SET = {}
+    TEMP_KEYBOARD = []
+    USER_SET = {}
 
 @setbot.on_message(get_stickerlist)
 async def set_stickers(client, message):
@@ -87,7 +86,7 @@ async def set_stickers(client, message):
 
 
 @setbot.on_callback_query(dynamic_data_filter("setsticker"))
-async def settings_sticker(client, message):
+async def settings_sticker(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
         return

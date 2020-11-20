@@ -1,10 +1,6 @@
 import sys
 import traceback
 import random
-import aiohttp
-import git
-import os
-from datetime import datetime
 from pyrogram import errors, __version__
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -13,16 +9,14 @@ from pyrogram.types import (
     InlineQueryResultArticle,
     InlineQueryResultPhoto,
 )
-from pyrogram.errors import PeerIdInvalid
+
 from platform import python_version
 
-from .__main__ import dynamic_data_filter
 from nana import setbot, Owner, OwnerName, DB_AVAILABLE, app, USERBOT_VERSION, AdminSettings
 from nana.tr_engine.strings import tld
 from nana.helpers.msg_types import Types
 from nana.helpers.string import parse_button, build_keyboard
 from nana.modules.pm import welc_txt
-from nana.helpers.aiohttp_helper import AioHttp
 from nana.helpers.sauce import anime_sauce
 from nana.modules.animelist import shorten
 from nana.modules.database import anime_db as sql
@@ -275,10 +269,6 @@ async def inline_query_handler(client, query):
                                         cache_time=0
                                         )
     elif string.split()[0] == "alive":
-        repo = git.Repo(os.getcwd())
-        master = repo.head.reference
-        commit_id = master.commit.hexsha
-        commit_link = f"[{commit_id[:7]}](https://github.com/pokurt/Nana-Remix/commit/{commit_id})"
         try:
             me = await app.get_me()
         except ConnectionError:
@@ -292,7 +282,6 @@ async def inline_query_handler(client, query):
             title="Alive",
             description="Nana Userbot",
             input_message_content=InputTextMessageContent(tld("alive_str").format(
-                commit_link,
                 nana_stats,
                 USERBOT_VERSION,
                 __version__,

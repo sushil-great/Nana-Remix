@@ -10,7 +10,7 @@ inline_help_text: "**Inline Guide**\nJust type `@{} (command)` in text box, and 
 start_message: "Hi {},\nNana is Ready at your Service!\n===================\n-> Python: `{}`\n-> Userbot: `{} (v{})`\n-> Assistant: `Running (v{})`\n-> Database: `{}`\n-> Group joined: `{}`\n===================\n`For more about the bot press button down below`"
 help_btn: "Help"
 help_str: "You can use {} on your userbot to execute that commands.\nHere is current modules you have\nMain commands available:\n - /start: get your bot status\n - /stats: get your userbot status\n - /settings: settings your userbot\n - /getme: get your userbot profile info\n - /help: get this menu"
-alive_str: "**[Nana-Remix](https://github.com/pokurt/Nana-Remix) Running on {}:**\n - **Bot**: `{} (v{})`\n - **Pyrogram**: `{}`\n - **Python**: `{}`\n - **Database**: `{}`\n"
+alive_str: "**[Nana-Remix](https://github.com/pokurt/Nana-Remix):**\n - **Bot**: `{} (v{})`\n - **Pyrogram**: `{}`\n - **Python**: `{}`\n - **Database**: `{}`\n"
 
 #Gdrive Assistant
 gdrive_credential_err_heroku: "Hello, look like you're not logged in to google drive 🙂 I can help you to login.\nFirst of all, you need to activate your google drive API\n1. [Go here]('https://developers.google.com/drive/api/v3/quickstart/python'),\nclick Enable the drive API\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click Enable the drive API again,\nand click Download Client Configuration button, download that.\n4. After downloaded that file, open that file then copy all of that content go to dashboard.heroku.com, \nselect your apps and go to settings, go to config vars then add key with name gdrive_credentials with value your credentials\nAfter that, you can go next guide by type /gdrive"

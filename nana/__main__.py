@@ -1,11 +1,10 @@
 import asyncio
 import importlib
 import sys
-import time
 import traceback
 
 from pyrogram import idle
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from nana import app, Owner, log, setbot, get_self, get_bot
 from nana.assistant import ALL_SETTINGS
@@ -68,6 +67,7 @@ async def reboot():
         importlib.reload(imported_module)
 
 
+
 # await setbot.send_message(Owner, "Restart successfully!")
 
 async def restart_all():
@@ -75,8 +75,11 @@ async def restart_all():
     asyncio.get_event_loop().create_task(reboot())
 
 
-RANDOM_STICKERS = ["CAADAgAD6EoAAuCjggf4LTFlHEcvNAI", "CAADAgADf1AAAuCjggfqE-GQnopqyAI",
-                   "CAADAgADaV0AAuCjggfi51NV8GUiRwI"]
+RANDOM_STICKERS = [
+    "CAADAgAD6EoAAuCjggf4LTFlHEcvNAI",
+    "CAADAgADf1AAAuCjggfqE-GQnopqyAI",
+    "CAADAgADaV0AAuCjggfi51NV8GUiRwI"
+]
 
 
 async def except_hook(errtype, value, tback):
@@ -156,5 +159,4 @@ async def start_bot():
 
 
 if __name__ == '__main__':
-    BOT_RUNTIME = int(time.time())
     loop.run_until_complete(start_bot())

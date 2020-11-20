@@ -2,7 +2,6 @@ import random
 import os
 from git import Repo
 from git.exc import GitCommandError, NoSuchPathError, InvalidGitRepositoryError
-from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from nana import (
     setbot,
@@ -86,7 +85,7 @@ async def update_checker():
 
 
 @setbot.on_callback_query(dynamic_data_filter("update_now"))
-async def update_button(client, query):
+async def update_button(client, _):
     await client.send_message(Owner, "Updating, please wait...")
     try:
         repo = Repo()
