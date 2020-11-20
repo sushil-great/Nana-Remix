@@ -120,3 +120,4 @@ nana/modules/test_admin.py
 .idea/Nana-Remix.iml
 .idea/dictionaries/Aman.xml
 *.session
+*.session-journal

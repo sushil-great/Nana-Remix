@@ -5,7 +5,7 @@ from nana import logging as LOGGER
 from nana.modules.database.lang_db import prev_locale
 from nana import Owner
 
-LANGUAGES = ['en-US', 'hi', 'id', 'he']
+LANGUAGES = ['en-US', 'hi', 'he', 'id']
 
 strings = {
     i: yaml.full_load(open("locales/" + i + ".yml", "r")) for i in LANGUAGES
@@ -26,10 +26,12 @@ def tld(t, _show_none=True):
             result = decode(
                 encode(strings['hi'][t], 'latin-1', 'backslashreplace'),
                 'unicode-escape')
+            return result
         elif LOCALE in ('he') and t in strings['he']:
             result = decode(
                 encode(strings['he'][t], 'latin-1', 'backslashreplace'),
                 'unicode-escape')
+            return result
         elif LOCALE in ('id') and t in strings['id']:
             result = decode(
                 encode(strings['id'][t], 'latin-1', 'backslashreplace'),
