@@ -22,3 +22,10 @@ community will answer you some questions.
 - [Ayra Hikari](https://github.com/AyraHikari)
 - [LegenHand](https://github.com/legenhand)
 - [RealAkito](https://github.com/RealAkito)
+
+### Translators
+
+- [pokurt](https://github.com/pokurt) - __English__
+- [iMat1n](https://github.com/iMat1n) - __Persian__
+- [iiiiii1wepfj](https://github.com/iiiiii1wepfj) - __Hebrew__
+- [breakdowns](https://github.com/breakdowns) - __Indonasian__
