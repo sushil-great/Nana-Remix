@@ -30,18 +30,18 @@ async def speedtestxyz_callback(client, query):
         speed.get_best_server()
         speed.download()
         speed.upload()
-        replymsg = '**SpeedTest Results:**'
+        replymsg = tld("speed_test_result")
         if query.data == 'speedtest_image':
             speedtest_image = speed.results.share()
-            replym = f"**[SpeedTest Results:]({speedtest_image})**"
+            replym = f"**[{tld('speed_test_result')}]({speedtest_image})**"
             await setbot.edit_inline_text(query.inline_message_id, replym, parse_mode="markdown")
 
         elif query.data == 'speedtest_text':
             result = speed.results.dict()
-            replymsg += f"\n - **ISP:** `{result['client']['isp']}`"
-            replymsg += f"\n - **Download:** `{speed_convert(result['download'])}`"
-            replymsg += f"\n - **Upload:** `{speed_convert(result['upload'])}`"
-            replymsg += f"\n - **Ping:** `{result['ping']}`"
+            replymsg += f"\n - {tld('speed_test_isp')} `{result['client']['isp']}`"
+            replymsg += f"\n - {tld('speed_test_download')} `{speed_convert(result['download'])}`"
+            replymsg += f"\n - {tld('speed_test_upload')} `{speed_convert(result['upload'])}`"
+            replymsg += f"\n - {tld('speed_test_ping')} `{result['ping']}`"
             await setbot.edit_inline_text(query.inline_message_id, replymsg, parse_mode="markdown")
     else:
         await client.answer_callback_query(query.id, "No, you are not allowed to do this", show_alert=False)

@@ -26,14 +26,13 @@ To report someone or report your message to all admins
 Check all bots in spesific chat or current chat
 """
 
-creator = []
-admin = []
-badmin = []
-
 @app.on_message(
     filters.me & filters.command(["admins", "adminlist"], Command)
     )
 async def adminlist(client, message):
+    creator = []
+    admin = []
+    badmin = []
     replyid = None
     toolong = False
     if len(message.text.split()) >= 2:

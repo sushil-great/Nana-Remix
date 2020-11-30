@@ -255,9 +255,9 @@ async def inline_query_handler(client, query):
                                         )
 
     elif string.split()[0] == "speedtest":
-        buttons = [[InlineKeyboardButton("Image",
+        buttons = [[InlineKeyboardButton(tld("speed_test_button_text"),
                                         callback_data="speedtest_image"),
-                    InlineKeyboardButton("Text",
+                    InlineKeyboardButton(tld("speed_test_button_image"),
                                         callback_data="speedtest_text")]]
         answers.append(InlineQueryResultArticle(
             title="Speed Test",
