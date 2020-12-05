@@ -7,18 +7,22 @@ from nana import ASSISTANT_LOAD, ASSISTANT_NOLOAD, log
 def __list_all_modules():
     from os.path import dirname, basename, isfile
     import glob
+
     # This generates a list of modules in this folder for the * in __main__ to work.
     mod_paths = glob.glob(dirname(__file__) + "/*.py")
     all_modules = [
-        basename(f)[:-3] for f in mod_paths if isfile(f)
-        and f.endswith(".py")
-        and not f.endswith('__init__.py')
+        basename(f)[:-3]
+        for f in mod_paths
+        if isfile(f) and f.endswith(".py") and not f.endswith("__init__.py")
     ]
 
     if ASSISTANT_LOAD or ASSISTANT_NOLOAD:
         to_load = ASSISTANT_LOAD
         if to_load:
-            if not all(any(mod == module_name for module_name in all_modules) for mod in to_load):
+            if not all(
+                any(mod == module_name for module_name in all_modules)
+                for mod in to_load
+            ):
                 log.error("Invalid Module name for Assistant bot!")
                 quit(1)
 

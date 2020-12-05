@@ -63,9 +63,9 @@ def get_message_type(msg):
 
     # TODO
     # elif msg.animated_sticker:
-    #	content = msg.animation.file_id
-    #	text = None
-    #	message_type = Types.ANIMATED_STICKER
+    # 	content = msg.animation.file_id
+    # 	text = None
+    # 	message_type = Types.ANIMATED_STICKER
 
     else:
         return None, None
@@ -141,9 +141,9 @@ def get_note_type(msg):
 
     # TODO
     # elif msg.reply_to_message.animated_sticker:
-    #	content = msg.reply_to_message.animation.file_id
-    #	text = None
-    #	data_type = Types.ANIMATED_STICKER
+    # 	content = msg.reply_to_message.animation.file_id
+    # 	text = None
+    # 	data_type = Types.ANIMATED_STICKER
 
     else:
         return None, None, None, None
@@ -218,9 +218,9 @@ def get_welcome_type(msg):
 
     # TODO
     # elif msg.reply_to_message.animated_sticker:
-    #	content = msg.reply_to_message.animation.file_id
-    #	text = None
-    #	data_type = Types.ANIMATED_STICKER
+    # 	content = msg.reply_to_message.animation.file_id
+    # 	text = None
+    # 	data_type = Types.ANIMATED_STICKER
 
     else:
         if msg.caption:

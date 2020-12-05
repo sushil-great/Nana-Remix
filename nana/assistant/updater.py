@@ -130,15 +130,21 @@ async def update_button(client, _):
                 remote = repo.create_remote("heroku", heroku_git_url)
             remote.push(refspec="HEAD:refs/heads/master")
         else:
-            await client.send_message(Owner, "no heroku application found, but a key given? 😕 ")
-        await client.send_message(Owner, "Build Unsuccess, Check heroku build log for more detail")
+            await client.send_message(
+                Owner, "no heroku application found, but a key given? 😕 "
+            )
+        await client.send_message(
+            Owner, "Build Unsuccess, Check heroku build log for more detail"
+        )
         return
     else:
         try:
-            os.system('git reset --hard')
-            os.system('git pull')
-            os.system('pip install -U -r requirements.txt')
-            await client.send_message(Owner, "Built Successfully, Please Restart Manually in /settings")
+            os.system("git reset --hard")
+            os.system("git pull")
+            os.system("pip install -U -r requirements.txt")
+            await client.send_message(
+                Owner, "Built Successfully, Please Restart Manually in /settings"
+            )
             return
         except Exception as e:
             await client.send_message(Owner, f"Build Unsuccess,\nLog:{e}")
@@ -152,8 +158,7 @@ async def update_button(client, _):
         repo.git.clean("-fd", "nana/assistant/")
         repo.git.clean("-fd", "nana/helpers/")
         await client.send_message(
-            Owner,
-            "Successfully Force Updated!\nBot is restarting..."
+            Owner, "Successfully Force Updated!\nBot is restarting..."
         )
     await update_changelog(changelog)
     await restart_all()

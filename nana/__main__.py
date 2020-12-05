@@ -61,14 +61,16 @@ async def reboot():
             if imported_module.__MODULE__.lower() not in HELP_COMMANDS:
                 HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
             else:
-                raise Exception("Can't have two modules with the same name! Please change one")
+                raise Exception(
+                    "Can't have two modules with the same name! Please change one"
+                )
         if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
             HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
         importlib.reload(imported_module)
 
 
-
 # await setbot.send_message(Owner, "Restart successfully!")
+
 
 async def restart_all():
     # Restarting and load all plugins
@@ -78,14 +80,16 @@ async def restart_all():
 RANDOM_STICKERS = [
     "CAADAgAD6EoAAuCjggf4LTFlHEcvNAI",
     "CAADAgADf1AAAuCjggfqE-GQnopqyAI",
-    "CAADAgADaV0AAuCjggfi51NV8GUiRwI"
+    "CAADAgADaV0AAuCjggfi51NV8GUiRwI",
 ]
 
 
 async def except_hook(errtype, value, tback):
     sys.__excepthook__(errtype, value, tback)
     errors = traceback.format_exception(etype=errtype, value=value, tb=tback)
-    button = InlineKeyboardMarkup([[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]])
+    button = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]]
+    )
     text = "An error has accured!\n\n```{}```\n".format("".join(errors))
     if errtype == ModuleNotFoundError:
         text += "\nHint: Try this in your terminal `pip install -r requirements.txt`"
@@ -120,7 +124,9 @@ async def start_bot():
             if imported_module.__MODULE__.lower() not in HELP_COMMANDS:
                 HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
             else:
-                raise Exception("Can't have two modules with the same name! Please change one")
+                raise Exception(
+                    "Can't have two modules with the same name! Please change one"
+                )
         if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
             HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
     userbot_modules = ""
@@ -158,5 +164,5 @@ async def start_bot():
         await idle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop.run_until_complete(start_bot())

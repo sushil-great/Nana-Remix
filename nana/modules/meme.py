@@ -83,9 +83,9 @@ async def pat(client, message):
             result = await request.json()
             url = result.get("link", None)
             await message.delete()
-            await client.send_video(message.chat.id, url,
-                                    reply_to_message_id=ReplyCheck(message)
-                                    )
+            await client.send_video(
+                message.chat.id, url, reply_to_message_id=ReplyCheck(message)
+            )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("scam", Command))
@@ -121,7 +121,7 @@ async def scam(client, message):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("shg", Command))
-async def shg(_client, message):
+async def shg(_, message):
     await edrep(message, text=random.choice(meme_strings.shgs))
 
 
@@ -129,10 +129,12 @@ async def shg(_client, message):
 async def spam(client, message):
     await message.delete()
     times = message.command[1]
-    to_spam = ' '.join(message.command[2:])
-    if message.chat.type in ['supergroup', 'group']:
+    to_spam = " ".join(message.command[2:])
+    if message.chat.type in ["supergroup", "group"]:
         for _ in range(int(times)):
-            await client.send_message(message.chat.id, to_spam, reply_to_message_id=ReplyCheck(message))
+            await client.send_message(
+                message.chat.id, to_spam, reply_to_message_id=ReplyCheck(message)
+            )
             await asyncio.sleep(0.20)
 
     if message.chat.type == "private":
@@ -151,23 +153,25 @@ async def spam_stick(client, message):
         return
     else:
         times = message.command[1]
-        if message.chat.type in ['supergroup', 'group']:
+        if message.chat.type in ["supergroup", "group"]:
             for _ in range(int(times)):
-                await client.send_sticker(message.chat.id,
-                sticker=message.reply_to_message.sticker.file_id,
-                reply_to_message_id=ReplyCheck(message)
+                await client.send_sticker(
+                    message.chat.id,
+                    sticker=message.reply_to_message.sticker.file_id,
+                    reply_to_message_id=ReplyCheck(message),
                 )
                 await asyncio.sleep(0.20)
 
         if message.chat.type == "private":
             for _ in range(int(times)):
-                await client.send_message(message.chat.id,
-                sticker=message.reply_to_message.sticker.file_id)
+                await client.send_message(
+                    message.chat.id, sticker=message.reply_to_message.sticker.file_id
+                )
                 await asyncio.sleep(0.20)
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("owo", Command))
-async def owo(_client, message):
+async def owo(_, message):
     cmd = message.command
     text = ""
     if len(cmd) > 1:
@@ -179,46 +183,25 @@ async def owo(_client, message):
         await asyncio.sleep(2)
         await message.delete()
         return
-    reply_text = re.sub(r'[rl]', "w", text)
-    reply_text = re.sub(r'[ｒｌ]', "ｗ", text)
-    reply_text = re.sub(r'[RL]', 'W', reply_text)
-    reply_text = re.sub(r'[ＲＬ]', 'Ｗ', reply_text)
-    reply_text = re.sub(r'n([aeiouａｅｉｏｕ])', r'ny\1', reply_text)
-    reply_text = re.sub(r'r([aeiouａｅｉｏｕ])', r'w\1', reply_text)
-    reply_text = re.sub(r'ｎ([ａｅｉｏｕ])', r'ｎｙ\1', reply_text)
-    reply_text = re.sub(r'N([aeiouAEIOU])', r'Ny\1', reply_text)
-    reply_text = re.sub(r'Ｎ([ａｅｉｏｕＡＥＩＯＵ])', r'Ｎｙ\1', reply_text)
-    reply_text = re.sub(r'\!+', ' ' + random.choice(meme_strings.faces), reply_text)
-    reply_text = re.sub(r'！+', ' ' + random.choice(meme_strings.faces), reply_text)
+    reply_text = re.sub(r"[rl]", "w", text)
+    reply_text = re.sub(r"[ｒｌ]", "ｗ", text)
+    reply_text = re.sub(r"[RL]", "W", reply_text)
+    reply_text = re.sub(r"[ＲＬ]", "Ｗ", reply_text)
+    reply_text = re.sub(r"n([aeiouａｅｉｏｕ])", r"ny\1", reply_text)
+    reply_text = re.sub(r"r([aeiouａｅｉｏｕ])", r"w\1", reply_text)
+    reply_text = re.sub(r"ｎ([ａｅｉｏｕ])", r"ｎｙ\1", reply_text)
+    reply_text = re.sub(r"N([aeiouAEIOU])", r"Ny\1", reply_text)
+    reply_text = re.sub(r"Ｎ([ａｅｉｏｕＡＥＩＯＵ])", r"Ｎｙ\1", reply_text)
+    reply_text = re.sub(r"\!+", " " + random.choice(meme_strings.faces), reply_text)
+    reply_text = re.sub(r"！+", " " + random.choice(meme_strings.faces), reply_text)
     reply_text = reply_text.replace("ove", "uv")
     reply_text = reply_text.replace("ｏｖｅ", "ｕｖ")
-    reply_text += ' ' + random.choice(meme_strings.faces)
+    reply_text += " " + random.choice(meme_strings.faces)
     await edrep(message, text=reply_text)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("f", Command))
-async def pay_respecc(_client, message):
-    cmd = message.command
-    paytext = ""
-    if len(cmd) > 1:
-        paytext = " ".join(cmd[1:])
-    elif message.reply_to_message and len(cmd) == 1:
-        paytext = message.reply_to_message.text
-    elif len(cmd) == 1:
-        await edrep(message, text="**Press F to Pay Respecc!**")
-        await asyncio.sleep(2)
-        await message.delete()
-        return
-    pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(
-        paytext * 8, paytext * 8, paytext * 2, paytext * 2, paytext * 2,
-        paytext * 6, paytext * 6, paytext * 2, paytext * 2, paytext * 2,
-        paytext * 2, paytext * 2
-    )
-    await edrep(message, text=pay)
-
-
 @app.on_message(filters.user(AdminSettings) & filters.command("str", Command))
-async def stretch(_client, message):
+async def stretch(_, message):
     cmd = message.command
     stretch_text = ""
     if len(cmd) > 1:
@@ -231,13 +214,14 @@ async def stretch(_client, message):
         await message.delete()
         return
     count = random.randint(3, 10)
-    reply_text = re.sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
-                        stretch_text)
+    reply_text = re.sub(
+        r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count), stretch_text
+    )
     await edrep(message, text=reply_text)
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("cp", Command))
-async def haha_emojis(_client, message):
+async def haha_emojis(_, message):
     if not message.reply_to_message.message_id:
         return
 
@@ -276,12 +260,12 @@ async def fake_ss(client, message):
         message.delete(),
         client.send(
             functions.messages.SendScreenshotNotification(
-                    peer=await client.resolve_peer(message.chat.id),
-                    reply_to_msg_id=0,
-                    random_id=client.rnd_id(),
-                )
+                peer=await client.resolve_peer(message.chat.id),
+                reply_to_msg_id=0,
+                random_id=client.rnd_id(),
             )
-        )
+        ),
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("g", Command))
@@ -291,7 +275,7 @@ async def glitch(client, message):
     if len(cmd) > 1:
         amount = " ".join(cmd[1:])
     elif len(cmd) == 1:
-        amount = '2'
+        amount = "2"
     profile_photo = "nana/downloads/pfp.jpg"
     glitched_gif = "nana/downloads/glitched_pfp.gif"
     replied = message.reply_to_message
@@ -301,17 +285,13 @@ async def glitch(client, message):
     user = await client.get_users(replied.from_user.id)
     await client.download_media(user.photo.big_file_id, file_name=profile_photo)
     subprocess.run(
-        ["glitch_this",
-        profile_photo,
-        f"{amount}",
-        "--gif"],
+        ["glitch_this", profile_photo, f"{amount}", "--gif"],
         capture_output=True,
-        text=True
-        )
-    await client.send_animation(message.chat.id,
-                                glitched_gif,
-                                reply_to_message_id=ReplyCheck(message)
-                                )
+        text=True,
+    )
+    await client.send_animation(
+        message.chat.id, glitched_gif, reply_to_message_id=ReplyCheck(message)
+    )
     await message.delete()
     os.remove(profile_photo)
     os.remove(glitched_gif)

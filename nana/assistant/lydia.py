@@ -13,16 +13,16 @@ import nana.modules.meme_strings as meme_strings
 from nana.assistant.database import lydia_db as sql
 
 CoffeeHouseAPI = API(lydia_api)
-api_client = LydiaAI(CoffeeHouseAPI)
+api_ = LydiaAI(CoffeeHouseAPI)
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["addchat"]))
-async def add_chat(_client, message):
-    global api_client
+async def add_chat(_, message):
+    global api_
     chat_id = message.chat.id
     is_chat = sql.is_chat(chat_id)
     if not is_chat:
-        ses = api_client.create_session()
+        ses = api_.create_session()
         ses_id = str(ses.id)
         expires = str(ses.expires)
         sql.set_ses(chat_id, ses_id, expires)
@@ -32,7 +32,7 @@ async def add_chat(_client, message):
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["rmchat"]))
-async def remove_chat(_client, message):
+async def remove_chat(_, message):
     chat_id = message.chat.id
     is_chat = sql.is_chat(chat_id)
     if not is_chat:
@@ -42,9 +42,11 @@ async def remove_chat(_client, message):
         await message.reply("AI disabled successfully!")
 
 
-@setbot.on_message(~filters.me & ~filters.edited & (filters.group | filters.private), group=2)
+@setbot.on_message(
+    ~filters.me & ~filters.edited & (filters.group | filters.private), group=2
+)
 async def chat_bot(client, message):
-    global api_client
+    global api_
     chat_id = message.chat.id
     is_chat = sql.is_chat(chat_id)
     if not is_chat:
@@ -56,7 +58,7 @@ async def chat_bot(client, message):
         query = message.text
         try:
             if int(exp) < time():
-                ses = api_client.create_session()
+                ses = api_.create_session()
                 ses_id = str(ses.id)
                 expires = str(ses.expires)
                 sql.set_ses(chat_id, ses_id, expires)
@@ -64,31 +66,36 @@ async def chat_bot(client, message):
         except ValueError:
             pass
         try:
-            await client.send_chat_action(chat_id, action='typing')
-            rep = api_client.think_thought(sesh, query)
-            reply_text = re.sub(r'[rl]', "w", rep)
-            reply_text = re.sub(r'[ｒｌ]', "ｗ", rep)
-            reply_text = re.sub(r'[RL]', 'W', reply_text)
-            reply_text = re.sub(r'[ＲＬ]', 'Ｗ', reply_text)
-            reply_text = re.sub(r'n([aeiouａｅｉｏｕ])', r'ny\1', reply_text)
-            reply_text = re.sub(r'r([aeiouａｅｉｏｕ])', r'w\1', reply_text)
-            reply_text = re.sub(r'ｎ([ａｅｉｏｕ])', r'ｎｙ\1', reply_text)
-            reply_text = re.sub(r'N([aeiouAEIOU])', r'Ny\1', reply_text)
-            reply_text = re.sub(r'Ｎ([ａｅｉｏｕＡＥＩＯＵ])', r'Ｎｙ\1', reply_text)
-            reply_text = re.sub(r'\!+', ' ' + random.choice(meme_strings.faces), reply_text)
-            reply_text = re.sub(r'！+', ' ' + random.choice(meme_strings.faces), reply_text)
+            await client.send_chat_action(chat_id, action="typing")
+            rep = api_.think_thought(sesh, query)
+            reply_text = re.sub(r"[rl]", "w", rep)
+            reply_text = re.sub(r"[ｒｌ]", "ｗ", rep)
+            reply_text = re.sub(r"[RL]", "W", reply_text)
+            reply_text = re.sub(r"[ＲＬ]", "Ｗ", reply_text)
+            reply_text = re.sub(r"n([aeiouａｅｉｏｕ])", r"ny\1", reply_text)
+            reply_text = re.sub(r"r([aeiouａｅｉｏｕ])", r"w\1", reply_text)
+            reply_text = re.sub(r"ｎ([ａｅｉｏｕ])", r"ｎｙ\1", reply_text)
+            reply_text = re.sub(r"N([aeiouAEIOU])", r"Ny\1", reply_text)
+            reply_text = re.sub(r"Ｎ([ａｅｉｏｕＡＥＩＯＵ])", r"Ｎｙ\1", reply_text)
+            reply_text = re.sub(
+                r"\!+", " " + random.choice(meme_strings.faces), reply_text
+            )
+            reply_text = re.sub(
+                r"！+", " " + random.choice(meme_strings.faces), reply_text
+            )
             reply_text = reply_text.replace("ove", "uv")
             reply_text = reply_text.replace("ｏｖｅ", "ｕｖ")
             reply_text = reply_text.replace(".", ",,.")
-            reply_text += ' ' + random.choice(meme_strings.faces)
+            reply_text += " " + random.choice(meme_strings.faces)
             await asyncio.sleep(0.3)
             await message.reply_text(reply_text.lower(), quote=True)
         except CFError as e:
             await client.send_message(
-                Owner, f"Chatbot error: {e} occurred in {chat_id}!")
+                Owner, f"Chatbot error: {e} occurred in {chat_id}!"
+            )
 
 
-async def check_message(_client, message):
+async def check_message(_, message):
     reply_msg = message.reply_to_message
     if message.text.lower() == f"{BotUsername}":
         return True

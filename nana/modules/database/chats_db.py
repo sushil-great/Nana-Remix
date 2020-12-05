@@ -30,8 +30,8 @@ def update_chat(chat):
     if (
         chat.id in list(MY_ALL_CHATS)
         and MY_ALL_CHATS.get(chat.id)
-        and MY_ALL_CHATS[chat.id].get('name') == chat.title
-        and MY_ALL_CHATS[chat.id].get('username') == chat.username
+        and MY_ALL_CHATS[chat.id].get("name") == chat.title
+        and MY_ALL_CHATS[chat.id].get("username") == chat.username
     ):
         return
     chat_db = SESSION.query(MyChats).get(str(chat.id))

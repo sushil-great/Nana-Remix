@@ -49,10 +49,10 @@ Reveal Self Destruct photo untouched, 'self' tag will reveal it in Saved Message
 
 async def aexec(code, client, message):
     exec(
-        'async def __aexec(client, message): ' +
-        ''.join(f'\n {l}' for l in code.split('\n'))
+        "async def __aexec(client, message): "
+        + "".join(f"\n {l}" for l in code.split("\n"))
     )
-    return await locals()['__aexec'](client, message)
+    return await locals()["__aexec"](client, message)
 
 
 @app.on_message(filters.me & filters.command("reveal", Command))
@@ -64,10 +64,10 @@ async def sd_reveal(client, message):
         await message.delete()
         return
     await message.delete()
-    a = 'nana/file.png'
+    a = "nana/file.png"
     await client.download_media(message.reply_to_message.photo, file_name=a)
     if tags:
-        await client.send_photo('me', a)
+        await client.send_photo("me", a)
     else:
         await client.send_photo(message.chat.id, a)
 
@@ -108,14 +108,14 @@ async def executor(client, message):
         evaluation = "Success"
     final_output = f"<b>QUERY</b>:\n<code>{cmd}</code>\n\n<b>OUTPUT</b>:\n<code>{evaluation.strip()}</code>"
     if len(final_output) > 4096:
-        filename = 'output.txt'
+        filename = "output.txt"
         with open(filename, "w+", encoding="utf8") as out_file:
             out_file.write(str(evaluation.strip()))
         await message.reply_document(
             document=filename,
             caption=cmd,
             disable_notification=True,
-            reply_to_message_id=reply_to_id
+            reply_to_message_id=reply_to_id,
         )
         os.remove(filename)
         await message.delete()
@@ -124,7 +124,7 @@ async def executor(client, message):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("ip", Command))
-async def public_ip(_client, message):
+async def public_ip(_, message):
     j = await AioHttp().get_json("http://ip-api.com/json")
     stats = f"**ISP {j['isp']}:**\n"
     stats += f"**AS:** `{j['as']}`\n"
@@ -134,8 +134,7 @@ async def public_ip(_client, message):
     stats += f"**Lattitude:** `{j['lat']}`\n"
     stats += f"**Longitude:** `{j['lon']}`\n"
     stats += f"**Time Zone:** `{j['timezone']}`"
-    await edrep(message, text=stats, parse_mode='markdown')
-
+    await edrep(message, text=stats, parse_mode="markdown")
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("sh", Command))
@@ -149,39 +148,47 @@ async def terminal(client, message):
         code = teks.split("\n")
         output = ""
         for x in code:
-            shell = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', x)
+            shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", x)
             try:
                 process = subprocess.Popen(
-                    shell,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
             except Exception as err:
                 print(err)
-                await edrep(message, text="""
+                await edrep(
+                    message,
+                    text="""
 **Input:**
 ```{}```
 
 **Error:**
 ```{}```
-""".format(teks, err))
+""".format(
+                        teks, err
+                    ),
+                )
             output += "**{}**\n".format(code)
             output += process.stdout.read()[:-1].decode("utf-8")
             output += "\n"
     else:
-        shell = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', teks)
+        shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", teks)
         for a in range(len(shell)):
             shell[a] = shell[a].replace('"', "")
         try:
             process = subprocess.Popen(
-                shell,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except Exception as err:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
-            await edrep(message, text="""**Input:**\n```{}```\n\n**Error:**\n```{}```""".format(teks, "".join(errors)))
+            errors = traceback.format_exception(
+                etype=exc_type, value=exc_obj, tb=exc_tb
+            )
+            await edrep(
+                message,
+                text="""**Input:**\n```{}```\n\n**Error:**\n```{}```""".format(
+                    teks, "".join(errors)
+                ),
+            )
             return
         output = process.stdout.read()[:-1].decode("utf-8")
     if str(output) == "\n":
@@ -192,54 +199,82 @@ async def terminal(client, message):
                 file.write(output)
                 file.close()
             await client.send_document(
-                message.chat.id, "nana/cache/output.txt", reply_to_message_id=message.message_id,
-                caption="`Output file`")
+                message.chat.id,
+                "nana/cache/output.txt",
+                reply_to_message_id=message.message_id,
+                caption="`Output file`",
+            )
             os.remove("nana/cache/output.txt")
             return
-        await edrep(message, text="""**Input:**\n```{}```\n\n**Output:**\n```{}```""".format(teks, output))
+        await edrep(
+            message,
+            text="""**Input:**\n```{}```\n\n**Output:**\n```{}```""".format(
+                teks, output
+            ),
+        )
     else:
-        await edrep(message, text="**Input: **\n`{}`\n\n**Output: **\n`No Output`".format(teks))
+        await edrep(
+            message, text="**Input: **\n`{}`\n\n**Output: **\n`No Output`".format(teks)
+        )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command(["log"], Command))
-async def log(_client, message):
+async def log(_, message):
     f = open("nana/logs/error.log", "r")
     data = await deldog(f.read())
-    await edrep(message, text=f"`Your recent logs stored here : `{data}", disable_web_page_preview=True)
+    await edrep(
+        message,
+        text=f"`Your recent logs stored here : `{data}",
+        disable_web_page_preview=True,
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("dc", Command))
-async def dc_id_check(_client, message):
+async def dc_id_check(_, message):
     user = message.from_user
     if message.reply_to_message:
         if message.reply_to_message.forward_from:
             dc_id = message.reply_to_message.forward_from.dc_id
-            user = mention_markdown(message.reply_to_message.forward_from.id,
-                                    message.reply_to_message.forward_from.first_name)
+            user = mention_markdown(
+                message.reply_to_message.forward_from.id,
+                message.reply_to_message.forward_from.first_name,
+            )
         else:
             dc_id = message.reply_to_message.from_user.dc_id
-            user = mention_markdown(message.reply_to_message.from_user.id,
-                                    message.reply_to_message.from_user.first_name)
+            user = mention_markdown(
+                message.reply_to_message.from_user.id,
+                message.reply_to_message.from_user.first_name,
+            )
     else:
         dc_id = user.dc_id
         user = mention_markdown(message.from_user.id, message.from_user.first_name)
     if dc_id == 1:
-        text = "{}'s assigned datacenter is **DC1**, located in **MIA, Miami FL, USA**".format(user)
+        text = "{}'s assigned datacenter is **DC1**, located in **MIA, Miami FL, USA**".format(
+            user
+        )
     elif dc_id == 2:
-        text = "{}'s assigned datacenter is **DC2**, located in **AMS, Amsterdam, NL**".format(user)
+        text = "{}'s assigned datacenter is **DC2**, located in **AMS, Amsterdam, NL**".format(
+            user
+        )
     elif dc_id == 3:
-        text = "{}'s assigned datacenter is **DC3**, located in **MIA, Miami FL, USA**".format(user)
+        text = "{}'s assigned datacenter is **DC3**, located in **MIA, Miami FL, USA**".format(
+            user
+        )
     elif dc_id == 4:
-        text = "{}'s assigned datacenter is **DC4**, located in **AMS, Amsterdam, NL**".format(user)
+        text = "{}'s assigned datacenter is **DC4**, located in **AMS, Amsterdam, NL**".format(
+            user
+        )
     elif dc_id == 5:
-        text = "{}'s assigned datacenter is **DC5**, located in **SIN, Singapore, SG**".format(user)
+        text = "{}'s assigned datacenter is **DC5**, located in **SIN, Singapore, SG**".format(
+            user
+        )
     else:
         text = "{}'s assigned datacenter is **Unknown**".format(user)
     await edrep(message, text=text)
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("id", Command))
-async def get_id(_client, message):
+async def get_id(_, message):
     file_id = None
     user_id = None
     if message.reply_to_message:
@@ -299,14 +334,18 @@ async def get_id(_client, message):
             user_id = rep.from_user.id
     if user_id:
         if rep.forward_from:
-            user_detail = f"**Forwarded User ID**: `{message.reply_to_message.forward_from.id}`\n"
+            user_detail = (
+                f"**Forwarded User ID**: `{message.reply_to_message.forward_from.id}`\n"
+            )
         else:
             user_detail = f"**User ID**: `{message.reply_to_message.from_user.id}`\n"
         user_detail += f"**Message ID**: `{message.reply_to_message.message_id}`"
         await edrep(message, text=user_detail)
     elif file_id:
         if rep.forward_from:
-            user_detail = f"**Forwarded User ID**: `{message.reply_to_message.forward_from.id}`\n"
+            user_detail = (
+                f"**Forwarded User ID**: `{message.reply_to_message.forward_from.id}`\n"
+            )
         else:
             user_detail = f"**User ID**: `{message.reply_to_message.from_user.id}`\n"
         user_detail += f"**Message ID**: `{message.reply_to_message.message_id}`\n\n"

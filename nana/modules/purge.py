@@ -47,29 +47,27 @@ async def purge_message(client, message):
     message_ids = []
     count_del_etion_s = 0
     if message.reply_to_message:
-        for a_s_message_id in range(message.reply_to_message.message_id, message.message_id):
+        for a_s_message_id in range(
+            message.reply_to_message.message_id, message.message_id
+        ):
             message_ids.append(a_s_message_id)
             if len(message_ids) == 100:
                 await client.delete_messages(
-                    chat_id=message.chat.id,
-                    message_ids=message_ids,
-                    revoke=True
+                    chat_id=message.chat.id, message_ids=message_ids, revoke=True
                 )
                 count_del_etion_s += len(message_ids)
                 message_ids = []
         if message_ids:
             await client.delete_messages(
-                chat_id=message.chat.id,
-                message_ids=message_ids,
-                revoke=True
+                chat_id=message.chat.id, message_ids=message_ids, revoke=True
             )
             count_del_etion_s += len(message_ids)
     end_t = datetime.now()
     time_taken_ms = (end_t - start_t).seconds
     ms_g = await client.send_message(
         message.chat.id,
-        f"Purged {count_del_etion_s} messages in {time_taken_ms} seconds"
-        )
+        f"Purged {count_del_etion_s} messages in {time_taken_ms} seconds",
+    )
     await asyncio.sleep(5)
     await ms_g.delete()
 
@@ -97,12 +95,16 @@ async def purge_myself(client, message):
         for x in range(math.ceil(len(semua) / 100)):
             if total >= 101:
                 jarak2 += 100
-                await client.delete_messages(message.chat.id, message_ids=semua[jarak:jarak2])
+                await client.delete_messages(
+                    message.chat.id, message_ids=semua[jarak:jarak2]
+                )
                 jarak += 100
                 total -= 100
             else:
                 jarak2 += total
-                await client.delete_messages(message.chat.id, message_ids=semua[jarak:jarak2])
+                await client.delete_messages(
+                    message.chat.id, message_ids=semua[jarak:jarak2]
+                )
                 jarak += total
                 total -= total
     else:

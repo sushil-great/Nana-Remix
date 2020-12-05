@@ -21,10 +21,17 @@ async def grabTime(_, message):
     if not time_country:
         await message.delete()
         return
-    tz = time_country.replace('_', ' ')
+    tz = time_country.replace("_", " ")
     tzDateTime = datetime.now(timezone(tz))
-    date = tzDateTime.strftime(r'%d-%m-%Y')
-    militaryTime = tzDateTime.strftime('%H:%M')
+    date = tzDateTime.strftime(r"%d-%m-%Y")
+    militaryTime = tzDateTime.strftime("%H:%M")
     time = datetime.strptime(militaryTime, "%H:%M").strftime("%I:%M %p")
-    time_string = '__Currently it is__' +f' **{time}** '+'__on__'+f' **{date}** '+'__in__ '+f'**{tz}**'
+    time_string = (
+        "__Currently it is__"
+        + f" **{time}** "
+        + "__on__"
+        + f" **{date}** "
+        + "__in__ "
+        + f"**{tz}**"
+    )
     await edrep(message, text=time_string)

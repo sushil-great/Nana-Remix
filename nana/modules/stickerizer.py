@@ -19,7 +19,7 @@ Stikerize spongebob mocking sticker.
 -> `waifu`
 Stickerize Waifu text.
 
-──「 **Spenpai** 」──
+──「 **Senpai** 」──
 -> `senpai`
 Stickerize senpai text.
 
@@ -48,11 +48,13 @@ async def google_search(client, message):
         return
     x = await client.get_inline_bot_results("Stickerizerbot", f"#12{googles}")
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("mock", Command))
@@ -70,11 +72,13 @@ async def mock_spongebob(client, message):
         return
     x = await client.get_inline_bot_results("Stickerizerbot", f"#7{mock}")
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("senpai", Command))
@@ -90,13 +94,17 @@ async def senpai_sticker(client, message):
         await asyncio.sleep(2)
         await message.delete()
         return
-    x = await client.get_inline_bot_results("Stickerizerbot", f"#{random.choice(senpais)}{senpai}")
+    x = await client.get_inline_bot_results(
+        "Stickerizerbot", f"#{random.choice(senpais)}{senpai}"
+    )
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("waifu", Command))
@@ -112,10 +120,14 @@ async def waifu_sticker(client, message):
         await asyncio.sleep(2)
         await message.delete()
         return
-    x = await client.get_inline_bot_results("Stickerizerbot", f"#{random.choice(waifus)}{waifu}")
+    x = await client.get_inline_bot_results(
+        "Stickerizerbot", f"#{random.choice(waifus)}{waifu}"
+    )
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )

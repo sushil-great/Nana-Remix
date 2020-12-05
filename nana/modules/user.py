@@ -58,21 +58,19 @@ profile_photo = "nana/downloads/pfp.jpg"
 async def set_pfp(client, message):
     replied = message.reply_to_message
     if (
-        replied and replied.media and (
-            replied.photo or (
-                replied.document and "image" in replied.document.mime_type
-            )
+        replied
+        and replied.media
+        and (
+            replied.photo
+            or (replied.document and "image" in replied.document.mime_type)
         )
     ):
-        await client.download_media(
-            message=replied,
-            file_name=profile_photo
-        )
+        await client.download_media(message=replied, file_name=profile_photo)
         await client.set_profile_photo(profile_photo)
         if os.path.exists(profile_photo):
             os.remove(profile_photo)
-        await edrep(message, text="<code>Profile picture changed.</code>",
-            parse_mode='html'
+        await edrep(
+            message, text="<code>Profile picture changed.</code>", parse_mode="html"
         )
     else:
         await edrep(message, text="```Reply to any photo to set as pfp```")
@@ -90,10 +88,7 @@ async def view_pfp(client, message):
     if not user.photo:
         await edrep(message, text="profile photo not found!")
         return
-    await client.download_media(
-        user.photo.big_file_id,
-        file_name=profile_photo
-    )
+    await client.download_media(user.photo.big_file_id, file_name=profile_photo)
     await client.send_photo(message.chat.id, profile_photo)
     await message.delete()
     if os.path.exists(profile_photo):
@@ -110,22 +105,35 @@ async def clone(client, message):
         await edrep(message, text="Select target user to clone their identity!")
     if "origin" in message.text:
         my_self = await app.get_me()
-        my_self = await client.send(functions.users.GetFullUser(id=await client.resolve_peer(my_self['id'])))
+        my_self = await client.send(
+            functions.users.GetFullUser(id=await client.resolve_peer(my_self["id"]))
+        )
 
         # Backup my first name, last name, and bio
-        backup_indentity(my_self['user']['first_name'], my_self['user']['last_name'], my_self['about'])
+        backup_indentity(
+            my_self["user"]["first_name"],
+            my_self["user"]["last_name"],
+            my_self["about"],
+        )
     q = await app.get_profile_photos(target)
     await client.download_media(q[0], file_name="nana/downloads/pp.png")
     await app.set_profile_photo("nana/downloads/pp.png")
     t = await app.get_users(target)
-    t = await client.send(functions.users.GetFullUser(id=await client.resolve_peer(t['id'])))
+    t = await client.send(
+        functions.users.GetFullUser(id=await client.resolve_peer(t["id"]))
+    )
     p_file = functions.account
     await client.send(
         p_file.UpdateProfile(
-            first_name=t['user']['first_name'] if t['user']['first_name'] is not None else "",
-            last_name=t['user']['last_name'] if t['user']['last_name'] is not None else "",
-            about=t['about'] if t['about'] is not None else "")
+            first_name=t["user"]["first_name"]
+            if t["user"]["first_name"] is not None
+            else "",
+            last_name=t["user"]["last_name"]
+            if t["user"]["last_name"] is not None
+            else "",
+            about=t["about"] if t["about"] is not None else "",
         )
+    )
     await edrep(message, text="`New identity has changed!`")
     await sleep(5)
     await message.delete()
@@ -134,10 +142,12 @@ async def clone(client, message):
 @app.on_message(filters.user(AdminSettings) & filters.command("revert", Command))
 async def revert(client, message):
     first_name, last_name, bio = restore_identity()
-    await client.send(functions.account.UpdateProfile(
-        first_name=first_name if first_name is not None else "",
-        last_name=last_name if last_name is not None else "",
-        about=bio if bio is not None else "")
+    await client.send(
+        functions.account.UpdateProfile(
+            first_name=first_name if first_name is not None else "",
+            last_name=last_name if last_name is not None else "",
+            about=bio if bio is not None else "",
+        )
     )
     photos = await client.get_profile_photos("me")
     await client.delete_profile_photos(photos[0].file_id)
@@ -159,19 +169,19 @@ async def join_chat(client, message):
         await sleep(2)
         await message.delete()
         return
-    await client.join_chat(text.replace('@', ''))
-    await edrep(message, text=f'joined {text} successfully!')
+    await client.join_chat(text.replace("@", ""))
+    await edrep(message, text=f"joined {text} successfully!")
     await sleep(2)
     await message.delete()
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("leave", Command))
 async def leave_chat(client, message):
-    await edrep(message, text='__adios__')
+    await edrep(message, text="__adios__")
     await client.leave_chat(message.chat.id)
 
 
-@app.on_message(filters.command('unread', Command) & filters.user(AdminSettings))
+@app.on_message(filters.command("unread", Command) & filters.user(AdminSettings))
 async def mark_chat_unread(client, message):
     await gather(
         message.delete(),
@@ -179,11 +189,11 @@ async def mark_chat_unread(client, message):
             functions.messages.MarkDialogUnread(
                 peer=await client.resolve_peer(message.chat.id), unread=True
             )
-        )
+        ),
     )
 
 
-@app.on_message(filters.command('s', Command) & filters.user(AdminSettings))
-async def to_saved(_client, message):
+@app.on_message(filters.command("s", Command) & filters.user(AdminSettings))
+async def to_saved(_, message):
     await message.delete()
-    await message.reply_to_message.forward('self')
+    await message.reply_to_message.forward("self")

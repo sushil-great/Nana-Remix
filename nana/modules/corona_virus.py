@@ -1,4 +1,3 @@
-
 import asyncio
 
 from pyrogram import filters
@@ -17,7 +16,7 @@ Check info of cases corona virus disease 2019
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("covid", Command))
-async def corona(_client, message):
+async def corona(_, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
         try:

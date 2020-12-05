@@ -24,11 +24,12 @@ Finding information about a github user.
 
 """
 
+
 @app.on_message(filters.user(AdminSettings) & filters.command("git", Command))
 async def github(client, message):
     if len(message.text.split()) == 1:
-            await edrep(message, text="Usage: `git (username)`")
-            return
+        await edrep(message, text="Usage: `git (username)`")
+        return
     username = message.text.split(None, 1)[1]
     URL = f"https://api.github.com/users/{username}"
     async with aiohttp.ClientSession() as session:
@@ -53,7 +54,7 @@ async def github(client, message):
         url = f"https://ghchart.rshah.org/{username}"
         file_name = f"{randint(1, 999)}{username}"
         resp = await AioHttp.get_raw(url)
-        f = await aiofiles.open(f"{file_name}.svg", mode='wb')
+        f = await aiofiles.open(f"{file_name}.svg", mode="wb")
         await f.write(resp)
         await f.close()
 
@@ -67,11 +68,11 @@ async def github(client, message):
             return
         await asyncio.gather(
             client.send_photo(
-            chat_id=message.chat.id,
-            photo=f"{file_name}.png",
-            caption=REPLY,
-            reply_to_message_id=ReplyCheck(message)
+                chat_id=message.chat.id,
+                photo=f"{file_name}.png",
+                caption=REPLY,
+                reply_to_message_id=ReplyCheck(message),
             )
-    )
+        )
     for file in iglob(f"{file_name}.*"):
         os.remove(file)

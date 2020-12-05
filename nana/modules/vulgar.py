@@ -19,12 +19,12 @@ Current words: 'nigga', 'nigger', 'coon', 'fuck', 'bitch'
 
 vulgar_filter = False
 
-bad_words = ['nigga', 'nigger', 'coon', 'bitch']
-f_word = ['fuck', 'suck']
+bad_words = ["nigga", "nigger", "coon", "bitch"]
+f_word = ["fuck", "suck"]
 
 
 @app.on_message(~filters.regex(r"^\.\w*") & filters.me)
-async def vulgar_f(_client, message):
+async def vulgar_f(_, message):
     if not vulgar_filter:
         return
     try:
@@ -35,10 +35,10 @@ async def vulgar_f(_client, message):
             txt = message.text
 
         for word in bad_words:
-            txt = re.sub(word, 'bruh', txt, flags=re.IGNORECASE)
+            txt = re.sub(word, "bruh", txt, flags=re.IGNORECASE)
 
         for word in f_word:
-            txt = re.sub(word, 'duck', txt, flags=re.IGNORECASE)
+            txt = re.sub(word, "duck", txt, flags=re.IGNORECASE)
 
         if message.caption:
             if txt != message.caption:
@@ -51,7 +51,7 @@ async def vulgar_f(_client, message):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("vulgar", Command))
-async def vulgar_trigger(_client, message):
+async def vulgar_trigger(_, message):
     global vulgar_filter
     if vulgar_filter:
         vulgar_filter = False

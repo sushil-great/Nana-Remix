@@ -29,10 +29,13 @@ async def get_stickers(_, message):
         for y in x:
             TEMP_KEYBOARD.append(y)
     await app.send_message("@Stickers", "/cancel")
-    msg = await message.reply("Select your stickers for set as kang sticker",
-                              reply_markup=ReplyKeyboardMarkup(keyboard))
+    msg = await message.reply(
+        "Select your stickers for set as kang sticker",
+        reply_markup=ReplyKeyboardMarkup(keyboard),
+    )
     USER_SET[message.from_user.id] = msg.message_id
     USER_SET["type"] = 1
+
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["setanimation"]))
 async def get_stickers_animation(_, message):
@@ -48,12 +51,15 @@ async def get_stickers_animation(_, message):
         for y in x:
             TEMP_KEYBOARD.append(y)
     await app.send_message("@Stickers", "/cancel")
-    msg = await message.reply("Select your stickers for set as kang animation sticker",
-                              reply_markup=ReplyKeyboardMarkup(keyboard))
+    msg = await message.reply(
+        "Select your stickers for set as kang animation sticker",
+        reply_markup=ReplyKeyboardMarkup(keyboard),
+    )
     USER_SET[message.from_user.id] = msg.message_id
     USER_SET["type"] = 2
 
-def get_stickerlist(_,message):
+
+def get_stickerlist(_, message):
     if not DB_AVAILABLE:
         return
     global TEMP_KEYBOARD, USER_SET
@@ -61,6 +67,7 @@ def get_stickerlist(_,message):
         return True
     TEMP_KEYBOARD = []
     USER_SET = {}
+
 
 @setbot.on_message(get_stickerlist)
 async def set_stickers(client, message):
@@ -82,7 +89,9 @@ async def set_stickers(client, message):
     text = await get_text_settings()
     text += "\n{}".format(status)
     button = await get_button_settings()
-    await setbot.send_photo(message.chat.id, NANA_IMG, caption=text, reply_markup=button)
+    await setbot.send_photo(
+        message.chat.id, NANA_IMG, caption=text, reply_markup=button
+    )
 
 
 @setbot.on_callback_query(dynamic_data_filter("setsticker"))
@@ -97,14 +106,19 @@ async def settings_sticker(_, message):
         keyboard = await app.get_history("@Stickers", limit=1)
         keyboard = keyboard[0].reply_markup.keyboard
     except:
-        await message.edit("You dont have any sticker pack!\nAdd stickers pack in @Stickers ")
+        await message.edit(
+            "You dont have any sticker pack!\nAdd stickers pack in @Stickers "
+        )
         return
     for x in keyboard:
         for y in x:
             TEMP_KEYBOARD.append(y)
     await app.send_message("@Stickers", "/cancel")
     await message.message.delete()
-    msg = await setbot.send_message(Owner, "Select your stickers for set as kang animation sticker",
-                                    reply_markup=ReplyKeyboardMarkup(keyboard))
+    msg = await setbot.send_message(
+        Owner,
+        "Select your stickers for set as kang animation sticker",
+        reply_markup=ReplyKeyboardMarkup(keyboard),
+    )
     USER_SET[message.from_user.id] = msg.message_id
     USER_SET["type"] = 2

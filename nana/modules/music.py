@@ -23,7 +23,9 @@ async def send_music(client, message):
         if len(cmd) > 1:
             song_name = " ".join(cmd[1:])
         elif message.reply_to_message and len(cmd) == 1:
-            song_name = message.reply_to_message.text or message.reply_to_message.caption
+            song_name = (
+                message.reply_to_message.text or message.reply_to_message.caption
+            )
         elif len(cmd) == 1:
             await edrep(message, text="Give a song name")
             await asyncio.sleep(2)
@@ -38,16 +40,21 @@ async def send_music(client, message):
                 chat_id="me",
                 query_id=song_results.query_id,
                 result_id=song_results.results[0].id,
-                hide_via=True)
+                hide_via=True,
+            )
 
             # forward as a new message from Saved Messages
             saved = await client.get_messages("me", int(saved.updates[1].message.id))
-            reply_to = message.reply_to_message.message_id if message.reply_to_message else None
+            reply_to = (
+                message.reply_to_message.message_id
+                if message.reply_to_message
+                else None
+            )
             await client.send_audio(
                 chat_id=message.chat.id,
                 audio=str(saved.audio.file_id),
                 file_ref=str(saved.audio.file_ref),
-                reply_to_message_id=reply_to
+                reply_to_message_id=reply_to,
             )
 
             # delete the message from Saved Messages
@@ -61,4 +68,3 @@ async def send_music(client, message):
         await edrep(message, text="`Failed to find song`")
         await asyncio.sleep(2)
         await message.delete()
-        

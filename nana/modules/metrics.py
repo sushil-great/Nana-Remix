@@ -62,11 +62,15 @@ async def get_inactive(client, message):
     )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command(["wordcount", "wc"], Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command(["wordcount", "wc"], Command)
+)
 async def word_count(client, message):
     await message.delete()
     words = Custom()
-    progress = await client.send_message(message.chat.id, "`Processing 1000 messages...`")
+    progress = await client.send_message(
+        message.chat.id, "`Processing 1000 messages...`"
+    )
     async for ms_g in client.iter_history(message.chat.id, 1000):
         if ms_g.text:
             for word in ms_g.text.split():

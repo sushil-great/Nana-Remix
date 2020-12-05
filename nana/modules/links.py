@@ -15,7 +15,7 @@ Reply or parse arg of url to expand
 
 
 @app.on_message(filters.command("expand", Command) & filters.user(AdminSettings))
-async def expand(_client, message):
+async def expand(_, message):
     if message.reply_to_message:
         url = message.reply_to_message.text or message.reply_to_message.caption
     elif len(message.command) > 1:
@@ -26,7 +26,11 @@ async def expand(_client, message):
     if url:
         expanded = await expand_url(url)
         if expanded:
-            await edrep(message, text=f"<b>Shortened URL</b>: {url}\n<b>Expanded URL</b>: {expanded}", disable_web_page_preview=True)
+            await edrep(
+                message,
+                text=f"<b>Shortened URL</b>: {url}\n<b>Expanded URL</b>: {expanded}",
+                disable_web_page_preview=True,
+            )
             return
         else:
             await edrep(message, text="`i Cant expand this url :p`")

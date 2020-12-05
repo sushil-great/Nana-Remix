@@ -7,53 +7,60 @@ BTN_URL_REGEX = re.compile(r"(\[([^\[]+?)\]\(buttonurl:(?:/{0,2})(.+?)(:same)?\)
 
 
 def replace_text(text):
-        return text.replace("\"", "").replace("\\r", "").replace("\\n", "").replace(
-            "\\", "")
+    return text.replace('"', "").replace("\\r", "").replace("\\n", "").replace("\\", "")
 
-            
+
 def extract_time(message, time_val):
-    if any(time_val.endswith(unit) for unit in ('m', 'h', 'd')):
+    if any(time_val.endswith(unit) for unit in ("m", "h", "d")):
         unit = time_val[-1]
         time_num = time_val[:-1]  # type: str
         if not time_num.isdigit():
             message.reply("Unspecified amount of time.")
             return ""
 
-        if unit == 'm':
+        if unit == "m":
             bantime = int(time.time() + int(time_num) * 60)
-        elif unit == 'h':
+        elif unit == "h":
             bantime = int(time.time() + int(time_num) * 60 * 60)
-        elif unit == 's':
+        elif unit == "s":
             bantime = int(time.time() + int(time_num) * 24 * 60 * 60)
         else:
             # how even...?
             return ""
         return bantime
     else:
-        message.reply("Invalid time type specified. Needed m, h, or s. got: {}".format(time_val[-1]))
+        message.reply(
+            "Invalid time type specified. Needed m, h, or s. got: {}".format(
+                time_val[-1]
+            )
+        )
         return ""
 
 
 def extract_time_str(message, time_val):
-    if any(time_val.endswith(unit) for unit in ('m', 'h', 'd')):
+    if any(time_val.endswith(unit) for unit in ("m", "h", "d")):
         unit = time_val[-1]
         time_num = time_val[:-1]  # type: str
         if not time_num.isdigit():
             message.reply("Unspecified amount of time.")
             return ""
 
-        if unit == 'm':
+        if unit == "m":
             bantime = int(int(time_num) * 60)
-        elif unit == 'h':
+        elif unit == "h":
             bantime = int(int(time_num) * 60 * 60)
-        elif unit == 's':
+        elif unit == "s":
             bantime = int(int(time_num) * 24 * 60 * 60)
         else:
             # how even...?
             return ""
         return bantime
     else:
-        message.reply("Invalid time type specified. Needed m, h, or s. got: {}".format(time_val[-1]))
+        message.reply(
+            "Invalid time type specified. Needed m, h, or s. got: {}".format(
+                time_val[-1]
+            )
+        )
         return ""
 
 
@@ -97,7 +104,7 @@ def parse_button(text):
         if n_escapes % 2 == 0:
             # create a thruple with button label, url, and newline status
             buttons.append((match.group(2), match.group(3), bool(match.group(4))))
-            note_data += markdown_note[prev:match.start(1)]
+            note_data += markdown_note[prev : match.start(1)]
             prev = match.end(1)
         # if odd, escaped -> move along
         else:
@@ -120,9 +127,9 @@ def build_keyboard(buttons):
     return keyb
 
 
-SMART_OPEN = '“'
-SMART_CLOSE = '”'
-START_CHAR = ('\'', '"', SMART_OPEN)
+SMART_OPEN = "“"
+SMART_CLOSE = "”"
+START_CHAR = ("'", '"', SMART_OPEN)
 
 
 def split_quotes(text: str):
@@ -131,7 +138,9 @@ def split_quotes(text: str):
         while counter < len(text):
             if text[counter] == "\\":
                 counter += 1
-            elif text[counter] == text[0] or (text[0] == SMART_OPEN and text[counter] == SMART_CLOSE):
+            elif text[counter] == text[0] or (
+                text[0] == SMART_OPEN and text[counter] == SMART_CLOSE
+            ):
                 break
             counter += 1
         else:
@@ -140,7 +149,7 @@ def split_quotes(text: str):
         # 1 to avoid starting quote, and counter is exclusive so avoids ending
         key = remove_escapes(text[1:counter].strip())
         # index will be in range, or `else` would have been executed and returned
-        rest = text[counter + 1:].strip()
+        rest = text[counter + 1 :].strip()
         if not key:
             key = text[0] + text[0]
         return list(filter(None, [key, rest]))
@@ -149,7 +158,11 @@ def split_quotes(text: str):
 
 
 def extract_text(message):
-    return message.text or message.caption or (message.sticker.emoji if message.sticker else None)
+    return (
+        message.text
+        or message.caption
+        or (message.sticker.emoji if message.sticker else None)
+    )
 
 
 def remove_escapes(text: str) -> str:

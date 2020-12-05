@@ -30,13 +30,20 @@ async def tfsh(client, message):
     name = await name_file(client, message)
     await download_file_from_tg(client, message)
     name_file_upload = name[-10:] if len(name) > 10 else name
-    name_file_upload.encode('ascii', 'ignore')
-    os.rename(r'nana/downloads/{}'.format(name), r'nana/downloads/{}'.format(name_file_upload))
+    name_file_upload.encode("ascii", "ignore")
+    os.rename(
+        r"nana/downloads/{}".format(name), r"nana/downloads/{}".format(name_file_upload)
+    )
     print(name_file_upload)
-    await edrep(message, text=
-        await send_to_keepsh("nana/downloads/{}".format(name_file_upload), message, name_file_upload))
+    await edrep(
+        message,
+        text=await send_to_keepsh(
+            "nana/downloads/{}".format(name_file_upload), message, name_file_upload
+        ),
+    )
     os.remove("nana/downloads/{}".format(name_file_upload))
     return
+
 
 async def send_to_keepsh(file, message, name):
     """send file to keepsh, retrieve download link"""
@@ -44,13 +51,18 @@ async def send_to_keepsh(file, message, name):
     final_date = get_date_in_two_weeks()
     file_name = os.path.basename(file)
 
-    await edrep(message, text="\nSending file: {} (size of the file: {})".format(file_name, size_of_file))
-    url = 'https://free.keep.sh/{}'.format(name)
+    await edrep(
+        message,
+        text="\nSending file: {} (size of the file: {})".format(
+            file_name, size_of_file
+        ),
+    )
+    url = "https://free.keep.sh/{}".format(name)
     c = pycurl.Curl()
     c.setopt(c.URL, url)
 
     c.setopt(c.UPLOAD, 1)
-    with open(file, 'rb') as f:
+    with open(file, "rb") as f:
         c.setopt(c.READDATA, f)
         try:
             download_link = c.perform_rs()
@@ -60,6 +72,7 @@ async def send_to_keepsh(file, message, name):
         c.close()
     f.close()
     return "`Success!\nwill be saved till {}`\n{}".format(final_date, download_link)
+
 
 def get_size(file):
     """

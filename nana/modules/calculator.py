@@ -35,7 +35,7 @@ def convert_c(celsius):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("curr", Command))
-async def evaluation_curr(_client, message):
+async def evaluation_curr(_, message):
     if len(message.text.split()) <= 3:
         await edrep(message, text="Usage: `curr 100 USD IDR`")
         return
@@ -44,14 +44,14 @@ async def evaluation_curr(_client, message):
     curr2 = message.text.split(None, 3)[3].upper()
     try:
         conv = c.convert(int(value), curr1, curr2)
-        text = "{} {} = {} {}".format(curr1, value, curr2, f'{conv:,.2f}')
+        text = "{} {} = {} {}".format(curr1, value, curr2, f"{conv:,.2f}")
         await edrep(message, text=text)
     except ValueError as err:
         await edrep(message, text=str(err))
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("temp", Command))
-async def evaluation_temp(_client, message):
+async def evaluation_temp(_, message):
     if len(message.text.split()) <= 2:
         await edrep(message, text="Usage: `temp 30 C` or `temp 60 F`")
         return

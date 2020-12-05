@@ -1,4 +1,4 @@
-from googletrans import Translator
+from gpytranslate import Translator
 from pyrogram import filters
 
 from nana import app, Command, AdminSettings, edrep
@@ -18,34 +18,42 @@ Reply a message to translate that.
 * = Not used when reply a message!
 """
 
+
 @app.on_message(filters.user(AdminSettings) & filters.command("tr", Command))
-async def translate(_client, message):
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+async def translate(_, message):
+    trl = Translator()
+    if message.reply_to_message and (
+        message.reply_to_message.text or message.reply_to_message.caption
+    ):
         if len(message.text.split()) == 1:
-            await edrep(message, text="Usage: Reply to a message, then `tr <lang>`")
+            await message.delete()
             return
         target = message.text.split()[1]
         if message.reply_to_message.text:
             text = message.reply_to_message.text
         else:
             text = message.reply_to_message.caption
-        detectlang = trl.detect(text)
         try:
-            tekstr = trl.translate(text, dest=target)
+            tekstr = await trl(text, targetlang=target)
         except ValueError as err:
-            await edrep(message, text=f"Error: `{str(err)}`")
+            await edrep(message, text=f"Error: `{str(err)}`", parse_mode="Markdown")
             return
     else:
         if len(message.text.split()) <= 2:
-            await edrep(message, text="Usage: `tr <lang> <text>`")
+            await message.delete()
             return
         target = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
-        detectlang = trl.detect(text)
         try:
-            tekstr = trl.translate(text, dest=target)
+            tekstr = await trl(text, targetlang=target)
         except ValueError as err:
-            await edrep(message, text="Error: `{}`".format(str(err)))
+            await edrep(
+                message, text="Error: `{}`".format(str(err)), parse_mode="Markdown"
+            )
             return
 
-    await edrep(message, text=f"Translated from `{detectlang.lang}` to `{target}`:\n```{tekstr.text}```")
+    await edrep(
+        message,
+        text=f"**Translated:**\n```{tekstr.text}```\n\n**Detected Language:** `{(await trl.detect(text))}`",
+        parse_mode="Markdown",
+    )

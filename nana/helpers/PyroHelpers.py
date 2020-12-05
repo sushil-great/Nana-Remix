@@ -8,7 +8,7 @@ def ReplyCheck(message):
     elif not message.from_user.is_self:
         reply_id = message.message_id
     return reply_id
-  
+
 
 def GetUserMentionable(user: User):
     "Get mentionable text of a user."

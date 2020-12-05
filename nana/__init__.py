@@ -19,9 +19,9 @@ from .startup.variable import get_var
 
 StartTime = time.time()
 
-ENV = bool(get_var('ENV', False))
+ENV = bool(get_var("ENV", False))
 if ENV:
-    TEST_DEVELOP = bool(get_var('TEST_DEVELOP', False))
+    TEST_DEVELOP = bool(get_var("TEST_DEVELOP", False))
 else:
     try:
         from nana.config import Development as Config
@@ -38,73 +38,75 @@ if TEST_DEVELOP:
 
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    logging.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
+    logging.error(
+        "You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting."
+    )
     sys.exit()
 
 USERBOT_VERSION = "2.1"
 ASSISTANT_VERSION = "2.1"
 
-OFFICIAL_BRANCH = ('master')
+OFFICIAL_BRANCH = "master"
 REPOSITORY = "https://github.com/pokurt/Nana-Remix.git"
 RANDOM_STICKERS = [
     "CAADAgAD6EoAAuCjggf4LTFlHEcvNAI",
     "CAADAgADf1AAAuCjggfqE-GQnopqyAI",
-    "CAADAgADaV0AAuCjggfi51NV8GUiRwI"
+    "CAADAgADaV0AAuCjggfi51NV8GUiRwI",
 ]
 
 
-logger = get_var('LOGGER', False)
+logger = get_var("LOGGER", False)
 # Version
-lang_code = get_var('lang_code', "en")
+lang_code = get_var("lang_code", "en")
 device_model = platform.machine()
 system_version = platform.platform()
 time_country = get_var("time_country", None)
 
 # Must be filled
-api_id = get_var('api_id', None)
-api_hash = get_var('api_hash', None)
+api_id = get_var("api_id", None)
+api_hash = get_var("api_hash", None)
 
 # Session
-USERBOT_SESSION = get_var('USERBOT_SESSION', None)
+USERBOT_SESSION = get_var("USERBOT_SESSION", None)
 
 # From config
 Command = get_var("Command", "! . - ^").split()
-NANA_WORKER = int(get_var('NANA_WORKER', 8))
-ASSISTANT_WORKER = int(get_var('ASSISTANT_WORKER', 2))
+NANA_WORKER = int(get_var("NANA_WORKER", 8))
+ASSISTANT_WORKER = int(get_var("ASSISTANT_WORKER", 2))
 
 try:
-    TEST_DEVELOP = bool(get_var('TEST_DEVELOP', False))
+    TEST_DEVELOP = bool(get_var("TEST_DEVELOP", False))
     if not TEST_DEVELOP:
         raise AttributeError
-    USERBOT_SESSION = get_var('USERBOT_SESSION', None)
-    ASSISTANT_SESSION = get_var('ASSISTANT_SESSION', None)
+    USERBOT_SESSION = get_var("USERBOT_SESSION", None)
+    ASSISTANT_SESSION = get_var("ASSISTANT_SESSION", None)
 except AttributeError:
     pass
 
 # APIs
-thumbnail_API = get_var('thumbnail_API', None)
-screenshotlayer_API = get_var('screenshotlayer_API', None)
-gdrive_credentials = get_var('gdrive_credentials', None)
-lydia_api = get_var('lydia_api', None)
-remove_bg_api = get_var('remove_bg_api', None)
-sw_api = get_var('sw_api', None)
-HEROKU_API = get_var('HEROKU_API', None)
-IBM_WATSON_CRED_URL = get_var('IBM_WATSON_CRED_URL', None)
-IBM_WATSON_CRED_PASSWORD = get_var('IBM_WATSON_CRED_PASSWORD', None)
+thumbnail_API = get_var("thumbnail_API", None)
+screenshotlayer_API = get_var("screenshotlayer_API", None)
+gdrive_credentials = get_var("gdrive_credentials", None)
+lydia_api = get_var("lydia_api", None)
+remove_bg_api = get_var("remove_bg_api", None)
+sw_api = get_var("sw_api", None)
+HEROKU_API = get_var("HEROKU_API", None)
+IBM_WATSON_CRED_URL = get_var("IBM_WATSON_CRED_URL", None)
+IBM_WATSON_CRED_PASSWORD = get_var("IBM_WATSON_CRED_PASSWORD", None)
 # LOADER
 USERBOT_LOAD = get_var("USERBOT_LOAD", "").split()
 USERBOT_NOLOAD = get_var("USERBOT_NOLOAD", "").split()
 ASSISTANT_LOAD = get_var("ASSISTANT_LOAD", "").split()
 ASSISTANT_NOLOAD = get_var("ASSISTANT_NOLOAD", "").split()
 
-DB_URI = get_var('DB_URI', "postgres://username:password@localhost:5432/database")
-ASSISTANT_BOT_TOKEN = get_var('ASSISTANT_BOT_TOKEN', None)
+DB_URI = get_var("DB_URI", "postgres://username:password@localhost:5432/database")
+ASSISTANT_BOT_TOKEN = get_var("ASSISTANT_BOT_TOKEN", None)
 AdminSettings = [int(x) for x in get_var("AdminSettings", "").split()]
-REMINDER_UPDATE = bool(get_var('REMINDER_UPDATE', True))
-TEST_MODE = bool(get_var('TEST_MODE', False))
-TERMUX_USER = get_var('TERMUX_USER', False)
-NANA_IMG = get_var('NANA_IMG', False)
-PM_PERMIT = bool(get_var('PM_PERMIT', False))
+REMINDER_UPDATE = bool(get_var("REMINDER_UPDATE", True))
+TEST_MODE = bool(get_var("TEST_MODE", False))
+TERMUX_USER = get_var("TERMUX_USER", False)
+NANA_IMG = get_var("NANA_IMG", False)
+PM_PERMIT = bool(get_var("PM_PERMIT", False))
 
 OwnerName = ""
 app_version = "💝 Nana v{}".format(USERBOT_VERSION)
@@ -119,17 +121,21 @@ OwnerUsername = ""
 if os.path.exists("nana/logs/error.log"):
     f = open("nana/logs/error.log", "w")
     f.write("PEAK OF THE LOGS FILE")
-LOG_FORMAT = "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.ERROR,
-                    format=LOG_FORMAT,
-                    datefmt='%m-%d %H:%M',
-                    filename='nana/logs/error.log',
-                    filemode='w')
+LOG_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
+)
+logging.basicConfig(
+    level=logging.ERROR,
+    format=LOG_FORMAT,
+    datefmt="%m-%d %H:%M",
+    filename="nana/logs/error.log",
+    filemode="w",
+)
 console = logging.StreamHandler()
 console.setLevel(logging.ERROR)
 formatter = logging.Formatter(LOG_FORMAT)
 console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
+logging.getLogger("").addHandler(console)
 
 log = logging.getLogger()
 
@@ -188,12 +194,12 @@ BASE = declarative_base()
 SESSION = mulaisql()
 
 setbot = Client(
-    'bot',
+    ":memory:",
     api_id=api_id,
     api_hash=api_hash,
     bot_token=ASSISTANT_BOT_TOKEN,
     workers=ASSISTANT_WORKER,
-    test_mode=TEST_MODE
+    test_mode=TEST_MODE,
 )
 
 app = Client(
@@ -205,7 +211,7 @@ app = Client(
     system_version=system_version,
     lang_code=lang_code,
     workers=NANA_WORKER,
-    test_mode=TEST_MODE
+    test_mode=TEST_MODE,
 )
 
 

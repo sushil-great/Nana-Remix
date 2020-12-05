@@ -1,154 +1,151 @@
 {
-  "name": "Nana - Telegram Userbot with Assistant",
-  "description": "A modular Telegram Userbot with Assistant running on Python 3.6+",
-  "logo": "https://i.imgur.com/m7KfBVq.png",
-  "keywords": [
-    "telegram",
-    "userbot",
-    "plugin",
-    "modular",
-    "nana",
-    "pyrogram",
-    "productivity",
-    "testing"
-  ],
-  "repository": "https://github.com/pokurt/Nana-Remix",
-  "website": "pokurt.github.io",
-  "success_url": "https://t.me/nanabotsupport",
-  "stack": "container",
-  "env": {
-    "ENV": {
-      "description": "Fill this if you using environ variable as config.",
-      "value": "Yes"
-    },
-    "api_id": {
-      "description": "To use this userbot, get your development App ID from https://my.telegram.org/apps.",
-      "value": ""
-    },
-    "api_hash": {
-      "description": "To use this userbot, get your development API hash from https://my.telegram.org/apps.",
-      "value": ""
-    },
-    "ASSISTANT_BOT_TOKEN": {
-      "description": "Go to t.me/BotFather , Create a Bot and Copy its Token here.",
-      "value": ""
-    },
-    "Owner": {
-      "description": "Go to some bot such as Rose and check your id there.",
-      "value": ""
-    },
-    "Command": {
-      "description": "Prefix command, separate by space.",
-      "value": "! ."
-    },
-    "AdminSettings": {
-      "description": "Fill your telegram id",
-      "value": ""
-    },
-    "DB_URI": {
-      "description": "Required to use an external db, try ElephantSQL: https://customer.elephantsql.com/login",
-      "value": ""
-    },
-    "ASSISTANT_WORKER": {
-      "description": "(optional) Worker for Assistant bot",
-      "value": "2",
-      "required": false
-    },
-    "NANA_WORKER": {
-      "description": "(optional) Worker for User bot",
-      "value": "8",
-      "required": false
-    },
-    "REMINDER_UPDATE": {
-      "description": "(optional) Pass False to disable reminder update every running script",
-      "value": "True",
-      "required": false
-    },
-    "NANA_IMG": {
-      "description": "(optional) Image URL to show up in your Assistant",
-      "value": "",
-      "required": false
-    },
-    "time_country": {
-      "description": "(optional) input your timezone from this list: https://telegra.ph/Time-Zone-list-for-Nana-Remix-07-21",
-      "value": "",
-      "required": false
-    },
-    "IBM_WATSON_CRED_URL": {
-      "description": "(optional)",
-      "value": "",
-      "required": false
-    },
-    "IBM_WATSON_CRED_PASSWORD": {
-      "description": "(optional)",
-      "value": "",
-      "required": false
-    },
-    "lang_code": {
-      "description": "(optional) Your language code",
-      "value": "en",
-      "required": false
-    },
-    "device_model": {
-      "description": "(optional) Your device mode for userbot",
-      "value": "PC",
-      "required": false
-    },
-    "system_version": {
-      "description": "(optional) Your System version for userbot",
-      "value": "Linux",
-      "required": false
-    },
-    "thumbnail_API": {
-      "description": "(optional) To get an API key, signup at https://thumbnail.ws/.",
-      "required": false
-    },
-    "screenshotlayer_API": {
-      "description": "(optional) To get an API key, signup at https://screenshotlayer.com/.",
-      "value": "False",
-      "required": false
-    },
-    "PM_PERMIT": {
-      "description": "(optional) Set to True if you want to turn on PM Permit",
-      "value": "False",
-      "required": false
-    },
-    "lydia_api": {
-      "description": "(optional) Fill in your Coffeehouse API, get one from https://coffeehouse.intellivoid.net",
-      "value": "False",
-      "required": false
-    },
-    "remove_bg_api": {
-      "description": "(optional) To get an API toen, signup at https://www.remove.bg/.",
-      "required": false
-    },
-    "HEROKU_API": {
-      "description": "Your Heroku API key for updater to work. Generate one at https://dashboard.heroku.com/account/applications/authorizations/new.",
-      "required": true
-    },
-    "USERBOT_LOAD": {
-      "description": "(optional) Fill if you want to load some modules for your userbot.",
-      "required": false
-    },
-    "USERBOT_NOLOAD": {
-      "description": "(optional) Fill if you want to unload some modules for your userbot.",
-      "required": false
-    },
-    "ASSISTANT_LOAD": {
-      "description": "(optional) Fill if you want to load some modules for your Assistant.",
-      "required": false
-    },
-    "ASSISTANT_NOLOAD": {
-      "description": "(optional) Fill if you want to unload some modules for your Assistant.",
-      "required": false
-    },
-    "USERBOT_SESSION": {
-      "description": "To generate an session, read: https://aman-a.gitbook.io/nana-remix/deploy-nana-remix-on-heroku",
-      "required": true
-    },
-    "sw_api": {
-      "description": "Read SpamWatch Docs on How to obtain api, https://docs.spamwat.ch/",
-      "required": false
+    "name": "Nana - Telegram Userbot with Assistant",
+    "description": "A modular Telegram Userbot with Assistant running on Python 3.6+",
+    "logo": "https://i.imgur.com/m7KfBVq.png",
+    "keywords": [
+        "telegram",
+        "userbot",
+        "plugin",
+        "modular",
+        "nana",
+        "pyrogram",
+        "productivity",
+        "testing"
+    ],
+    "repository": "https://github.com/pokurt/Nana-Remix",
+    "website": "pokurt.github.io",
+    "success_url": "https://t.me/nanabotsupport",
+    "stack": "container",
+    "env": {
+        "ENV": {
+            "description": "Fill this if you using environ variable as config.",
+            "value": "Yes"
+        },
+        "api_id": {
+            "description": "To use this userbot, get your development App ID from https://my.telegram.org/apps.",
+            "value": ""
+        },
+        "api_hash": {
+            "description": "To use this userbot, get your development API hash from https://my.telegram.org/apps.",
+            "value": ""
+        },
+        "ASSISTANT_BOT_TOKEN": {
+            "description": "Go to t.me/BotFather , Create a Bot and Copy its Token here.",
+            "value": ""
+        },
+        "Owner": {
+            "description": "Go to some bot such as Rose and check your id there.",
+            "value": ""
+        },
+        "Command": {
+            "description": "Prefix command, separate by space.",
+            "value": "! ."
+        },
+        "AdminSettings": {"description": "Fill your telegram id", "value": ""},
+        "DB_URI": {
+            "description": "Required to use an external db, try ElephantSQL: https://customer.elephantsql.com/login",
+            "value": ""
+        },
+        "ASSISTANT_WORKER": {
+            "description": "(optional) Worker for Assistant bot",
+            "value": "2",
+            "required": false
+        },
+        "NANA_WORKER": {
+            "description": "(optional) Worker for User bot",
+            "value": "8",
+            "required": false
+        },
+        "REMINDER_UPDATE": {
+            "description": "(optional) Pass False to disable reminder update every running script",
+            "value": "True",
+            "required": false
+        },
+        "NANA_IMG": {
+            "description": "(optional) Image URL to show up in your Assistant",
+            "value": "",
+            "required": false
+        },
+        "time_country": {
+            "description": "(optional) input your timezone from this list: https://telegra.ph/Time-Zone-list-for-Nana-Remix-07-21",
+            "value": "",
+            "required": false
+        },
+        "IBM_WATSON_CRED_URL": {
+            "description": "(optional)",
+            "value": "",
+            "required": false
+        },
+        "IBM_WATSON_CRED_PASSWORD": {
+            "description": "(optional)",
+            "value": "",
+            "required": false
+        },
+        "lang_code": {
+            "description": "(optional) Your language code",
+            "value": "en",
+            "required": false
+        },
+        "device_model": {
+            "description": "(optional) Your device mode for userbot",
+            "value": "PC",
+            "required": false
+        },
+        "system_version": {
+            "description": "(optional) Your System version for userbot",
+            "value": "Linux",
+            "required": false
+        },
+        "thumbnail_API": {
+            "description": "(optional) To get an API key, signup at https://thumbnail.ws/.",
+            "required": false
+        },
+        "screenshotlayer_API": {
+            "description": "(optional) To get an API key, signup at https://screenshotlayer.com/.",
+            "value": "False",
+            "required": false
+        },
+        "PM_PERMIT": {
+            "description": "(optional) Set to True if you want to turn on PM Permit",
+            "value": "False",
+            "required": false
+        },
+        "lydia_api": {
+            "description": "(optional) Fill in your Coffeehouse API, get one from https://coffeehouse.intellivoid.net",
+            "value": "False",
+            "required": false
+        },
+        "remove_bg_api": {
+            "description": "(optional) To get an API toen, signup at https://www.remove.bg/.",
+            "required": false
+        },
+        "HEROKU_API": {
+            "description": "Your Heroku API key for updater to work. Generate one at https://dashboard.heroku.com/account/applications/authorizations/new.",
+            "required": true
+        },
+        "USERBOT_LOAD": {
+            "description": "(optional) Fill if you want to load some modules for your userbot.",
+            "required": false
+        },
+        "USERBOT_NOLOAD": {
+            "description": "(optional) Fill if you want to unload some modules for your userbot.",
+            "required": false
+        },
+        "ASSISTANT_LOAD": {
+            "description": "(optional) Fill if you want to load some modules for your Assistant.",
+            "required": false
+        },
+        "ASSISTANT_NOLOAD": {
+            "description": "(optional) Fill if you want to unload some modules for your Assistant.",
+            "required": false
+        },
+        "USERBOT_SESSION": {
+            "description": "To generate an session, read: https://aman-a.gitbook.io/nana-remix/deploy-nana-remix-on-heroku",
+            "required": true
+        },
+        "sw_api": {
+            "description": "Read SpamWatch Docs on How to obtain api, https://docs.spamwat.ch/",
+            "required": false
+        }
     }
-  }
 }

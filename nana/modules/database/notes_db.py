@@ -47,6 +47,7 @@ SELF_NOTES = {}
 # ANIMATED_STICKER = 10
 # CONTACT = 11
 
+
 def save_selfnote(user_id, note_name, note_data, msgtype, file=None):
     global SELF_NOTES
     with INSERTION_LOCK:
@@ -59,7 +60,11 @@ def save_selfnote(user_id, note_name, note_data, msgtype, file=None):
 
         if not SELF_NOTES.get(user_id):
             SELF_NOTES[user_id] = {}
-        SELF_NOTES[user_id][note_name] = {'value': note_data, 'type': msgtype, 'file': file}
+        SELF_NOTES[user_id][note_name] = {
+            "value": note_data,
+            "type": msgtype,
+            "file": file,
+        }
 
 
 def get_selfnote(user_id, note_name):
@@ -111,7 +116,11 @@ def __load_allnotes():
     for x in getall:
         if not SELF_NOTES.get(x.user_id):
             SELF_NOTES[x.user_id] = {}
-        SELF_NOTES[x.user_id][x.name] = {'value': x.value, 'type': x.msgtype, 'file': x.file}
+        SELF_NOTES[x.user_id][x.name] = {
+            "value": x.value,
+            "type": x.msgtype,
+            "file": x.file,
+        }
 
 
 __load_allnotes()

@@ -26,9 +26,8 @@ To report someone or report your message to all admins
 Check all bots in spesific chat or current chat
 """
 
-@app.on_message(
-    filters.me & filters.command(["admins", "adminlist"], Command)
-    )
+
+@app.on_message(filters.me & filters.command(["admins", "adminlist"], Command))
 async def adminlist(client, message):
     creator = []
     admin = []
@@ -60,28 +59,28 @@ async def adminlist(client, message):
     admin.sort()
     badmin.sort()
     totaladmins = len(creator) + len(admin) + len(badmin)
-    teks = tld('adminlist_one').format(grup.title)
+    teks = tld("adminlist_one").format(grup.title)
     for x in creator:
         teks += "│ • {}\n".format(x)
         if len(teks) >= 4096:
             await message.reply(message.chat.id, teks, reply_to_message_id=replyid)
             teks = ""
             toolong = True
-    teks += tld('adminlist_two').format(len(admin))
+    teks += tld("adminlist_two").format(len(admin))
     for x in admin:
         teks += "│ • {}\n".format(x)
         if len(teks) >= 4096:
             await message.reply(message.chat.id, teks, reply_to_message_id=replyid)
             teks = ""
             toolong = True
-    teks += tld('adminlist_three').format(len(badmin))
+    teks += tld("adminlist_three").format(len(badmin))
     for x in badmin:
         teks += "│ • {}\n".format(x)
         if len(teks) >= 4096:
             await message.reply(message.chat.id, teks, reply_to_message_id=replyid)
             teks = ""
             toolong = True
-    teks += tld('adminlist_four').format(totaladmins)
+    teks += tld("adminlist_four").format(totaladmins)
     if toolong:
         await message.reply(message.chat.id, teks, reply_to_message_id=replyid)
     else:
@@ -105,20 +104,25 @@ async def report_admin(client, message):
 
     if message.reply_to_message:
         if text:
-            teks = '{}'.format(text)
+            teks = "{}".format(text)
         else:
             user = message.reply_to_message.from_user
-            teks = tld('reportadmins_one').format(
-                mention_html(user.id, user.first_name))
+            teks = tld("reportadmins_one").format(
+                mention_html(user.id, user.first_name)
+            )
     else:
         if text:
-            teks = '{}'.format(html.escape(text))
+            teks = "{}".format(html.escape(text))
         else:
-            teks = tld('reportadmins_two').format(grup.title)
+            teks = tld("reportadmins_two").format(grup.title)
     teks += "".join(admin)
     if message.reply_to_message:
-        await client.send_message(message.chat.id, teks, reply_to_message_id=message.reply_to_message.message_id,
-            parse_mode="html")
+        await client.send_message(
+            message.chat.id,
+            teks,
+            reply_to_message_id=message.reply_to_message.message_id,
+            parse_mode="html",
+        )
     else:
         await client.send_message(message.chat.id, teks, parse_mode="html")
 
@@ -128,13 +132,18 @@ async def tag_all_users(client, message):
     if len(message.text.split()) >= 2:
         text = message.text.split(None, 1)[1]
     else:
-        text = tld('tagall')
+        text = tld("tagall")
     kek = client.iter_chat_members(message.chat.id)
     async for a in kek:
         if not a.user.is_bot:
             text += mention_html(a.user.id, "\u200b")
     if message.reply_to_message:
-        await client.send_message(message.chat.id, text, reply_to_message_id=message.reply_to_message.message_id, parse_mode="html")
+        await client.send_message(
+            message.chat.id,
+            text,
+            reply_to_message_id=message.reply_to_message.message_id,
+            parse_mode="html",
+        )
     else:
         await client.send_message(message.chat.id, text, parse_mode="html")
     await message.delete()
@@ -158,16 +167,15 @@ async def get_list_bots(client, message):
         except:
             nama = a.user.first_name
         if nama is None:
-            nama = tld('botlist_one')
+            nama = tld("botlist_one")
         if a.user.is_bot:
             bots.append(mention_markdown(a.user.id, nama))
-    teks = tld('botlist_two').format(grup.title)
-    teks += tld('botlist_three')
+    teks = tld("botlist_two").format(grup.title)
+    teks += tld("botlist_three")
     for x in bots:
         teks += "│ • {}\n".format(x)
-    teks += tld('botlist_four').format(len(bots))
+    teks += tld("botlist_four").format(len(bots))
     if replyid:
         await client.send_message(message.chat.id, teks, reply_to_message_id=replyid)
     else:
         await edrep(message, text=teks)
-

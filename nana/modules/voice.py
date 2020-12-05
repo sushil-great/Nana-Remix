@@ -6,7 +6,14 @@ import asyncio
 
 from pyrogram import filters
 
-from nana import app, Command, IBM_WATSON_CRED_URL, IBM_WATSON_CRED_PASSWORD, AdminSettings, edrep
+from nana import (
+    app,
+    Command,
+    IBM_WATSON_CRED_URL,
+    IBM_WATSON_CRED_PASSWORD,
+    AdminSettings,
+    edrep,
+)
 from nana.modules.downloads import download_reply_nocall
 
 __MODULE__ = "TTS / STT"
@@ -54,7 +61,9 @@ async def voice(client, message):
     elif message.reply_to_message and len(cmd) == 1:
         v_text = message.reply_to_message.text
     elif len(cmd) == 1:
-        await edrep(message, text="Usage: `reply to a message or send text arg to convert to voice`"
+        await edrep(
+            message,
+            text="Usage: `reply to a message or send text arg to convert to voice`",
         )
         await asyncio.sleep(2)
         await message.delete()
@@ -77,7 +86,7 @@ async def voice(client, message):
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("voicelang", Command))
-async def voicelang(_client, message):
+async def voicelang(_, message):
     global lang
     temp = lang
     lang = message.text.split(None, 1)[1]
@@ -121,9 +130,7 @@ async def speach_to_text(client, message):
                 for alternative in results:
                     alternatives = alternative["alternatives"][0]
                     transcript_response += " " + str(alternatives["transcript"])
-                    transcript_confidence += (
-                        " " + str(alternatives["confidence"])
-                    )
+                    transcript_confidence += " " + str(alternatives["confidence"])
                 end = datetime.now()
                 ms = (end - start).seconds
                 if transcript_response != "":
@@ -136,7 +143,7 @@ async def speach_to_text(client, message):
                                     """
                 else:
                     string_to_show = f"<pre>Time Taken<pre>: {ms} seconds\n<pre>No Results Found<pre>"
-                await edrep(message, text=string_to_show, parse_mode='html')
+                await edrep(message, text=string_to_show, parse_mode="html")
             else:
                 await edrep(message, text=r["error"])
             # now, remove the temporary file

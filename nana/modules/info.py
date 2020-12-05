@@ -19,31 +19,31 @@ To find information about a person.
 """
 
 
-
-
 def LastOnline(user: User):
     if user.is_bot:
         return ""
-    elif user.status == 'recently':
+    elif user.status == "recently":
         return "Recently"
-    elif user.status == 'within_week':
+    elif user.status == "within_week":
         return "Within the last week"
-    elif user.status == 'within_month':
+    elif user.status == "within_month":
         return "Within the last month"
-    elif user.status == 'long_time_ago':
+    elif user.status == "long_time_ago":
         return "A long time ago :("
-    elif user.status == 'online':
+    elif user.status == "online":
         return "Currently Online"
-    elif user.status == 'offline':
-        return datetime.fromtimestamp(user.status.date).strftime("%a, %d %b %Y, %H:%M:%S")
+    elif user.status == "offline":
+        return datetime.fromtimestamp(user.status.date).strftime(
+            "%a, %d %b %Y, %H:%M:%S"
+        )
 
 
 async def GetCommon(client, get_user):
     common = await client.send(
         functions.messages.GetCommonChats(
-            user_id=await client.resolve_peer(get_user),
-            max_id=0,
-            limit=0))
+            user_id=await client.resolve_peer(get_user), max_id=0, limit=0
+        )
+    )
     return common
 
 
@@ -83,7 +83,9 @@ async def whois(client, message):
             sw = spamwatch.Client(sw_api)
             status = sw.get_ban(user.id)
             if status == False:
-                await edrep(message, text=f"""
+                await edrep(
+                    message,
+                    text=f"""
 **About {user.mention}**:
   - **UserID**: `{user.id}`
   - **Username**: {'@'+user.username if user.username else ''}
@@ -92,9 +94,12 @@ async def whois(client, message):
   - **Contact**: `{user.is_contact}`
 **SpamWatch Banned** : `False`
                 """,
-                disable_web_page_preview=True)
+                    disable_web_page_preview=True,
+                )
             else:
-                await edrep(message, text=f"""
+                await edrep(
+                    message,
+                    text=f"""
 **About {user.mention}**:
   - **UserID**: `{user.id}`
   - **Username**: {'@'+user.username if user.username else ''}
@@ -105,10 +110,13 @@ async def whois(client, message):
   • **Reason**: `{status.reason}`
   • **Message**: `{status.message}`
                 """,
-                disable_web_page_preview=True)
+                    disable_web_page_preview=True,
+                )
             return
         else:
-            await edrep(message, text=f"""
+            await edrep(
+                message,
+                text=f"""
 **About {user.mention}**:
   - **UserID**: `{user.id}`
   - **Username**: {'@'+user.username if user.username else ''}
@@ -116,4 +124,5 @@ async def whois(client, message):
   - **Common Groups**: `{len(common.chats)}`
   - **Contact**: `{user.is_contact}`
             """,
-            disable_web_page_preview=True)
+                disable_web_page_preview=True,
+            )

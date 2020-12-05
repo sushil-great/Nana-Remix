@@ -1,4 +1,3 @@
-
 import os
 from datetime import datetime
 import shlex
@@ -38,18 +37,20 @@ async def run_cmd(cmd: str) -> Tuple[str, str, int, int]:
     """run command in terminal."""
     args = shlex.split(cmd)
     process = await asyncio.create_subprocess_exec(
-        *args,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
+        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await process.communicate()
-    return (stdout.decode('utf-8', 'replace').strip(),
-            stderr.decode('utf-8', 'replace').strip(),
-            process.returncode,
-            process.pid)
+    return (
+        stdout.decode("utf-8", "replace").strip(),
+        stderr.decode("utf-8", "replace").strip(),
+        process.returncode,
+        process.pid,
+    )
 
 
-async def take_screen_shot(video_file: str, duration: int, path: str = '') -> Optional[str]:
+async def take_screen_shot(
+    video_file: str, duration: int, path: str = ""
+) -> Optional[str]:
     """take a screenshot."""
     ttl = duration // 2
     thumb_image_path = path or os.path.join(screen_shot, f"{basename(video_file)}.jpg")
@@ -63,18 +64,15 @@ async def take_screen_shot(video_file: str, duration: int, path: str = '') -> Op
 @app.on_message(filters.user(AdminSettings) & filters.command("reverse", Command))
 async def google_rs(client, message):
     start = datetime.now()
-    dis_loc = ''
+    dis_loc = ""
     out_str = "`Reply to an image`"
     if message.reply_to_message:
         message_ = message.reply_to_message
-        if message_.sticker and message_.sticker.file_name.endswith('.tgs'):
+        if message_.sticker and message_.sticker.file_name.endswith(".tgs"):
             await message.delete()
             return
         if message_.photo or message_.animation or message_.sticker:
-            dis = await client.download_media(
-                message=message_,
-                file_name=screen_shot
-            )
+            dis = await client.download_media(message=message_, file_name=screen_shot)
             dis_loc = os.path.join(screen_shot, os.path.basename(dis))
         if message_.animation or message_.video:
             await edrep(message, text="`Converting this Gif`")
@@ -91,9 +89,11 @@ async def google_rs(client, message):
             search_url = "{}/searchbyimage/upload".format(base_url)
             multipart = {
                 "encoded_image": (dis_loc, open(dis_loc, "rb")),
-                "image_content": ""
+                "image_content": "",
             }
-            google_rs_response = requests.post(search_url, files=multipart, allow_redirects=False)
+            google_rs_response = requests.post(
+                search_url, files=multipart, allow_redirects=False
+            )
             the_location = google_rs_response.headers.get("Location")
             os.remove(dis_loc)
         else:
@@ -119,17 +119,14 @@ async def google_rs(client, message):
 
 @app.on_message(filters.user(AdminSettings) & filters.command("areverse", Command))
 async def tracemoe_rs(client, message):
-    dis_loc = ''
+    dis_loc = ""
     if message.reply_to_message:
         message_ = message.reply_to_message
-        if message_.sticker and message_.sticker.file_name.endswith('.tgs'):
+        if message_.sticker and message_.sticker.file_name.endswith(".tgs"):
             await message.delete()
             return
         if message_.photo or message_.animation or message_.sticker:
-            dis = await client.download_media(
-                message=message_,
-                file_name=screen_shot
-            )
+            dis = await client.download_media(message=message_, file_name=screen_shot)
             dis_loc = os.path.join(screen_shot, os.path.basename(dis))
         if message_.animation:
             await edrep(message, text="`Converting this Gif`")
@@ -142,8 +139,13 @@ async def tracemoe_rs(client, message):
                 return
             dis_loc = img_file
         if message_.video:
-            nama = "video_{}-{}.mp4".format(message.reply_to_message.video.date, message.reply_to_message.video.file_size)
-            await client.download_media(message.reply_to_message.video, file_name="nana/downloads/" + nama)
+            nama = "video_{}-{}.mp4".format(
+                message.reply_to_message.video.date,
+                message.reply_to_message.video.file_size,
+            )
+            await client.download_media(
+                message.reply_to_message.video, file_name="nana/downloads/" + nama
+            )
             dis_loc = "nana/downloads/" + nama
             img_file = os.path.join(screen_shot, "grs.jpg")
             await take_screen_shot(dis_loc, 0, img_file)
@@ -155,27 +157,30 @@ async def tracemoe_rs(client, message):
         if dis_loc:
             tracemoe = tracemoepy.async_trace.Async_Trace()
             if message_.video:
-                search = await tracemoe.search(img_file, upload_file = True)
+                search = await tracemoe.search(img_file, upload_file=True)
                 os.remove(img_file)
             else:
-                search = await tracemoe.search(dis_loc, upload_file = True)
+                search = await tracemoe.search(dis_loc, upload_file=True)
             os.remove(dis_loc)
-            result = search['docs'][0]
-            ms_g = f"**Title**: {result['title_english']}" \
-                f"\n**Similarity**: {result['similarity']*100}"\
+            result = search["docs"][0]
+            ms_g = (
+                f"**Title**: {result['title_english']}"
+                f"\n**Similarity**: {result['similarity']*100}"
                 f"\n**Episode**: {result['episode']}"
+            )
             preview = await tracemoe.natural_preview(search)
-            with open('preview.mp4', 'wb') as f:
+            with open("preview.mp4", "wb") as f:
                 f.write(preview)
             await message.delete()
-            await client.send_video(message.chat.id,
-                                    'preview.mp4',
-                                    caption=ms_g,
-                                    reply_to_message_id=ReplyCheck(message)
-                                    )
+            await client.send_video(
+                message.chat.id,
+                "preview.mp4",
+                caption=ms_g,
+                reply_to_message_id=ReplyCheck(message),
+            )
             await asyncio.sleep(5)
             await message.delete()
-            os.remove('preview.mp4')
+            os.remove("preview.mp4")
         else:
             await message.delete()
             return

@@ -14,7 +14,7 @@ __Reply To Message Text To Create Quote Sticker.__
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("q", Command))
-async def q_maker(_client, message):
+async def q_maker(_, message):
     if not message.reply_to_message:
         await edrep(message, text="**Reply to any users text message**")
         return
@@ -30,7 +30,7 @@ async def q_maker(_client, message):
             print(e)
             await sleep(0.5)
             try:
-                print('Making a Quote')
+                print("Making a Quote")
             except Exception as e:
                 print(e)
     msg_id = ms_g[0]["message_id"]

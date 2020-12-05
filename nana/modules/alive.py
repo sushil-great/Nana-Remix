@@ -1,4 +1,3 @@
-
 import time
 
 from pyrogram import filters
@@ -35,7 +34,7 @@ def get_readable_time(seconds: int) -> str:
 
 
 @setbot.on_callback_query(dynamic_data_filter("alive_message"))
-async def  alivemsg_callback(client, query):
+async def alivemsg_callback(client, query):
     start_time = time.time()
     uptime = get_readable_time((time.time() - StartTime))
     reply_msg = f"{OwnerUsername}@nana-remix\n"
@@ -51,8 +50,10 @@ async def  alivemsg_callback(client, query):
 async def google_search(client, message):
     x = await client.get_inline_bot_results(f"{BotUsername}", "alive")
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )

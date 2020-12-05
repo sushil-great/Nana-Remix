@@ -1,4 +1,3 @@
-
 import json
 import os
 import urllib.request
@@ -23,19 +22,20 @@ async def change_repo(url):
     index = repo.index
     index.add(["Dockerfile"])  # add a new file to the index
     from git import Actor
+
     author = Actor("Nana", "nana@harumi.tech")
     committer = Actor("Nana", "nana@harumi.tech")
     # commit by commit message and author and committer
     index.commit("Change Repo", author=author, committer=committer)
     if HEROKU_API is not None:
         import heroku3
+
         heroku = heroku3.from_key(HEROKU_API)
         heroku_applications = heroku.apps()
         if len(heroku_applications) >= 1:
             heroku_app = heroku_applications[0]
             heroku_git_url = heroku_app.git_url.replace(
-                "https://",
-                "https://api:" + HEROKU_API + "@"
+                "https://", "https://api:" + HEROKU_API + "@"
             )
             if "heroku" in repo.remotes:
                 remote = repo.remote("heroku")
@@ -57,32 +57,31 @@ async def configrepo():
 
 
 @setbot.on_callback_query(dynamic_data_filter("change_repo"))
-async def chgrepo(_client, query):
-    text = "**⚙️ Repository Configuration **\n" \
-           "`Change Your Repo Source Here! `\n"
+async def chgrepo(_, query):
+    text = "**⚙️ Repository Configuration **\n" "`Change Your Repo Source Here! `\n"
 
     data_repo = await configrepo()
 
     list_button = []
     for r in data_repo.items():
-        list_button.append([InlineKeyboardButton(r[0],
-                            callback_data=r[0])])
+        list_button.append([InlineKeyboardButton(r[0], callback_data=r[0])])
     list_button.append([InlineKeyboardButton("⬅ back️", callback_data="back")])
     button = InlineKeyboardMarkup(list_button)
     await query.message.edit_text(text, reply_markup=button)
 
 
 @setbot.on_callback_query(filters.regex("^Nana"))
-async def chgrepoo(_client, query):
+async def chgrepoo(_, query):
     rp = await configrepo()
     global repo_name
     repo_name = query.data
     list_button = []
     for version in rp[query.data]["version"]:
-        list_button.append([InlineKeyboardButton(version, callback_data=f"vs{version}")])
+        list_button.append(
+            [InlineKeyboardButton(version, callback_data=f"vs{version}")]
+        )
     list_button.append([InlineKeyboardButton("⬅ back️", callback_data="change_repo")])
-    text = "**⚙️ Repository Configuration **\n" \
-           "`Change Your Repo Source Here! `\n"
+    text = "**⚙️ Repository Configuration **\n" "`Change Your Repo Source Here! `\n"
     text += f"""**Author** : {rp[query.data]["Author"]}
 **Repository** : {rp[query.data]["repo-link"]}
     """
@@ -91,7 +90,7 @@ async def chgrepoo(_client, query):
 
 
 @setbot.on_callback_query(filters.regex("^vs"))
-async def selectversion(_client, query):
+async def selectversion(_, query):
     ver = query.data[2:]
     rp = await configrepo()
     list_button = []
@@ -99,19 +98,21 @@ async def selectversion(_client, query):
     desc = rp[repo_name]["version"][ver]["description"]
     print(rp[repo_name]["version"][ver])
     repo_docker = rp[repo_name]["version"][ver]["dockerfile"]
-    text = "**⚙️ Repository Configuration **\n" \
-           "`description : {} `\n".format(desc)
-    text += "** Warning ! **" \
-            "This Feature still experimental! \n " \
-            "Your bot might broken after change repo \n" \
-            "Use at your own risk! "
+    text = "**⚙️ Repository Configuration **\n" "`description : {} `\n".format(desc)
+    text += (
+        "** Warning ! **"
+        "This Feature still experimental! \n "
+        "Your bot might broken after change repo \n"
+        "Use at your own risk! "
+    )
     list_button.append([InlineKeyboardButton("Yes️", callback_data="chg_repo")])
     list_button.append([InlineKeyboardButton("⬅ back️", callback_data="change_repo")])
     button = InlineKeyboardMarkup(list_button)
     await query.message.edit_text(text, reply_markup=button)
 
+
 @setbot.on_callback_query(filters.regex("chg_repo"))
-async def select_version(_client, query):
+async def select_version(_, query):
     global repo_docker
     text = "Repo Changed! It will take up to 5 minutes, Please Wait...."
     await query.message.edit_text(text)

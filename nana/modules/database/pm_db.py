@@ -3,13 +3,10 @@ from sqlalchemy import Column, String
 from nana import BASE, SESSION
 
 
-
 # class set_req
 # class get_req
 
 import threading
-
-
 
 
 class WhitelistUsers(BASE):
@@ -21,23 +18,25 @@ class WhitelistUsers(BASE):
         """initializing db"""
         self.user_id = user_id
         self.username = username
-        
+
+
 class ReqUsers(BASE):
     __tablename__ = "getpmapprove"
     user_id = Column(String(14), primary_key=True)
     username = Column(String(15))
-    
+
     def __init__(self, user_id, username):
         """getting query from db for user and name"""
         self.user_id = user_id
         self.username = username
-        
-        
+
+
 ReqUsers.__table__.create(checkfirst=True)
-        
+
 WhitelistUsers.__table__.create(checkfirst=True)
 
 INSERTION_LOCK = threading.RLock()
+
 
 def set_whitelist(user_id, username):
     with INSERTION_LOCK:
@@ -46,7 +45,7 @@ def set_whitelist(user_id, username):
             user = WhitelistUsers(str(user_id), str(username))
         else:
             user.username = str(username)
-        
+
         SESSION.add(user)
         SESSION.commit()
 
@@ -68,9 +67,10 @@ def get_whitelist(user_id):
     rep = ""
     if user:
         rep = str(user.username)
-        
+
     SESSION.close()
     return rep
+
 
 def set_req(user_id, username):
     with INSERTION_LOCK:
@@ -79,16 +79,16 @@ def set_req(user_id, username):
             user = ReqUsers(str(user_id), str(username))
         else:
             user.username = str(username)
-        
+
         SESSION.add(user)
         SESSION.commit()
-        
-        
+
+
 def get_req(user_id):
     user = SESSION.query(ReqUsers).get(str(user_id))
     rep = ""
     if user:
         rep = str(user.username)
-        
+
     SESSION.close()
     return rep

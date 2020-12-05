@@ -54,11 +54,11 @@ async def separate_sed(sed_string):
 
     while counter < len(sed_string):
         if (
-                sed_string[counter] == "\\"
-                and counter + 1 < len(sed_string)
-                and sed_string[counter + 1] == delim
+            sed_string[counter] == "\\"
+            and counter + 1 < len(sed_string)
+            and sed_string[counter + 1] == delim
         ):
-            sed_string = sed_string[:counter] + sed_string[counter + 1:]
+            sed_string = sed_string[:counter] + sed_string[counter + 1 :]
 
         elif sed_string[counter] == delim:
             replace_with = sed_string[start:counter]
@@ -105,7 +105,11 @@ async def sed_msg(_, message):
                 text = re.sub(repl, repl_with, to_fix, count=1).strip()
         except sre_constants.error:
             print("SRE constant error")
-            await edrep(message, text="SRE constant error. You can learn regex in [here](https://regexone.com)", disable_web_page_preview=True)
+            await edrep(
+                message,
+                text="SRE constant error. You can learn regex in [here](https://regexone.com)",
+                disable_web_page_preview=True,
+            )
             return
         if text:
             await edrep(message, text="```{}```".format(text))

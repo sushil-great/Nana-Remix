@@ -50,10 +50,7 @@ async def ss_web(client, message):
     args = message.text.split(None, 1)
     teks = args[1]
     full = False
-    if (
-        len(message.text.split()) >= 3
-        and message.text.split(None, 2)[2] == "full"
-    ):
+    if len(message.text.split()) >= 3 and message.text.split(None, 2)[2] == "full":
         full = True
 
     teks = teks if "http://" in teks or "https://" in teks else "http://" + teks
@@ -65,9 +62,6 @@ async def ss_web(client, message):
     else:
         r = f"http://api.screenshotlayer.com/api/capture?access_key={screenshotlayer_API}&url={teks}&fullpage=0"
     await message.delete()
-    await client.send_photo(
-        message.chat.id, photo=r,
-        caption=capt
-    )
+    await client.send_photo(message.chat.id, photo=r, caption=capt)
     os.remove("nana/cache/web.png")
     await client.send_chat_action(message.chat.id, action="cancel")

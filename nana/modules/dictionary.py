@@ -15,7 +15,7 @@ __MODULE__ = "Dictionary"
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("dic", Command))
-async def dictionary(_client, message):
+async def dictionary(_, message):
     cmd = message.command
     input_ = ""
     if len(cmd) > 1:
@@ -27,15 +27,23 @@ async def dictionary(_client, message):
         await asyncio.sleep(2)
         await message.delete()
         return
+
     def combine(s_word, name):
         w_word = f"**__{name.title()}__**\n"
         for i in s_word:
             if "definition" in i:
                 if "example" in i:
-                    w_word += ("\n**Definition**\n<pre>" + i["definition"] +
-                               "</pre>\n<b>Example</b>\n<pre>" + i["example"] + "</pre>")
+                    w_word += (
+                        "\n**Definition**\n<pre>"
+                        + i["definition"]
+                        + "</pre>\n<b>Example</b>\n<pre>"
+                        + i["example"]
+                        + "</pre>"
+                    )
                 else:
-                    w_word += "\n**Definition**\n" + "<pre>" + i["definition"] + "</pre>"
+                    w_word += (
+                        "\n**Definition**\n" + "<pre>" + i["definition"] + "</pre>"
+                    )
         w_word += "\n\n"
         return w_word
 
@@ -84,9 +92,15 @@ async def dictionary(_client, message):
                 out += combine(crosref, "crossReference")
                 # print(crosref)
         if "title" in list(word1):
-            out += ("**__Error Note__**\n\n▪️`" + word1["title"] +
-                    "\n\n▪️" + word1["message"] + "\n\n▪️<i>" + word1["resolution"] +
-                    "</i>`")
+            out += (
+                "**__Error Note__**\n\n▪️`"
+                + word1["title"]
+                + "\n\n▪️"
+                + word1["message"]
+                + "\n\n▪️<i>"
+                + word1["resolution"]
+                + "</i>`"
+            )
         return out
 
     if not input_:
@@ -94,14 +108,18 @@ async def dictionary(_client, message):
         return
     else:
         word = input_
-        r_dec = await AioHttp().get_json(f"https://api.dictionaryapi.dev/api/v1/entries/en/{word}")
+        r_dec = await AioHttp().get_json(
+            f"https://api.dictionaryapi.dev/api/v1/entries/en/{word}"
+        )
 
         v_word = input_
         if isinstance(r_dec, list):
             r_dec = r_dec[0]
-            v_word = r_dec['word']
+            v_word = r_dec["word"]
         last_output = out_print(r_dec)
         if last_output:
-            await edrep(message, text="`Search reasult for   `" + f" {v_word}\n\n" + last_output)
+            await edrep(
+                message, text="`Search reasult for   `" + f" {v_word}\n\n" + last_output
+            )
         else:
-            await edrep(message, text='`No result found from the database.`')
+            await edrep(message, text="`No result found from the database.`")

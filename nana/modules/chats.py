@@ -26,8 +26,9 @@ Deletes a Message Replied with this command.
 def get_msgc():
     return MESSAGE_RECOUNTER
 
+
 @app.on_message(filters.group, group=10)
-async def updatemychats(_client, message):
+async def updatemychats(_, message):
     global MESSAGE_RECOUNTER
     if DB_AVAILABLE:
         update_chat(message.chat)
@@ -40,10 +41,12 @@ async def get_chat(client, message):
         await edrep(message, text="Your database is not avaiable!")
         return
     all_chats = get_all_chats()
-    chatfile = 'List of chats that I joined.\n'
+    chatfile = "List of chats that I joined.\n"
     for chat in all_chats:
         if str(chat.chat_username) != "None":
-            chatfile += "{} - ({}): @{}\n".format(chat.chat_name, chat.chat_id, chat.chat_username)
+            chatfile += "{} - ({}): @{}\n".format(
+                chat.chat_name, chat.chat_id, chat.chat_username
+            )
         else:
             chatfile += "{} - ({})\n".format(chat.chat_name, chat.chat_id)
 
@@ -54,7 +57,7 @@ async def get_chat(client, message):
     await client.send_document(
         "self",
         document="nana/cache/chatlist.txt",
-        caption="Here is the chat list that I joined."
+        caption="Here is the chat list that I joined.",
     )
     await edrep(message, text="My chat list exported to my saved messages.")
     os.remove("nana/cache/chatlist.txt")

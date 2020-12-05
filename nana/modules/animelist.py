@@ -9,7 +9,6 @@ from nana.helpers.sauce import airing_sauce, character_sauce, manga_sauce
 from nana.modules.database import anime_db as sql
 
 
-
 __MODULE__ = "Anilist"
 
 __HELP__ = """
@@ -40,10 +39,10 @@ Get your favourite Anime list.
 """
 
 
-def shorten(description, info='anilist.co'):
+def shorten(description, info="anilist.co"):
     ms_g = ""
     if len(description) > 700:
-        description = description[0:500] + '....'
+        description = description[0:500] + "...."
         ms_g += f"\n**Description**: __{description}__[Read More]({info})"
     else:
         ms_g += f"\n**Description**: __{description}__"
@@ -63,24 +62,26 @@ def t(milliseconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
-    tmp = ((str(days) + " Days, ") if days else "") + \
-        ((str(hours) + " Hours, ") if hours else "") + \
-        ((str(minutes) + " Minutes, ") if minutes else "") + \
-        ((str(seconds) + " Seconds, ") if seconds else "") + \
-        ((str(milliseconds) + " ms, ") if milliseconds else "")
+    tmp = (
+        ((str(days) + " Days, ") if days else "")
+        + ((str(hours) + " Hours, ") if hours else "")
+        + ((str(minutes) + " Minutes, ") if minutes else "")
+        + ((str(seconds) + " Seconds, ") if seconds else "")
+        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+    )
     return tmp[:-2]
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("airing", Command))
-async def anime_airing(_client, message):
-    search_str = message.text.split(' ', 1)
+async def anime_airing(_, message):
+    search_str = message.text.split(" ", 1)
     if len(search_str) == 1:
-        await edrep(message, text='Format: `airing <anime name>`')
+        await edrep(message, text="Format: `airing <anime name>`")
         return
-    response = (await airing_sauce(search_str[1]))['data']['Media']
+    response = (await airing_sauce(search_str[1]))["data"]["Media"]
     ms_g = f"**Name**: **{response['title']['romaji']}**(`{response['title']['native']}`)\n**ID**: `{response['id']}`"
-    if response['nextAiringEpisode']:
-        airing_time = response['nextAiringEpisode']['timeUntilAiring'] * 1000
+    if response["nextAiringEpisode"]:
+        airing_time = response["nextAiringEpisode"]["timeUntilAiring"] * 1000
         airing_time_final = t(airing_time)
         ms_g += f"\n**Episode**: `{response['nextAiringEpisode']['episode']}`\n**Airing In**: `{airing_time_final}`"
     else:
@@ -101,28 +102,32 @@ async def anime_search(client, message):
         return
     x = await client.get_inline_bot_results(f"{BotUsername}", f"anime {mock}")
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )
 
 
 @app.on_message(filters.user(AdminSettings) & filters.command("character", Command))
 async def character_search(client, message):
-    search = message.text.split(' ', 1)
+    search = message.text.split(" ", 1)
     if len(search) == 1:
         await message.delete()
         return
-    json = (await character_sauce(search[1]))['data'].get('Character', None)
+    json = (await character_sauce(search[1]))["data"].get("Character", None)
     if json:
-        ms_g = f"**{json.get('name').get('full')}**(`{json.get('name').get('native')}`)\n"
+        ms_g = (
+            f"**{json.get('name').get('full')}**(`{json.get('name').get('native')}`)\n"
+        )
         description = f"{json['description']}"
-        site_url = json.get('siteUrl')
+        site_url = json.get("siteUrl")
         ms_g += shorten(description, site_url)
-        image = json.get('image', None)
+        image = json.get("image", None)
         if image:
-            image = image.get('large')
+            image = image.get("large")
             await message.delete()
             await client.send_photo(message.chat.id, photo=image, caption=ms_g)
         else:
@@ -131,18 +136,22 @@ async def character_search(client, message):
 
 @app.on_message(filters.user(AdminSettings) & filters.command("manga", Command))
 async def manga_search(client, message):
-    search = message.text.split(' ', 1)
+    search = message.text.split(" ", 1)
     if len(search) == 1:
         await message.delete()
         return
-    
-    json = (await manga_sauce(search[1]))['data'].get('Media', None)
-    ms_g = ''
+
+    json = (await manga_sauce(search[1]))["data"].get("Media", None)
+    ms_g = ""
     if json:
-        title, title_native = json['title'].get(
-            'romaji', False), json['title'].get('native', False)
-        start_date, status, score = json['startDate'].get('year', False), json.get(
-            'status', False), json.get('averageScore', False)
+        title, title_native = json["title"].get("romaji", False), json["title"].get(
+            "native", False
+        )
+        start_date, status, score = (
+            json["startDate"].get("year", False),
+            json.get("status", False),
+            json.get("averageScore", False),
+        )
         if title:
             ms_g += f"**{title}**"
             if title_native:
@@ -153,8 +162,8 @@ async def manga_search(client, message):
             ms_g += f"\n**Status** - `{status}`"
         if score:
             ms_g += f"\n**Score** - `{score}`"
-        ms_g += '\n**Genres** - '
-        for x in json.get('genres', []):
+        ms_g += "\n**Genres** - "
+        for x in json.get("genres", []):
             ms_g += f"{x}, "
         ms_g = ms_g[:-2]
 
@@ -175,11 +184,13 @@ async def manga_search(client, message):
 async def favourite_animelist(client, message):
     x = await client.get_inline_bot_results(f"{BotUsername}", "favourite")
     await message.delete()
-    await client.send_inline_bot_result(chat_id=message.chat.id,
-                                        query_id=x.query_id,
-                                        result_id=x.results[0].id,
-                                        reply_to_message_id=ReplyCheck(message),
-                                        hide_via=True)
+    await client.send_inline_bot_result(
+        chat_id=message.chat.id,
+        query_id=x.query_id,
+        result_id=x.results[0].id,
+        reply_to_message_id=ReplyCheck(message),
+        hide_via=True,
+    )
 
 
 async def addfav_callback(_, __, query):
@@ -198,17 +209,19 @@ async def add_favorite(_, query):
         match = query.data.split("_")[1]
         add = sql.add_fav(Owner, match)
         if add:
-            await query.answer('Added to Favourites', show_alert=True)
+            await query.answer("Added to Favourites", show_alert=True)
         else:
-            await query.answer('Anime already Exists in Favourites', show_alert=True)
+            await query.answer("Anime already Exists in Favourites", show_alert=True)
     else:
-        await query.answer('You are not Allowed to Press this', show_alert=True)
+        await query.answer("You are not Allowed to Press this", show_alert=True)
 
 
 @setbot.on_callback_query(filters.create(remfav_callback))
 async def rem_favorite(_, query):
     if query.from_user.id in AdminSettings:
         sql.remove_fav(Owner)
-        await setbot.edit_inline_text(query.inline_message_id,'Removed from Favourites')
+        await setbot.edit_inline_text(
+            query.inline_message_id, "Removed from Favourites"
+        )
     else:
-        await query.answer('You are not Allowed to Press this', show_alert=True)
+        await query.answer("You are not Allowed to Press this", show_alert=True)

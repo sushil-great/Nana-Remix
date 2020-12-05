@@ -1,4 +1,3 @@
-
 import asyncio
 import aiohttp
 from html import escape
@@ -19,8 +18,8 @@ Powered by `wttr.in`
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command('wttr', Command))
-async def weather(_client, message):
+@app.on_message(filters.user(AdminSettings) & filters.command("wttr", Command))
+async def weather(_, message):
     if len(message.command) == 1:
         await edrep(message, text="Usage: `wttr Maldives`")
         await asyncio.sleep(3)
@@ -28,7 +27,7 @@ async def weather(_client, message):
 
     if len(message.command) > 1:
         location = message.command[1]
-        headers = {'user-agent': 'httpie'}
+        headers = {"user-agent": "httpie"}
         url = f"https://wttr.in/{location}?mnTC0&lang=en"
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
@@ -38,8 +37,8 @@ async def weather(_client, message):
             print(e)
             await edrep(message, text="Failed to get the weather forecast")
 
-        if 'we processed more than 1M requests today' in data:
+        if "we processed more than 1M requests today" in data:
             await edrep(message, text="`Sorry, we cannot process this request today!`")
         else:
             weather_data = f"<code>{escape(data.replace('report', 'Report'))}</code>"
-            await edrep(message, text=weather_data, parse_mode='html')
+            await edrep(message, text=weather_data, parse_mode="html")

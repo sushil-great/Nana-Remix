@@ -9,7 +9,7 @@ from nana.tr_engine.strings import tld
 
 
 @setbot.on_message(filters.user(AdminSettings) & filters.command(["gdrive"]))
-async def gdrive_helper(_client, message):
+async def gdrive_helper(_, message):
     if len(message.text.split()) == 1:
         gdriveclient = os.path.isfile("client_secrets.json")
         if HEROKU_API:
@@ -32,17 +32,24 @@ async def gdrive_helper(_client, message):
             except:
                 await message.reply(
                     "Wrong Credentials! Check var ENV gdrive_credentials on heroku or do .credentials (your "
-                    "credentials) for change your Credentials")
+                    "credentials) for change your Credentials"
+                )
                 return
-            teks = "First, you must log in to your Google drive first.\n\n[Visit this link and login to your Google " \
-                   "account]({})\n\nAfter that you will get a verification code, type `/gdrive (verification code)` " \
-                   "without '(' or ')'.".format(authurl)
+            teks = (
+                "First, you must log in to your Google drive first.\n\n[Visit this link and login to your Google "
+                "account]({})\n\nAfter that you will get a verification code, type `/gdrive (verification code)` "
+                "without '(' or ')'.".format(authurl)
+            )
             await message.reply(teks)
             return
-        await message.reply("You're already logged in!\nTo logout type `/gdrive logout`")
+        await message.reply(
+            "You're already logged in!\nTo logout type `/gdrive logout`"
+        )
     elif len(message.text.split()) == 2 and message.text.split()[1] == "logout":
         os.remove("nana/session/drive")
-        await message.reply("You have logged out of your account!\nTo login again, just type /gdrive")
+        await message.reply(
+            "You have logged out of your account!\nTo login again, just type /gdrive"
+        )
     elif len(message.text.split()) == 2:
         try:
             gauth.Auth(message.text.split()[1])
@@ -51,13 +58,19 @@ async def gdrive_helper(_client, message):
             return
         gauth.SaveCredentialsFile("nana/session/drive")
         drive = GoogleDrive(gauth)
-        file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+        file_list = drive.ListFile(
+            {"q": "'root' in parents and trashed=false"}
+        ).GetList()
         for drivefolders in file_list:
-            if drivefolders['title'] == 'Nana Drive':
+            if drivefolders["title"] == "Nana Drive":
                 await message.reply("Authentication successful!\nWelcome back!")
                 return
-        mkdir = drive.CreateFile({'title': 'Nana Drive', "mimeType": "application/vnd.google-apps.folder"})
+        mkdir = drive.CreateFile(
+            {"title": "Nana Drive", "mimeType": "application/vnd.google-apps.folder"}
+        )
         mkdir.Upload()
-        await message.reply("Authentication successful!\nThe 'Nana Drive' folder has been created automatically!")
+        await message.reply(
+            "Authentication successful!\nThe 'Nana Drive' folder has been created automatically!"
+        )
     else:
         await message.reply("Invaild args!\nCheck /gdrive for usage guide")

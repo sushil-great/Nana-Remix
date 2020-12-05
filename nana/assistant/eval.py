@@ -46,14 +46,14 @@ async def eval(client, message):
         evaluation = "Success"
     final_output = f"<b>OUTPUT</b>:\n<code>{evaluation.strip()}</code>"
     if len(final_output) > 4096:
-        filename = 'output.txt'
+        filename = "output.txt"
         with open(filename, "w+", encoding="utf8") as out_file:
             out_file.write(str(final_output))
         await message.reply_document(
             document=filename,
             caption=cmd,
             disable_notification=True,
-            reply_to_message_id=reply_to_id
+            reply_to_message_id=reply_to_id,
         )
         os.remove(filename)
         await status_message.delete()
@@ -72,35 +72,37 @@ async def terminal(client, message):
         code = teks.split("\n")
         output = ""
         for x in code:
-            shell = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', x)
+            shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", x)
             try:
                 process = subprocess.Popen(
-                    shell,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
             except Exception as err:
                 print(err)
-                await message.reply("""
+                await message.reply(
+                    """
 **Error:**
 ```{}```
-""".format(err))
+""".format(
+                        err
+                    )
+                )
             output += "**{}**\n".format(code)
             output += process.stdout.read()[:-1].decode("utf-8")
             output += "\n"
     else:
-        shell = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', teks)
+        shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", teks)
         for a in range(len(shell)):
             shell[a] = shell[a].replace('"', "")
         try:
             process = subprocess.Popen(
-                shell,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except Exception as err:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
+            errors = traceback.format_exception(
+                etype=exc_type, value=exc_obj, tb=exc_tb
+            )
             await message.reply("""**Error:**\n```{}```""".format("".join(errors)))
             return
         output = process.stdout.read()[:-1].decode("utf-8")
@@ -111,10 +113,14 @@ async def terminal(client, message):
             with open("nana/cache/output.txt", "w+") as file:
                 file.write(output)
                 file.close()
-            await client.send_document(message.chat.id, "nana/cache/output.txt", reply_to_message_id=message.message_id,
-                caption="`Output file`")
+            await client.send_document(
+                message.chat.id,
+                "nana/cache/output.txt",
+                reply_to_message_id=message.message_id,
+                caption="`Output file`",
+            )
             os.remove("nana/cache/output.txt")
             return
-        await message.reply(f"**Output:**\n```{output}```", parse_mode='markdown')
+        await message.reply(f"**Output:**\n```{output}```", parse_mode="markdown")
     else:
         await message.reply("**Output:**\n`No Output`")
