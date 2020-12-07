@@ -6,7 +6,7 @@ from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError, NoSuchPathError
 from pyrogram import filters
 
-from nana import app, Command, OFFICIAL_BRANCH, REPOSITORY, HEROKU_API, edrep
+from nana import app, Command, AdminSettings, OFFICIAL_BRANCH, REPOSITORY, edrep
 from nana.__main__ import restart_all, except_hook
 from nana.assistant.updater import update_changelog
 
@@ -52,9 +52,8 @@ async def initial_git(repo):
     os.rename("nana-old/nana/session/", "nana/session/")
 
 
-@app.on_message(filters.me & filters.command("update", Command))
+@app.on_message(filters.user(AdminSettings) & filters.command("update", Command))
 async def updater(client, message):
-    await edrep(message, text="__Checking update...__")
     initial = False
     try:
         repo = Repo()
@@ -146,9 +145,8 @@ async def updater(client, message):
             await edrep(
                 message, text="`Changelog is too big, view the file to see it.`"
             )
-            file = open("nana/cache/output.txt", "w+")
-            file.write(changelog_str)
-            file.close()
+            with open("nana/cache/output.txt", "w+") as file:
+                file.write(changelog_str)
             await client.send_document(
                 message.chat.id,
                 "nana/cache/output.txt",
@@ -161,28 +159,6 @@ async def updater(client, message):
         return
     elif len(message.text.split()) == 2 and message.text.split()[1] == "now":
         await edrep(message, text="`New update found, updating...`")
-        if HEROKU_API is not None:
-            import heroku3
-
-            heroku = heroku3.from_key(HEROKU_API)
-            heroku_applications = heroku.apps()
-            if len(heroku_applications) >= 1:
-                heroku_app = heroku_applications[0]
-                heroku_git_url = heroku_app.git_url.replace(
-                    "https://", "https://api:" + HEROKU_API + "@"
-                )
-                if "heroku" in repo.remotes:
-                    remote = repo.remote("heroku")
-                    remote.set_url(heroku_git_url)
-                else:
-                    remote = repo.create_remote("heroku", heroku_git_url)
-                remote.push(refspec="HEAD:refs/heads/master")
-            else:
-                await message.reply("no heroku application found, but a key given? 😕 ")
-            await edrep(
-                message, text="Build Unsuccess, Check heroku build log for more detail"
-            )
-            return
         try:
             upstream.pull(brname)
             await edrep(message, text="Successfully Updated!\nBot is restarting...")

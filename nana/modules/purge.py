@@ -35,12 +35,11 @@ Delete's a message that you reply to
 
 @app.on_message(filters.user(AdminSettings) & filters.command("purge", Command))
 async def purge_message(client, message):
-    if message.chat.type in (("supergroup", "channel")):
-        is_admin = await admin_check(message)
-        if not is_admin:
-            await message.delete()
-            return
-    else:
+    if message.chat.type not in ("supergroup", "channel"):
+        return
+    is_admin = await admin_check(message)
+    if not is_admin:
+        await message.delete()
         return
     start_t = datetime.now()
     await message.delete()

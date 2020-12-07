@@ -70,13 +70,14 @@ async def start(_, message):
                     InlineKeyboardButton(
                         text=tld("help_btn"), callback_data="help_back"
                     ),
-                    InlineKeyboardButton("Language", callback_data="set_lang_"),
+                    InlineKeyboardButton(
+                        tld("language_btn"), callback_data="set_lang_"
+                    ),
                 ]
             ]
         )
         if NANA_IMG:
-            await setbot.send_photo(
-                message.chat.id,
+            await message.reply_photo(
                 NANA_IMG,
                 caption=tld("start_message").format(
                     OwnerName,
@@ -186,7 +187,7 @@ async def get_myself_btn(client, query):
 @setbot.on_callback_query(dynamic_data_filter("report_errors"))
 async def report_some_errors(client, query):
     await app.join_chat("@nanabotsupport")
-    text = "Hi @pokurt, i got an error for you.\nPlease take a look and fix it if possible.\n\nThank you ❤️"
+    text = "Hi @DeprecatedUser, i got an error for you.\nPlease take a look and fix it if possible.\n\nThank you ❤️"
     err = query.message.text
     open("nana/cache/errors.txt", "w").write(err)
     await query.message.edit_reply_markup(reply_markup=None)

@@ -39,7 +39,9 @@ async def speedtestxyz_callback(client, query):
         replymsg = tld("speed_test_result")
         if query.data == "speedtest_image":
             speedtest_image = speed.results.share()
-            replym = f"[{tld('speed_test_result')}]({speedtest_image})"
+            replym = (
+                f"{tld('speed_test_result')}[\u200c\u200c\u200e]({speedtest_image})"
+            )
             await setbot.edit_inline_text(
                 query.inline_message_id, replym, parse_mode="markdown"
             )

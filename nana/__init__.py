@@ -43,10 +43,10 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     )
     sys.exit()
 
-USERBOT_VERSION = "2.1"
-ASSISTANT_VERSION = "2.1"
+USERBOT_VERSION = "3.0"
+ASSISTANT_VERSION = "3.0"
 
-OFFICIAL_BRANCH = "master"
+OFFICIAL_BRANCH = ["master", "dev", "translations"]
 REPOSITORY = "https://github.com/pokurt/Nana-Remix.git"
 RANDOM_STICKERS = [
     "CAADAgAD6EoAAuCjggf4LTFlHEcvNAI",
@@ -90,7 +90,6 @@ gdrive_credentials = get_var("gdrive_credentials", None)
 lydia_api = get_var("lydia_api", None)
 remove_bg_api = get_var("remove_bg_api", None)
 sw_api = get_var("sw_api", None)
-HEROKU_API = get_var("HEROKU_API", None)
 IBM_WATSON_CRED_URL = get_var("IBM_WATSON_CRED_URL", None)
 IBM_WATSON_CRED_PASSWORD = get_var("IBM_WATSON_CRED_PASSWORD", None)
 # LOADER
@@ -104,7 +103,6 @@ ASSISTANT_BOT_TOKEN = get_var("ASSISTANT_BOT_TOKEN", None)
 AdminSettings = [int(x) for x in get_var("AdminSettings", "").split()]
 REMINDER_UPDATE = bool(get_var("REMINDER_UPDATE", True))
 TEST_MODE = bool(get_var("TEST_MODE", False))
-TERMUX_USER = get_var("TERMUX_USER", False)
 NANA_IMG = get_var("NANA_IMG", False)
 PM_PERMIT = bool(get_var("PM_PERMIT", False))
 

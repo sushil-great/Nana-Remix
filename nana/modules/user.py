@@ -66,7 +66,7 @@ async def set_pfp(client, message):
         )
     ):
         await client.download_media(message=replied, file_name=profile_photo)
-        await client.set_profile_photo(profile_photo)
+        await client.set_profile_photo(photo=profile_photo)
         if os.path.exists(profile_photo):
             os.remove(profile_photo)
         await edrep(
@@ -116,8 +116,8 @@ async def clone(client, message):
             my_self["about"],
         )
     q = await app.get_profile_photos(target)
-    await client.download_media(q[0], file_name="nana/downloads/pp.png")
-    await app.set_profile_photo("nana/downloads/pp.png")
+    dl = await client.download_media(q[0], file_name="nana/downloads/pp.png")
+    await app.set_profile_photo(photo="nana/downloads/pp.png")
     t = await app.get_users(target)
     t = await client.send(
         functions.users.GetFullUser(id=await client.resolve_peer(t["id"]))
@@ -134,6 +134,7 @@ async def clone(client, message):
             about=t["about"] if t["about"] is not None else "",
         )
     )
+    os.remove(dl)
     await edrep(message, text="`New identity has changed!`")
     await sleep(5)
     await message.delete()

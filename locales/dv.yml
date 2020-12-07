@@ -4,6 +4,7 @@ language_not_supported: " ޙިޔާރުކުރެވިފައިވާ ބަސް އަދި
 language_code_not_valid: ޙިޔާރުކުރެވިފައިވާ ބަހުގެ ކޯޑު ރަނގަޅެއް ނޫން
 language_current_locale: "**{}**:ހިޔާރު ކުރެވިފައިވާ ބަހަކީ"
 language_select_language: "**ބަސް ޙިޔާރުކުރައްވާ** \n"
+language_btn: "ބަސް"
 # Assistant Help
 inline_help_text: "**އިންލައިން ގެ އެހީ:** ޙިޔާރުކުރެވިފައިވާ ގޮޅީގައި `@{}` (ކޮމާންޑް) ލިޔުއްވުމަށް ފަހު މަޑުކުރައްވާ\n\n──「 **އިންލައިން ނޯޓްސް** 」──\n-> `note (*ނޯޓް ގެ ޓެގް)`\nލިޔުވުމައްފަހު އިޙްތިޔާރު ކުރެވިފައިވާ ގޮޅީގައި އިން ނޯޓް އަށް ފިއްތަވާ ލައްވާ\n\n──「 **ސްޓައިލިޝް** 」──\n-> `stylish (ޖުމްލަ)`\nރީތި އަކުރުތަކަކަށް ޖުމްލަ ބަދަލު ކުރައްވާ\n\n* = *ބޭނުން ވާ ނަމަ ބޭނުން ކުރައްވާ"
 start_message: "އައްސަލާމު އަލައިކުމް {},\nނަނާ ތައްޔާރު\n===================\n-> ޕައިތޯން: `{}`\n-> ޔޫސަރބޮޓް: `{} (v{})`\n-> އެސިސްޓެންޓް: `Running (v{})`\n-> ޑޭޓާބޭސް: `{}`\n-> ވަންނަވާފައިވާ ގރުޕްތައް: `{}`\n===================\n`އިތުރު މައުލޫމާތު ތަކައް ތިރީގައިވާ ފިތުން އެހީ ހޯދަވާ`"
@@ -77,8 +78,6 @@ settings_userbot_stopbutton: "ހުއްޓާ"
 settings_userbot_startbutton: "ފައްޓާ"
 settings_userbot_restartbutton: "ރިސްޓާޓް"
 settings_setstickerbutton: "ސްޓިކާ"
-settings_herokubutton: "ހެރޮކޫ ވޭރިއަބަލް"
-settings_heroku_restartbutton: "ރިސްޓާޓް ހެރޮކޫ"
 settings_change_repo_button: "ރިޕޯ ބަދަލް ކުރަން"
 settings_stats_botstart: "✅ ބޮޓް ފެށިއްޖެ!"
 settings_stats_botstop: "✅ ބޮޓް ހުއްޓިއްޖެ!"

@@ -13,7 +13,7 @@ from nana import (
     Command,
     gauth,
     gdrive_credentials,
-    HEROKU_API,
+    ENV,
     AdminSettings,
     edrep,
 )
@@ -97,7 +97,7 @@ async def credentials(_, message):
 async def gdrive_stuff(client, message):
     gauth.LoadCredentialsFile("nana/session/drive")
     if gauth.credentials is None:
-        if HEROKU_API and gdrive_credentials:
+        if ENV and gdrive_credentials:
             with open("client_secrets.json", "w") as file:
                 file.write(gdrive_credentials)
         await edrep(

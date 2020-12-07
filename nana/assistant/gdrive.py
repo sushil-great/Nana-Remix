@@ -4,7 +4,7 @@ import pydrive
 from pydrive.drive import GoogleDrive
 from pyrogram import filters
 
-from nana import setbot, AdminSettings, gauth, gdrive_credentials, HEROKU_API
+from nana import setbot, AdminSettings, gauth, gdrive_credentials, ENV
 from nana.tr_engine.strings import tld
 
 
@@ -12,7 +12,7 @@ from nana.tr_engine.strings import tld
 async def gdrive_helper(_, message):
     if len(message.text.split()) == 1:
         gdriveclient = os.path.isfile("client_secrets.json")
-        if HEROKU_API:
+        if ENV:
             if not gdrive_credentials:
                 await message.reply(tld("gdrive_credential_err_heroku"))
                 return

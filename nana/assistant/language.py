@@ -19,7 +19,7 @@ language_button_create = filters.create(language_button_callback)
 
 @setbot.on_callback_query(language_button_create)
 async def locale_button(client, query):
-    lang_match = re.findall(r"en-US|hi|he|id|fa|el|dv|es|ja", query.data)
+    lang_match = re.findall(r"en-US|hi|he|id|fa|el|dv|es|ja|de", query.data)
     if lang_match:
         if lang_match[0]:
             switch_to_locale(Owner, lang_match[0])
@@ -41,22 +41,19 @@ async def locale_button(client, query):
     text += tld("language_current_locale").format(curr_lang)
     buttons = [
         [
-            InlineKeyboardButton("🇺🇸 English (US)", callback_data="set_lang_en-US"),
-            InlineKeyboardButton("🇮🇳 हिंदी", callback_data="set_lang_hi"),
+            InlineKeyboardButton("🇺🇸", callback_data="set_lang_en-US"),
+            InlineKeyboardButton("🇮🇳", callback_data="set_lang_hi"),
+            InlineKeyboardButton("🇮🇱", callback_data="set_lang_he"),
+            InlineKeyboardButton("🇮🇩", callback_data="set_lang_id"),
+            InlineKeyboardButton("🇮🇷", callback_data="set_lang_fa"),
         ],
         [
-            InlineKeyboardButton("🇮🇱 עברית", callback_data="set_lang_he"),
-            InlineKeyboardButton("🇮🇩 bahasa Indonesia", callback_data="set_lang_id"),
+            InlineKeyboardButton("🇯🇵", callback_data="set_lang_ja"),
+            InlineKeyboardButton("🇬🇷", callback_data="set_lang_el"),
+            InlineKeyboardButton("🇲🇻", callback_data="set_lang_dv"),
+            InlineKeyboardButton("🇪🇸", callback_data="set_lang_es"),
+            InlineKeyboardButton("🇩🇪", callback_data="set_lang_de"),
         ],
-        [
-            InlineKeyboardButton("🇮🇷 فارسی", callback_data="set_lang_fa"),
-            InlineKeyboardButton("🇯🇵 日本人", callback_data="set_lang_ja"),
-        ],
-        [
-            InlineKeyboardButton("🇬🇷 Ελληνικά", callback_data="set_lang_el"),
-            InlineKeyboardButton("🇲🇻 ދިވެހި", callback_data="set_lang_dv"),
-        ],
-        [InlineKeyboardButton("🇪🇸 Espanol", callback_data="set_lang_es")],
     ]
     await client.edit_message_text(
         chat_id=Owner,

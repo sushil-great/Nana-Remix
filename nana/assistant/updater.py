@@ -1,5 +1,4 @@
 import random
-import os
 from git import Repo
 from git.exc import GitCommandError, NoSuchPathError, InvalidGitRepositoryError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -14,7 +13,6 @@ from nana import (
     RANDOM_STICKERS,
     REMINDER_UPDATE,
     TEST_DEVELOP,
-    HEROKU_API,
 )
 from nana.__main__ import restart_all, loop
 from nana.assistant.__main__ import dynamic_data_filter
@@ -113,42 +111,6 @@ async def update_button(client, _):
     upstream = repo.remote("upstream")
     upstream.fetch(brname)
     changelog = await gen_chlog(repo, f"HEAD..upstream/{brname}")
-    if HEROKU_API is not None:
-        import heroku3
-
-        heroku = heroku3.from_key(HEROKU_API)
-        heroku_applications = heroku.apps()
-        if len(heroku_applications) >= 1:
-            heroku_app = heroku_applications[0]
-            heroku_git_url = heroku_app.git_url.replace(
-                "https://", "https://api:" + HEROKU_API + "@"
-            )
-            if "heroku" in repo.remotes:
-                remote = repo.remote("heroku")
-                remote.set_url(heroku_git_url)
-            else:
-                remote = repo.create_remote("heroku", heroku_git_url)
-            remote.push(refspec="HEAD:refs/heads/master")
-        else:
-            await client.send_message(
-                Owner, "no heroku application found, but a key given? 😕 "
-            )
-        await client.send_message(
-            Owner, "Build Unsuccess, Check heroku build log for more detail"
-        )
-        return
-    else:
-        try:
-            os.system("git reset --hard")
-            os.system("git pull")
-            os.system("pip install -U -r requirements.txt")
-            await client.send_message(
-                Owner, "Built Successfully, Please Restart Manually in /settings"
-            )
-            return
-        except Exception as e:
-            await client.send_message(Owner, f"Build Unsuccess,\nLog:{e}")
-            return
     try:
         upstream.pull(brname)
         await client.send_message(Owner, "Successfully Updated!\nBot is restarting...")

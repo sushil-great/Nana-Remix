@@ -1,0 +1,93 @@
+# Language
+language_switch_success_pm: Ihre Spracheinstellung wurde auf {} aktualisiert
+language_not_supported: "{} wird noch nicht unterstützt!"
+language_code_not_valid: Das ist kein gültiger Sprachcode. Verwenden Sie einen international anerkannten ISO-Code!
+language_current_locale: "Aktuelle Sprache ausgewählt: ** {} **"
+language_select_language: "**Sprache auswählen**"
+# Assistant Help
+inline_help_text: "** Inline-Anleitung **\nGeben Sie einfach \"@ {} (Befehl)\" in das Textfeld ein und warten Sie auf die Antwort.\n\n── 「** Notiz von Inline abrufen **」 ──\n-> `note (* notetag)`\nUnd warten Sie auf die Liste der Notizen inline, unterstützt derzeit nur Text und Button.\n\n── 「** Stylish Generator Inline **」 ──\n-> `stylish (dein Text)`\nKonvertieren Sie einen Text in verschiedene Stile, kann überall verwendet werden!\n\n* = Kann optional verwendet werden"
+start_message: "Hallo {},\nNana ist bereit für Sie!\n===================\n-> Python: `{}`\n-> Userbot: `{} (v {})`\n-> Assistent: `Running (v {})`\n-> Datenbank: `{}`\n-> Gruppe beigetreten: `{}`\n===================\n`Um mehr über den Bot zu erfahren, drücke den Knopf unten`"
+help_btn: "Hilfe"
+help_str: "Sie können {} auf Ihrem Userbot verwenden, um diese Befehle auszuführen.\nHier sind die aktuellen Module, die Sie haben\nHauptbefehle verfügbar:\n - /start: Holen Sie sich Ihren Bot-Status\n - /stats: Erhalte deinen Userbot-Status\n - /settings: Einstellungen Ihres Userbots\n - /getme: Holen Sie sich Ihre Userbot-Profilinformationen\n - /help: Holen Sie sich dieses Menü"
+alive_str: "**[Nana-Remix](https://github.com/pokurt/Nana-Remix):**\n - **Bot**: `{} (v {})`\n - **Pyrogram**: `{}`\n - **Python **: `{}`\n - **Datenbank**: `{}`"
+# Gdrive Assistant
+gdrive_credential_err_heroku: "Hallo, Sie sind anscheinend nicht bei Google Drive angemeldet. Ich kann Ihnen bei der Anmeldung helfen.\nZunächst müssen Sie Ihre Google Drive-API aktivieren\n1. [Hier klicken](https://developers.google.com/drive/api/v3/quickstart/python),\nKlicken Sie auf Laufwerks-API aktivieren\n2. Melden Sie sich bei Ihrem Google-Konto an (überspringen Sie dies, wenn Sie bereits angemeldet sind).\n3. Klicken Sie nach dem Anmelden erneut auf Laufwerk-API aktivieren.\nund klicken Sie auf die Schaltfläche Client-Konfiguration herunterladen. Laden Sie diese herunter.\n4. Nachdem Sie diese Datei heruntergeladen haben, öffnen Sie diese Datei und kopieren Sie den gesamten Inhalt auf dashboard.heroku.com.\nWählen Sie Ihre Apps aus und gehen Sie zu den Einstellungen, gehen Sie zu config vars und fügen Sie den Schlüssel mit dem Namen gdrive_credentials mit dem Wert Ihrer Anmeldeinformationen hinzu\nDanach können Sie die nächste Anleitung nach Typ /gdrive aufrufen\n"
+# Adminlist Module
+# Adminlist
+adminlist_one: "** Administratoren in {} **\n╒═══ 「Schöpfer」\n"
+adminlist_two: "╞══ 「{} Human Administrator」\n"
+adminlist_three: "╞══ 「{} Bot Administrator」\n"
+adminlist_four: "╘══ 「Insgesamt {} Administratoren」"
+# ReportAdmins
+reportadmins_one: "{} Admins gemeldet."
+reportadmins_two: "Admins in {} anrufen."
+# tagall
+tagall: "Hallo zusammen!"
+# botlist
+botlist_one: "☠️ Konto gelöscht"
+botlist_two: "** Alle Bots in Gruppe {} **\n"
+botlist_three: "╒═══「 Bots 」\n"
+botlist_four: "╘══ 「Insgesamt {} Bots」"
+# Admins Module
+# errors
+user_invalid: "`ungültiger Benutzername`"
+peer_invalid: "`ungültiger Benutzername oder ungültige Benutzer-ID`"
+id_invalid: "`ungültige Benutzer-ID`"
+denied_permission: "`Erlaubnis verweigert`"
+# Invite_link
+invite_link: "** Generierter Einladungslink für {}: **\n - ** Join Link: ** {}"
+# pin_message
+pin_message: "`Auf eine Nachricht an Pin antworten`"
+# mute
+mute_user: "`Antworte einem Benutzer, um ihn stummzuschalten`"
+# unmute
+unmute_user: "`Antworte einem Benutzer, um die Stummschaltung aufzuheben`"
+# kick
+kick_user: "`Antworte einem Benutzer, um zu treten`"
+# ban
+ban_user: "`Antwort an einen Benutzer zum Verbot`"
+# unban
+unban_user: "`Antwort an einen Benutzer zum Aufheben des Verbots`"
+# promote
+promote_user: "`Antwort an einen Benutzer zu fördern`"
+# demote
+demote_user: "`Antwort an einen Benutzer zur Herabstufung`"
+# lock
+lock_all: "`Alle Berechtigungen aus diesem Chat gesperrt!`"
+lock_chat: "`{} Für diesen Chat gesperrt!`"
+# Unlock
+unlock_all: "`Alle Berechtigungen aus diesem Chat freigeschaltet!`"
+unlock_invalid: "`Ungültiger Entsperrtyp!`"
+unlock_chat: "`{} Für diesen Chat freigeschaltet!`"
+# viewlocks
+permission_view_str: "<b>Chat-Berechtigungen:</b>\n<b>Nachrichten senden:</b> {}\n<b>Medien senden:</b> {}\n<b>Aufkleber senden:</b> {}\n<b>Animationen senden:</b> {}\n<b>Kann Spiele spielen:</b> {}\n<b>Kann Inline-Bots verwenden:</b> {}\n<b>Webseitenvorschau:</b> {}\n<b>Umfragen senden:</b> {}\n<b>Info ändern:</b> {}\n<b>Benutzer einladen:</b> {}\n<b>Pin Nachrichten:</b> {}"
+# SpeedTest Module
+# Speed-Test
+speed_test_trigger: "Wählen Sie den SpeedTest-Modus"
+speed_test_running: "Speedtest durchführen ...."
+# Gdrive Assistant
+gdrive_credential_err: "Hallo, Sie sind anscheinend nicht bei Google Drive angemeldet\n\nIch kann Ihnen helfen, sich anzumelden.\n\nZunächst müssen Sie Ihre Google Drive-API aktivieren\n1. Klicken Sie auf [Hier klicken](https://developers.google.com/drive/api/v3/quickstart/python) auf ** Laufwerks-API aktivieren **\n2. Melden Sie sich bei Ihrem Google-Konto an (überspringen Sie dies, wenn Sie bereits angemeldet sind).\n3. Klicken Sie nach dem Anmelden erneut auf ** Laufwerks-API aktivieren ** und dann auf ** Client-Konfiguration herunterladen ** und laden Sie diese herunter.\n4. Öffnen Sie nach dem Herunterladen dieser Datei diese Datei und kopieren Sie den gesamten Inhalt. Zurück zum Telegramm. Führen Sie dann .credentials (Kopieren des Inhalts dieser Datei) ohne Klammer aus\n\nDanach können Sie die nächste Anleitung nach Typ /gdrive aufrufen"
+# Settings Module
+settings_userbot_stop: "-> Userbot: `Stopped (v{})`\n"
+settings_userbot_running: "-> Userbot: `Running (v{})`\n"
+settings_assistant_running: "-> Assistant: `Running (v{})`\n"
+settings_database: "-> Datenbank: `{}`\n"
+settings_python: "-> Python: `{}`\n"
+settings_userbot_stopbutton: "Stoppen Sie Bot"
+settings_userbot_startbutton: "Starten Sie Bot"
+settings_userbot_restartbutton: "Starten Sie den Bot neu"
+settings_setstickerbutton: "Set Aufkleber"
+settings_change_repo_button: "Repo-Quelle ändern"
+settings_stats_botstart: "✅ Bot wurde gestartet!"
+settings_stats_botstop: "❎ Bot wurde gestoppt!"
+settings_stats_botrestart: "✅ Bot wurde neu gestartet!"
+settings_bot_stoprestart_err: "Userbot bereits gestoppt! Neustart abbrechen"
+settings_bot_restarting: "Bitte warten Sie auf den Neustart des Bots ..."
+speed_test_result: "** SpeedTest-Ergebnisse: **"
+speed_test_isp: "** ISP: **"
+speed_test_download: "**Herunterladen:**"
+speed_test_upload: "**Hochladen:**"
+speed_test_ping: "**Klingeln:**"
+speed_test_button_text: "Text"
+speed_test_button_image: "Bild"
+language_btn: "Sprache"

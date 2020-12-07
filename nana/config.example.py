@@ -35,7 +35,6 @@ class Config:
     sw_api = ""  # Read docs in docs.spamwat.ch
     lydia_api = ""  # get from https://coffeehouse.intellivoid.net
     remove_bg_api = ""  # Get from https://remove.bg
-    HEROKU_API = ""  # if you're using heroku this field must filled, get from here : https://dashboard.heroku.com/account
     IBM_WATSON_CRED_URL = ""
     IBM_WATSON_CRED_PASSWORD = ""
     time_country = ""  # timezone list is in the link: https://telegra.ph/Time-Zone-list-for-Nana-Remix-07-21

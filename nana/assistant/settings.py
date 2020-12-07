@@ -1,6 +1,5 @@
 from platform import python_version
 
-import heroku3
 from pyrogram import filters, errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from nana import (
@@ -10,7 +9,6 @@ from nana import (
     USERBOT_VERSION,
     ASSISTANT_VERSION,
     DB_AVAILABLE,
-    HEROKU_API,
     NANA_IMG,
 )
 from nana.__main__ import reload_userbot, restart_all
@@ -57,28 +55,6 @@ async def get_button_settings():
             )
         ],
     ]
-    if HEROKU_API:
-        list_button.append(
-            [
-                InlineKeyboardButton(
-                    tld("settings_herokubutton"), callback_data="heroku_vars"
-                )
-            ]
-        )
-        list_button.append(
-            [
-                InlineKeyboardButton(
-                    tld("settings_heroku_restartbutton"), callback_data="restart_heroku"
-                )
-            ]
-        )
-        list_button.append(
-            [
-                InlineKeyboardButton(
-                    tld("settings_change_repo_button"), callback_data="change_repo"
-                )
-            ]
-        )
     return InlineKeyboardMarkup(list_button)
 
 
@@ -135,61 +111,6 @@ async def reboot_bot(client, query):
     except errors.exceptions.bad_request_400.MessageNotModified:
         pass
     await client.answer_callback_query(query.id, tld("settings_bot_restarting"))
-
-
-@setbot.on_callback_query(dynamic_data_filter("restart_heroku"))
-async def reboot_heroku(client, query):
-    text = await get_text_settings()
-    button = await get_button_settings()
-    if HEROKU_API is not None:
-        text += "\nPlease wait..."
-        try:
-            await query.message.edit_text(text, reply_markup=button)
-        except errors.exceptions.bad_request_400.MessageNotModified:
-            pass
-        await client.answer_callback_query(
-            query.id, tld("settings_bot_restarting_heroku")
-        )
-        heroku = heroku3.from_key(HEROKU_API)
-        heroku_applications = heroku.apps()
-        if len(heroku_applications) >= 1:
-            heroku_app = heroku_applications[0]
-            heroku_app.restart()
-        else:
-            text += tld("settings_no_heroku_app")
-    try:
-        await query.message.edit_text(text, reply_markup=button)
-    except errors.exceptions.bad_request_400.MessageNotModified:
-        pass
-    await client.answer_callback_query(query.id, tld("settings_no_heroku_app"))
-
-
-@setbot.on_callback_query(dynamic_data_filter("heroku_vars"))
-async def vars_heroku(_, query):
-    text = tld("settings_heroku_config")
-    list_button = [
-        [
-            InlineKeyboardButton("⬅ back️", callback_data="back"),
-            InlineKeyboardButton("➕  add️", callback_data="add_vars"),
-        ]
-    ]
-    if HEROKU_API:
-        heroku = heroku3.from_key(HEROKU_API)
-        heroku_applications = heroku.apps()
-        if len(heroku_applications) >= 1:
-            app = heroku_applications[0]
-            config = app.config()
-            # if config["api_id"]:
-            #     list_button.insert(0, [InlineKeyboardButton("api_id✅", callback_data="api_id")])
-            # else:
-            #     list_button.insert(0, [InlineKeyboardButton("api_id🚫", callback_data="api_id")])
-            configdict = config.to_dict()
-            for x, _ in configdict.items():
-                list_button.insert(
-                    0, [InlineKeyboardButton("{}✅".format(x), callback_data="tes")]
-                )
-    button = InlineKeyboardMarkup(list_button)
-    await query.message.edit_text(text, reply_markup=button)
 
 
 # Back button
