@@ -106,6 +106,7 @@ async def help_button(_, query):
                 paginate_modules(0, HELP_COMMANDS, "help")
             ),
         )
+    await query.answer()
 
 
 @setbot.on_message(

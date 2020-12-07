@@ -64,9 +64,10 @@ async def get_button_settings():
 async def settings(_, message):
     text = await get_text_settings()
     button = await get_button_settings()
-    await setbot.send_photo(
-        message.chat.id, NANA_IMG, caption=text, reply_markup=button
-    )
+    if NANA_IMG:
+        await message.reply_photo(NANA_IMG, caption=text, reply_markup=button)
+    else:
+        await message.reply(text, reply_markup=button)
 
 
 @setbot.on_callback_query(dynamic_data_filter("toggle_startbot"))
@@ -120,6 +121,7 @@ async def reboot_bot(client, query):
 async def back(_, message):
     text = await get_text_settings()
     button = await get_button_settings()
-    await setbot.send_photo(
-        message.chat.id, NANA_IMG, caption=text, reply_markup=button
-    )
+    if NANA_IMG:
+        await message.reply_photo(NANA_IMG, caption=text, reply_markup=button)
+    else:
+        await message.reply(text, reply_markup=button)

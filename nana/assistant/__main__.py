@@ -182,6 +182,52 @@ async def get_myself_btn(client, query):
         await query.message.edit_caption(caption=text, reply_markup=button)
     else:
         await query.message.edit(text, reply_markup=button)
+    await query.answer()
+
+
+@setbot.on_callback_query(dynamic_data_filter("language_back"))
+async def lang_back(_, query):
+    try:
+        me = await app.get_me()
+    except ConnectionError:
+        me = None
+    userbot_stat = "Stopped" if not me else "Running"
+    db_stat = len(get_all_chats()) if DB_AVAILABLE else "None"
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(text=tld("help_btn"), callback_data="help_back"),
+                InlineKeyboardButton(tld("language_btn"), callback_data="set_lang_"),
+            ]
+        ]
+    )
+    if NANA_IMG:
+        await query.message.edit_caption(
+            tld("start_message").format(
+                OwnerName,
+                python_version(),
+                userbot_stat,
+                USERBOT_VERSION,
+                ASSISTANT_VERSION,
+                DB_AVAILABLE,
+                db_stat,
+            ),
+        )
+        await query.message.edit_reply_markup(buttons)
+    else:
+        await query.message.edit(
+            tld("start_message").format(
+                OwnerName,
+                python_version(),
+                userbot_stat,
+                USERBOT_VERSION,
+                ASSISTANT_VERSION,
+                DB_AVAILABLE,
+                db_stat,
+            ),
+            reply_markup=buttons,
+        )
+    await query.answer()
 
 
 @setbot.on_callback_query(dynamic_data_filter("report_errors"))
@@ -194,19 +240,3 @@ async def report_some_errors(client, query):
     await app.send_document("nanabotsupport", "nana/cache/errors.txt", caption=text)
     os.remove("nana/cache/errors.txt")
     await client.answer_callback_query(query.id, "Report was sent!")
-
-
-namevars = ""
-valuevars = ""
-
-
-@setbot.on_callback_query(dynamic_data_filter("add_vars"))
-async def add_vars(_, query):
-    global namevars
-    await query.message.edit_text("Send Name Variable :")
-    setbot.on_message()
-
-
-async def name_vars(_, message):
-    global namevars
-    namevars = message.text

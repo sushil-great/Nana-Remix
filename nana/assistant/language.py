@@ -3,7 +3,7 @@ from nana.tr_engine.strings import tld
 from nana.tr_engine.list_locale import list_locales
 import re
 
-from pyrogram import filters
+from pyrogram import filters, errors
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from nana import setbot, Owner
@@ -26,7 +26,8 @@ async def locale_button(client, query):
             await query.answer(
                 text=tld("language_switch_success_pm").format(
                     list_locales[lang_match[0]]
-                )
+                ),
+                show_alert=True,
             )
         else:
             await query.answer(text="Error!", show_alert=True)
@@ -54,12 +55,14 @@ async def locale_button(client, query):
             InlineKeyboardButton("🇪🇸", callback_data="set_lang_es"),
             InlineKeyboardButton("🇩🇪", callback_data="set_lang_de"),
         ],
+        [InlineKeyboardButton("◀️", callback_data="language_back")],
     ]
-    await client.edit_message_text(
-        chat_id=Owner,
-        message_id=query.message.message_id,
-        text=text,
-        parse_mode="markdown",
-        reply_markup=InlineKeyboardMarkup(buttons),
-    )
-    await client.answer_callback_query(query.id)
+    try:
+        await query.message.edit(
+            text,
+            parse_mode="markdown",
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+        await query.answer()
+    except errors.exceptions.bad_request_400.MessageNotModified:
+        return
