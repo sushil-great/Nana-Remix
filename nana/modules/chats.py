@@ -2,7 +2,13 @@ import os
 
 from pyrogram import filters
 
-from nana import app, Command, DB_AVAILABLE, AdminSettings, edrep
+from nana import (
+    app,
+    COMMAND_PREFIXES,
+    DB_AVAILABLE,
+    AdminSettings,
+    edit_or_reply
+)
 
 if DB_AVAILABLE:
     from nana.modules.database.chats_db import update_chat, get_all_chats
@@ -11,15 +17,14 @@ MESSAGE_RECOUNTER = 0
 
 __MODULE__ = "Chats"
 __HELP__ = """
-This module is to manage your chats, when message was received from unknown chat, and that chat was not in database, then save that chat info to your database.
+This module is to manage your chats,
+when message was received from unknown chat,
+and that chat was not in database,
+then save that chat info to your database.
 
 ──「 **Export chats** 」──
 -> `chatlist`
 Send your chatlist to your saved messages.
-
-──「 **Message Delete** 」──
--> `del`
-Deletes a Message Replied with this command.
 """
 
 
@@ -35,10 +40,12 @@ async def updatemychats(_, message):
     MESSAGE_RECOUNTER += 1
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("chatlist", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("chatlist", COMMAND_PREFIXES)
+)
 async def get_chat(client, message):
     if not DB_AVAILABLE:
-        await edrep(message, text="Your database is not avaiable!")
+        await edit_or_reply(message, text="Your database is not avaiable!")
         return
     all_chats = get_all_chats()
     chatfile = "List of chats that I joined.\n"
@@ -59,5 +66,8 @@ async def get_chat(client, message):
         document="nana/cache/chatlist.txt",
         caption="Here is the chat list that I joined.",
     )
-    await edrep(message, text="My chat list exported to my saved messages.")
+    await edit_or_reply(
+        message,
+        text="My chat list exported to my saved messages."
+    )
     os.remove("nana/cache/chatlist.txt")

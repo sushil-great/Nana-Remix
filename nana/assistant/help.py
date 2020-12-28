@@ -9,14 +9,14 @@ from pyrogram.raw import functions
 from nana import (
     setbot,
     AdminSettings,
-    Command,
+    COMMAND_PREFIXES,
     DB_AVAILABLE,
     NANA_IMG,
     BotUsername,
     app,
     StartTime,
 )
-from nana.helpers.misc import paginate_modules
+from nana.utils.misc import paginate_modules
 from nana.modules.chats import get_msgc
 from nana.tr_engine.strings import tld
 
@@ -32,7 +32,11 @@ def get_readable_time(seconds: int) -> str:
     time_suffix_list = ["s", "m", "h", "days"]
     while count < 4:
         count += 1
-        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
+        remainder, result = divmod(
+            seconds, 60
+        ) if count < 3 else divmod(
+            seconds, 24
+        )
         if seconds == 0 and remainder == 0:
             break
         time_list.append(int(result))
@@ -48,9 +52,16 @@ def get_readable_time(seconds: int) -> str:
 
 async def help_parser(client, chat_id, text, keyboard=None):
     if not keyboard:
-        keyboard = InlineKeyboardMarkup(paginate_modules(0, HELP_COMMANDS, "help"))
+        keyboard = InlineKeyboardMarkup(
+            paginate_modules(0, HELP_COMMANDS, "help")
+        )
     if NANA_IMG:
-        await client.send_photo(chat_id, NANA_IMG, caption=text, reply_markup=keyboard)
+        await client.send_photo(
+            chat_id,
+            NANA_IMG,
+            caption=text,
+            reply_markup=keyboard
+        )
     else:
         await client.send_message(chat_id, text, reply_markup=keyboard)
 
@@ -59,15 +70,24 @@ async def help_parser(client, chat_id, text, keyboard=None):
 async def help_command(client, message):
     if message.chat.type != "private":
         buttons = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="Help", url=f"t.me/{BotUsername}?start=help")]]
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Help",
+                        url=f"t.me/{BotUsername}?start=help"
+                    )
+                ]
+            ]
         )
         await message.reply(
-            "**OWNER ONLY**\nContact me in PM to get the list of possible commands.",
+            "**OWNER ONLY**\nContact me in PM",
             reply_markup=buttons,
         )
         return
     await help_parser(
-        client, message.chat.id, tld("help_str").format(", ".join(Command))
+        client,
+        message.chat.id,
+        tld("help_str").format(", ".join(COMMAND_PREFIXES))
     )
 
 
@@ -95,13 +115,20 @@ async def help_button(_, query):
         await query.message.edit(
             text=text,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Back", callback_data="help_back")]]
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Back",
+                            callback_data="help_back"
+                        )
+                    ]
+                ]
             ),
         )
 
     elif back_match:
         await query.message.edit(
-            text=tld("help_str").format(", ".join(Command)),
+            text=tld("help_str").format(", ".join(COMMAND_PREFIXES)),
             reply_markup=InlineKeyboardMarkup(
                 paginate_modules(0, HELP_COMMANDS, "help")
             ),
@@ -120,11 +147,16 @@ async def stats(_, message):
         text += "<b>Notes:</b> `{} notes`\n".format(
             len(get_all_selfnotes(message.from_user.id) or "")
         )
-        text += "<b>Group joined:</b> `{} groups`\n".format(len(get_all_chats()))
+        text += "<b>Group joined:</b> `{} groups`\n".format(
+            len(get_all_chats())
+        )
     stk = await app.send(functions.messages.GetAllStickers(hash=0))
     all_sets = stk.sets
     count = sum(x.count for x in all_sets)
-    text += f"<b>Stickers Count:</b> <code>{count} across {len(all_sets)} sets</code>\n"
+    text += "<b>Stickers Count:</b> <code>{} across {} sets</code>\n".format(
+        count,
+        len(all_sets)
+    )
     text += "<b>Message received:</b> `{} messages`\n".format(get_msgc())
     uptime = get_readable_time((time.time() - StartTime))
     text += "<b>Nana uptime:</b> <code>{}</code>".format(uptime)

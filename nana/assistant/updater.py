@@ -23,7 +23,11 @@ async def gen_chlog(repo, diff):
     d_form = "%H:%M - %d/%m/%y"
     try:
         for cl in repo.iter_commits(diff):
-            changelog += f"• [{cl.committed_datetime.strftime(d_form)}]: {cl.summary} <{cl.author}>\n"
+            changelog += "• [{}]: {} <{}>\n".format(
+                cl.committed_datetime.strftime(d_form),
+                cl.summary,
+                cl.author
+            )
     except GitCommandError:
         changelog = None
     return changelog
@@ -46,7 +50,9 @@ async def update_checker():
         return
     except InvalidGitRepositoryError as error:
         log.warning(
-            f"Check update failed!\nDirectory {error} does not seems to be a git repository"
+            "Check update failed!\nDirectory {} Not a git repository".format(
+                error
+            )
         )
         return
     except GitCommandError as error:
@@ -75,9 +81,21 @@ async def update_checker():
     text = tld("updater_available_text").format(brname)
     text += f"**CHANGELOG:**\n`{changelog}`"
     button = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(tld("update_now_btn"), callback_data="update_now")]]
+        [
+            [
+                InlineKeyboardButton(
+                    tld("update_now_btn"),
+                    callback_data="update_now"
+                )
+            ]
+        ]
     )
-    await setbot.send_message(Owner, text, reply_markup=button, parse_mode="markdown")
+    await setbot.send_message(
+        Owner,
+        text,
+        reply_markup=button,
+        parse_mode="markdown"
+    )
 
 
 @setbot.on_callback_query(dynamic_data_filter("update_now"))
@@ -91,7 +109,9 @@ async def update_button(client, query):
         return
     except InvalidGitRepositoryError as error:
         log.warning(
-            f"Check update failed!\nDirectory {error} does not seems to be a git repository"
+            "Check update failed!\nDirectory {} Not a git repository".format(
+                error
+            )
         )
         return
     except GitCommandError as error:
@@ -117,7 +137,7 @@ async def update_button(client, query):
         repo.git.reset("--hard")
         repo.git.clean("-fd", "nana/modules/")
         repo.git.clean("-fd", "nana/assistant/")
-        repo.git.clean("-fd", "nana/helpers/")
+        repo.git.clean("-fd", "nana/utils/")
         await client.send_message(Owner, tld("update_successful_force"))
     await update_changelog(changelog)
     await restart_all()

@@ -7,7 +7,7 @@ import os
 import pycurl
 from pyrogram import filters
 
-from nana import app, Command, log, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, log, AdminSettings, edit_or_reply
 from .downloads import download_file_from_tg, name_file, humanbytes
 
 __MODULE__ = "Keep.sh"
@@ -16,30 +16,37 @@ Mirror any telegram file to keep.sh
 
 ──「 **Transfer telegram file** 」──
 -> `keepsh`
-Reply to telegram file for mirroring to keep.sh 
+Reply to telegram file for mirroring to keep.sh
 
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("keepsh", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("keepsh", COMMAND_PREFIXES)
+)
 async def tfsh(client, message):
     if not message.reply_to_message:
-        await edrep(message, text="`Reply to any file telegram message!`")
+        await edit_or_reply(
+            message,
+            text="`Reply to any file telegram message!`"
+        )
         return
-    await edrep(message, text="`Processing...`")
+    await edit_or_reply(message, text="`Processing...`")
     name = await name_file(client, message)
     await download_file_from_tg(client, message)
     name_file_upload = name[-10:] if len(name) > 10 else name
     name_file_upload.encode("ascii", "ignore")
     os.rename(
-        r"nana/downloads/{}".format(name), r"nana/downloads/{}".format(name_file_upload)
+        r"nana/downloads/{}".format(name),
+        r"nana/downloads/{}".format(name_file_upload)
     )
-    print(name_file_upload)
-    await edrep(
+    await edit_or_reply(
         message,
         text=await send_to_keepsh(
-            "nana/downloads/{}".format(name_file_upload), message, name_file_upload
+            "nana/downloads/{}".format(name_file_upload),
+            message, name_file_upload
         ),
+        disable_web_page_preview=True,
     )
     os.remove("nana/downloads/{}".format(name_file_upload))
     return
@@ -51,7 +58,7 @@ async def send_to_keepsh(file, message, name):
     final_date = get_date_in_two_weeks()
     file_name = os.path.basename(file)
 
-    await edrep(
+    await edit_or_reply(
         message,
         text="\nSending file: {} (size of the file: {})".format(
             file_name, size_of_file
@@ -71,7 +78,10 @@ async def send_to_keepsh(file, message, name):
             return "Unsupported file format!"
         c.close()
     f.close()
-    return "`Success!\nwill be saved till {}`\n{}".format(final_date, download_link)
+    return "`Success!\nwill be saved till {}`\n{}".format(
+        final_date,
+        download_link
+    )
 
 
 def get_size(file):

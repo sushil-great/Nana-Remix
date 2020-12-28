@@ -14,7 +14,10 @@ def escape_markdown(text):
 
 
 def mention_html(user_id, name):
-    return u'<a href="tg://user?id={}">{}</a>'.format(user_id, html.escape(name))
+    return u'<a href="tg://user?id={}">{}</a>'.format(
+        user_id,
+        html.escape(name)
+    )
 
 
 def mention_markdown(user_id, name):

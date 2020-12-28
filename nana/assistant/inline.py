@@ -12,8 +12,6 @@ from pyrogram.types import (
 
 from platform import python_version
 
-from twistdl import TwistDL
-
 from nana import (
     setbot,
     Owner,
@@ -24,10 +22,10 @@ from nana import (
     AdminSettings,
 )
 from nana.tr_engine.strings import tld
-from nana.helpers.msg_types import Types
-from nana.helpers.string import parse_button, build_keyboard
+from nana.utils.msg_types import Types
+from nana.utils.string import parse_button, build_keyboard
 from nana.modules.pm import welc_txt
-from nana.helpers.sauce import anime_sauce
+from nana.utils.sauce import anime_sauce
 from nana.modules.animelist import shorten
 from nana.modules.database import anime_db as sql
 from nana.modules.stylish import (
@@ -164,16 +162,29 @@ async def inline_query_handler(client, query):
             )
         )
         try:
-            await client.answer_inline_query(query.id, results=answers, cache_time=5)
+            await client.answer_inline_query(
+                query.id,
+                results=answers,
+                cache_time=5
+            )
         except errors.exceptions.bad_request_400.MessageEmpty:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log_errors = traceback.format_exception(
                 etype=exc_type, value=exc_obj, tb=exc_tb
             )
             button = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]]
+                [
+                    [
+                        InlineKeyboardButton(
+                            "🐞 Report bugs",
+                            callback_data="report_errors"
+                        )
+                    ]
+                ]
             )
-            text = "An error has accured!\n\n```{}```\n".format("".join(log_errors))
+            text = "An error has accured!\n\n```{}```\n".format(
+                "".join(log_errors)
+            )
             await setbot.send_message(Owner, text, reply_markup=button)
             return
 
@@ -274,7 +285,9 @@ async def inline_query_handler(client, query):
             InlineQueryResultArticle(
                 title=bubblesblack_text,
                 description="Bubbles Black Text",
-                input_message_content=InputTextMessageContent(bubblesblack_text),
+                input_message_content=InputTextMessageContent(
+                    bubblesblack_text
+                ),
             )
         )
         smoth_text = formatting_text_inline(text, smothtext)
@@ -307,7 +320,9 @@ async def inline_query_handler(client, query):
             InlineQueryResultArticle(
                 title=handwriting_text,
                 description="Handwriting Text",
-                input_message_content=InputTextMessageContent(handwriting_text),
+                input_message_content=InputTextMessageContent(
+                    handwriting_text
+                ),
             )
         )
         handwritingb_text = formatting_text_inline(text, handwritingb)
@@ -315,26 +330,33 @@ async def inline_query_handler(client, query):
             InlineQueryResultArticle(
                 title=handwritingb_text,
                 description="Handwriting Bold Text",
-                input_message_content=InputTextMessageContent(handwritingb_text),
+                input_message_content=InputTextMessageContent(
+                    handwritingb_text
+                ),
             )
         )
-        await client.answer_inline_query(
-            query.id,
-            results=answers,
-            switch_pm_text="Converted to stylish text",
-            switch_pm_parameter="help_inline",
-        )
-
     # PM_PERMIT
     elif string.split()[0] == "engine_pm":
         button = [
             [
-                InlineKeyboardButton("Ask for Money", callback_data="engine_pm_block"),
-                InlineKeyboardButton("Contact me", callback_data="engine_pm_nope"),
+                InlineKeyboardButton(
+                    "Ask for Money",
+                    callback_data="engine_pm_block"
+                ),
+                InlineKeyboardButton(
+                    "Contact me",
+                    callback_data="engine_pm_nope"
+                ),
             ],
             [
-                InlineKeyboardButton("Report", callback_data="engine_pm_report"),
-                InlineKeyboardButton("Passing by", callback_data="engine_pm_none"),
+                InlineKeyboardButton(
+                    "Report",
+                    callback_data="engine_pm_report"
+                ),
+                InlineKeyboardButton(
+                    "Passing by",
+                    callback_data="engine_pm_none"
+                ),
             ],
         ]
         random.shuffle(button)
@@ -348,16 +370,16 @@ async def inline_query_handler(client, query):
                 reply_markup=InlineKeyboardMarkup(button),
             )
         )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
-
     elif string.split()[0] == "speedtest":
         buttons = [
             [
                 InlineKeyboardButton(
-                    tld("speed_test_button_image"), callback_data="speedtest_image"
+                    tld("speed_test_button_image"),
+                    callback_data="speedtest_image"
                 ),
                 InlineKeyboardButton(
-                    tld("speed_test_button_text"), callback_data="speedtest_text"
+                    tld("speed_test_button_text"),
+                    callback_data="speedtest_text"
                 ),
             ]
         ]
@@ -371,7 +393,6 @@ async def inline_query_handler(client, query):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
     elif string.split()[0] == "alive":
         try:
             me = await app.get_me()
@@ -381,7 +402,13 @@ async def inline_query_handler(client, query):
             nana_stats = "stopped"
         else:
             nana_stats = "alive"
-        buttons = [[InlineKeyboardButton("stats", callback_data="alive_message")]]
+        buttons = [
+            [
+                InlineKeyboardButton(
+                    "stats",
+                    callback_data="alive_message")
+            ]
+        ]
         answers.append(
             InlineQueryResultArticle(
                 title="Alive",
@@ -400,7 +427,6 @@ async def inline_query_handler(client, query):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
     elif string.split()[0] == "anime":
         if len(string.split()) == 1:
             await client.answer_inline_query(
@@ -410,9 +436,28 @@ async def inline_query_handler(client, query):
                 switch_pm_parameter="help_inline",
             )
             return
-        json = (await anime_sauce(string.split(None, 1)[1]))["data"].get("Media", None)
+        json = (
+            await anime_sauce(
+                string.split(None, 1)[1]
+            )
+        )["data"].get("Media", None)
         if json:
-            msg = f"**{json['title']['romaji']}** (`{json['title']['native']}`)\n**Type**: {json['format']}\n**Status**: {json['status']}\n**Episodes**: {json.get('episodes', 'N/A')}\n**Duration**: {json.get('duration', 'N/A')} Per Ep.\n**Score**: {json['averageScore']}\n**Genres**: `"
+            msg = (
+                "**{}** (`{}`)\n"
+                "**Type**: {}\n"
+                "**Status**: {}\n"
+                "**Episodes**: {}\n"
+                "**Duration**: {}"
+                "Per Ep.\n**Score**: {}\n**Genres**: `"
+            ).format(
+                json['title']['romaji'],
+                json['title']['native'],
+                json['format'],
+                json['status'],
+                json.get('episodes', 'N/A'),
+                json.get('duration', 'N/A'),
+                json['averageScore']
+            )
             for x in json["genres"]:
                 msg += f"{x}, "
             msg = msg[:-2] + "`\n"
@@ -475,12 +520,13 @@ async def inline_query_handler(client, query):
                         title=f"{json['title']['romaji']}",
                         description=f"{json['averageScore']}",
                         input_message_content=InputTextMessageContent(
-                            msg, parse_mode="markdown", disable_web_page_preview=True
+                            msg,
+                            parse_mode="markdown",
+                            disable_web_page_preview=True
                         ),
                         reply_markup=InlineKeyboardMarkup(buttons),
                     )
                 )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
 
     elif string.split()[0] == "favourite":
         fav = sql.get_fav(Owner)
@@ -515,38 +561,9 @@ async def inline_query_handler(client, query):
                     ),
                 )
             )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
-    elif string.split()[0] == "watch":
-        if len(string.split()) == 1:
-            await client.answer_inline_query(
-                query.id,
-                results=answers,
-                switch_pm_text="Search for an Anime to Watch",
-                switch_pm_parameter="help_inline",
-            )
-            return
-        c = TwistDL()
-        animes = c.search_animes(title=string.split(None, 1)[1])
-        buttons = []
-        for anime in animes:
-            for episode in anime.episodes:
-                buttons.append(
-                    [
-                        InlineKeyboardButton(
-                            f"Episode - {episode.number}",
-                            url=f"https://twist.moe/a/{anime.slug.slug}/{episode.number}",
-                        )
-                    ]
-                )
-            answers.append(
-                InlineQueryResultPhoto(
-                    photo_url=f"https://media.kitsu.io/anime/poster_images/{anime.hb_id}/large.jpg",
-                    caption=f"**Title:** {anime.title}\n **Episodes:**",
-                    title=f"{anime.title}",
-                    description=f"{len(buttons)} Episodes",
-                    reply_markup=InlineKeyboardMarkup(buttons),
-                    thumb_url=f"https://media.kitsu.io/anime/poster_images/{anime.hb_id}/small.jpg",
-                )
-            )
-        await client.answer_inline_query(query.id, results=answers, cache_time=0)
-        return
+    await client.answer_inline_query(
+        query.id,
+        results=answers,
+        cache_time=0
+    )
+    return

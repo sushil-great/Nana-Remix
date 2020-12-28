@@ -10,9 +10,9 @@ from random import randint
 
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings, edrep
-from nana.helpers.PyroHelpers import ReplyCheck
-from nana.helpers.aiohttp_helper import AioHttp
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from nana.utils.Pyroutils import ReplyCheck
+from nana.utils.aiohttp_helper import AioHttp
 
 __MODULE__ = "Github"
 __HELP__ = """
@@ -25,17 +25,23 @@ Finding information about a github user.
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("git", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("git", COMMAND_PREFIXES)
+)
 async def github(client, message):
     if len(message.text.split()) == 1:
-        await edrep(message, text="Usage: `git (username)`")
+        await edit_or_reply(message, text="Usage: `git (username)`")
         return
     username = message.text.split(None, 1)[1]
     URL = f"https://api.github.com/users/{username}"
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as request:
             if request.status == 404:
-                return await edrep(message, text="`" + username + " not found`")
+                return await edit_or_reply(
+                    message,
+                    text="`" + username + " not found`"
+                )
 
             result = await request.json()
 
@@ -44,12 +50,20 @@ async def github(client, message):
             company = result.get("company", None)
             bio = result.get("bio", None)
             created_at = result.get("created_at", "Not Found")
-
+            repo_url = f"https://github.com/{username}?tab=repositories"
             REPLY = (
-                f"**GitHub Info for {name}**"
-                f"\n**Username:** `{username}`\n**Bio:** `{bio}`\n**Profile Link:** [Link]({url})"
-                f"\n**Company:** `{company}`\n**Created at:** `{created_at}`"
-                f"\n**Repository:** [Link](https://github.com/{username}?tab=repositories)"
+                "**GitHub Info for {}**"
+                "\n**Username:** `{}`\n**Bio:** `{}`\n**Profile:** [Link]({})"
+                "\n**Company:** `{}`\n**Created at:** `{}`"
+                "\n**Repository:** [Link]({})"
+            ).format(
+                name,
+                username,
+                bio,
+                url,
+                company,
+                created_at,
+                repo_url
             )
         url = f"https://ghchart.rshah.org/{username}"
         file_name = f"{randint(1, 999)}{username}"
@@ -62,7 +76,7 @@ async def github(client, message):
             drawing = svg2rlg(f"{file_name}.svg")
             renderPM.drawToFile(drawing, f"{file_name}.png")
         except UnboundLocalError:
-            await edrep(message, text="Username does not exist!")
+            await edit_or_reply(message, text="Username does not exist!")
             await sleep(2)
             await message.delete()
             return

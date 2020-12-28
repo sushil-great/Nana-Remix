@@ -11,8 +11,8 @@ import asyncio
 
 from pyrogram import filters
 
-from nana import app, Command, logging, AdminSettings, edrep
-from nana.helpers.PyroHelpers import ReplyCheck
+from nana import app, COMMAND_PREFIXES, logging, AdminSettings, edit_or_reply
+from nana.utils.Pyroutils import ReplyCheck
 
 __MODULE__ = "Reverse"
 __HELP__ = """
@@ -47,21 +47,34 @@ async def run_cmd(cmd: str) -> Tuple[str, str, int, int]:
         process.pid,
     )
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0"
+}
+
 
 async def take_screen_shot(
     video_file: str, duration: int, path: str = ""
 ) -> Optional[str]:
     """take a screenshot."""
     ttl = duration // 2
-    thumb_image_path = path or os.path.join(screen_shot, f"{basename(video_file)}.jpg")
-    command = f"ffmpeg -ss {ttl} -i '{video_file}' -vframes 1 '{thumb_image_path}'"
+    thumb_image_path = path or os.path.join(
+        screen_shot,
+        f"{basename(video_file)}.jpg"
+    )
+    command = "ffmpeg -ss {} -i '{}' -vframes 1 '{}'".format(
+        ttl,
+        video_file,
+        thumb_image_path
+    )
     err = (await run_cmd(command))[1]
     if err:
         _LOG.error(err)
     return thumb_image_path if os.path.exists(thumb_image_path) else None
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("reverse", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("reverse", COMMAND_PREFIXES)
+)
 async def google_rs(client, message):
     start = datetime.now()
     dis_loc = ""
@@ -72,14 +85,19 @@ async def google_rs(client, message):
             await message.delete()
             return
         if message_.photo or message_.animation or message_.sticker:
-            dis = await client.download_media(message=message_, file_name=screen_shot)
+            dis = await client.download_media(
+                message=message_,
+                file_name=screen_shot
+            )
             dis_loc = os.path.join(screen_shot, os.path.basename(dis))
         if message_.animation or message_.video:
-            await edrep(message, text="`Converting this Gif`")
+            await edit_or_reply(message, text="`Converting this Gif`")
             img_file = os.path.join(screen_shot, "grs.jpg")
             await take_screen_shot(dis_loc, 0, img_file)
             if not os.path.lexists(img_file):
-                await edrep(message, text="`Something went wrong in Conversion`")
+                await edit_or_reply(
+                    message, text="`Something went wrong in Conversion`"
+                )
                 await asyncio.sleep(5)
                 await message.delete()
                 return
@@ -99,9 +117,6 @@ async def google_rs(client, message):
         else:
             await message.delete()
             return
-        headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0"
-        }
         response = requests.get(the_location, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         prs_div = soup.find_all("div", {"class": "r5a77d"})[0]
@@ -114,10 +129,15 @@ async def google_rs(client, message):
 <b>Possible Related Search</b>: <a href="{prs_url}">{prs_text}</a>
 <b>More Info</b>: Open this <a href="{the_location}">Link</a>
 """
-    await edrep(message, text=out_str, parse_mode="HTML", disable_web_page_preview=True)
+    await edit_or_reply(
+        message, text=out_str, parse_mode="HTML", disable_web_page_preview=True
+    )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("areverse", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("areverse", COMMAND_PREFIXES)
+)
 async def tracemoe_rs(client, message):
     dis_loc = ""
     if message.reply_to_message:
@@ -125,15 +145,24 @@ async def tracemoe_rs(client, message):
         if message_.sticker and message_.sticker.file_name.endswith(".tgs"):
             await message.delete()
             return
-        if message_.photo or message_.animation or message_.sticker:
-            dis = await client.download_media(message=message_, file_name=screen_shot)
+        if (
+            message_.photo
+            or message_.animation
+            or message_.sticker
+        ):
+            dis = await client.download_media(
+                message=message_,
+                file_name=screen_shot
+            )
             dis_loc = os.path.join(screen_shot, os.path.basename(dis))
         if message_.animation:
-            await edrep(message, text="`Converting this Gif`")
+            await edit_or_reply(message, text="`Converting this Gif`")
             img_file = os.path.join(screen_shot, "grs.jpg")
             await take_screen_shot(dis_loc, 0, img_file)
             if not os.path.lexists(img_file):
-                await edrep(message, text="`Something went wrong in Conversion`")
+                await edit_or_reply(
+                    message, text="`Something went wrong in Conversion`"
+                )
                 await asyncio.sleep(5)
                 await message.delete()
                 return
@@ -144,13 +173,16 @@ async def tracemoe_rs(client, message):
                 message.reply_to_message.video.file_size,
             )
             await client.download_media(
-                message.reply_to_message.video, file_name="nana/downloads/" + nama
+                message.reply_to_message.video,
+                file_name="nana/downloads/" + nama
             )
             dis_loc = "nana/downloads/" + nama
             img_file = os.path.join(screen_shot, "grs.jpg")
             await take_screen_shot(dis_loc, 0, img_file)
             if not os.path.lexists(img_file):
-                await edrep(message, text="`Something went wrong in Conversion`")
+                await edit_or_reply(
+                    message, text="`Something went wrong in Conversion`"
+                )
                 await asyncio.sleep(5)
                 await message.delete()
                 return
@@ -185,7 +217,7 @@ async def tracemoe_rs(client, message):
             await message.delete()
             return
     else:
-        await edrep(message, text="`Reply to a message to proceed`")
+        await edit_or_reply(message, text="`Reply to a message to proceed`")
         await asyncio.sleep(5)
         await message.delete()
         return

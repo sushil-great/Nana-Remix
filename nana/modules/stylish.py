@@ -3,28 +3,36 @@ from html import escape
 
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 __MODULE__ = "Stylish Text"
 __HELP__ = """
 Convert your text to stylish text!
 
-Use this custom format: [Click here to Read](https://telegra.ph/Nana-Remix-Stylish-Text-Helper-07-17)
+Use this custom format:
+[Read](https://telegra.ph/Nana-Remix-Stylish-Text-Helper-07-17)
 
 ──「 **Stylish Generator** 」──
--> `stylish Your text here <upside>with</upside> <strike>formatted</strike> <unline>style</unline>`
+-> `stylish Your text here <upside>with</upside> <unline>style</unline>`
 Stylish your text easily, can be used as caption and text.
 
 Example:
-Input = `stylish Your text here <upside>with</upside> <strike>formatted</strike> <unline>style</unline>`
-Output = `Your text here ɥʇ!ʍ f̶o̶r̶m̶a̶t̶t̶e̶d̶ s̲t̲y̲l̲e̲`
+Input:
+`stylish Your text here <upside>with</upside>
+<strike>formatted</strike>
+<unline>style</unline>`
+
+Output:
+Your text here ɥʇ!ʍ
+f̶o̶r̶m̶a̶t̶t̶e̶d̶
+s̲t̲y̲l̲e̲
 """.replace(
     "<", escape("<")
 ).replace(
     ">", escape(">")
 )
 
-upsidedown_dict = {
+ud_dict = {
     "a": "ɐ",
     "b": "q",
     "c": "ɔ",
@@ -118,9 +126,7 @@ def text_style_generator(text, text_type):
     teks = list(text)
     for i, _ in enumerate(teks):
         teks[i] = text_type + teks[i]
-    pesan = ""
-    for tek in teks:
-        pesan += tek
+    pesan = "".join(teks)
     return pesan + text_type
 
 
@@ -131,7 +137,7 @@ def stylish_formatting(text):
     for x in src_code:
         line = x.strip("\r\n")
         xline = "".join(
-            upsidedown_dict[c] if c in upsidedown_dict else c for c in line[::-1]
+            ud_dict[c] if c in ud_dict else c for c in line[::-1]
         )
         text = re.sub(r"<upside>(.*?)</upside>", xline, text, 1)
 
@@ -240,7 +246,9 @@ def stylish_formatting(text):
     return text
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("stylish", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("stylish", COMMAND_PREFIXES)
+)
 async def stylish_generator(_, message):
     if (
         message.text
@@ -248,7 +256,10 @@ async def stylish_generator(_, message):
         or message.caption
         and len(message.caption.split()) == 1
     ):
-        await edrep(message, text="Usage: `stylish your text goes here`")
+        await edit_or_reply(
+            message,
+            text="Usage: `stylish your text goes here`"
+        )
         return
 
     if message.caption:
@@ -261,7 +272,7 @@ async def stylish_generator(_, message):
     if message.caption:
         await message.edit_caption(text)
     else:
-        await edrep(message, text=text)
+        await edit_or_reply(message, text=text)
 
 
 # For inline stuff
@@ -273,6 +284,6 @@ def formatting_text_inline(text, text_style):
 def upsidedown_text_inline(text):
     line = text.strip("\r\n")
     text = "".join(
-        upsidedown_dict[c] if c in upsidedown_dict else c for c in line[::-1]
+        ud_dict[c] if c in ud_dict else c for c in line[::-1]
     )
     return text

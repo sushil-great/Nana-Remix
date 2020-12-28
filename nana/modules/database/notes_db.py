@@ -3,7 +3,7 @@ import threading
 from sqlalchemy import Column, UnicodeText, Integer
 
 from nana import BASE, SESSION
-from nana.helpers.msg_types import Types
+from nana.utils.msg_types import Types
 
 
 class SelfNotes(BASE):
@@ -54,7 +54,13 @@ def save_selfnote(user_id, note_name, note_data, msgtype, file=None):
         prev = SESSION.query(SelfNotes).get((user_id, note_name))
         if prev:
             SESSION.delete(prev)
-        note = SelfNotes(user_id, note_name, note_data, msgtype=int(msgtype), file=file)
+        note = SelfNotes(
+            user_id,
+            note_name,
+            note_data,
+            msgtype=int(msgtype),
+            file=file
+        )
         SESSION.add(note)
         SESSION.commit()
 

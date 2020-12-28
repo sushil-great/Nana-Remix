@@ -55,14 +55,22 @@ async def reboot():
     # Nana userbot
     for modul in ALL_MODULES:
         imported_module = importlib.import_module("nana.modules." + modul)
-        if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+        if hasattr(
+            imported_module,
+            "__MODULE__"
+        ) and imported_module.__MODULE__:
             imported_module.__MODULE__ = imported_module.__MODULE__
-        if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+        if hasattr(
+            imported_module,
+            "__MODULE__"
+        ) and imported_module.__MODULE__:
             if imported_module.__MODULE__.lower() not in HELP_COMMANDS:
-                HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
+                HELP_COMMANDS[
+                    imported_module.__MODULE__.lower()
+                ] = imported_module
             else:
                 raise Exception(
-                    "Can't have two modules with the same name! Please change one"
+                    "Can't have two modules with the same name!"
                 )
         if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
             HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
@@ -88,11 +96,18 @@ async def except_hook(errtype, value, tback):
     sys.__excepthook__(errtype, value, tback)
     errors = traceback.format_exception(etype=errtype, value=value, tb=tback)
     button = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🐞 Report bugs", callback_data="report_errors")]]
+        [
+            [
+                InlineKeyboardButton(
+                    "🐞 Report bugs",
+                    callback_data="report_errors"
+                )
+            ]
+        ]
     )
     text = "An error has accured!\n\n```{}```\n".format("".join(errors))
     if errtype == ModuleNotFoundError:
-        text += "\nHint: Try this in your terminal `pip install -r requirements.txt`"
+        text += "\nHint: `pip install -r requirements.txt`"
     await setbot.send_message(Owner, text, reply_markup=button)
 
 
@@ -118,14 +133,22 @@ async def start_bot():
     await app.start()
     for modul in ALL_MODULES:
         imported_module = importlib.import_module("nana.modules." + modul)
-        if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+        if hasattr(
+            imported_module,
+            "__MODULE__"
+        ) and imported_module.__MODULE__:
             imported_module.__MODULE__ = imported_module.__MODULE__
-        if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+        if hasattr(
+            imported_module,
+            "__MODULE__"
+        ) and imported_module.__MODULE__:
             if imported_module.__MODULE__.lower() not in HELP_COMMANDS:
-                HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
+                HELP_COMMANDS[
+                    imported_module.__MODULE__.lower()
+                ] = imported_module
             else:
                 raise Exception(
-                    "Can't have two modules with the same name! Please change one"
+                    "Can't have two modules with the same name!"
                 )
         if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
             HELP_COMMANDS[imported_module.__MODULE__.lower()] = imported_module
@@ -147,16 +170,16 @@ async def start_bot():
         else:
             assistant_modules += "|{:<15}".format(i)
         j += 1
-    print("+===============================================================+")
-    print("|                      Userbot Modules                          |")
-    print("+===============+===============+===============+===============+")
+    print("+=============================================================+")
+    print("|                     Userbot Modules                         |")
+    print("+=============+===============+===============+===============+")
     print(userbot_modules)
-    print("+===============+===============+===============+===============+\n")
-    print("+===============================================================+")
-    print("|                    Assistant Modules                          |")
-    print("+===============+===============+===============+===============+")
+    print("+=============+===============+===============+===============+\n")
+    print("+=============================================================+")
+    print("|                   Assistant Modules                         |")
+    print("+=============+===============+===============+===============+")
     print(assistant_modules)
-    print("+===============+===============+===============+===============+")
+    print("+===============+=============+===============+===============+")
     print("Bot run successfully!")
     if TEST_DEVELOP:
         log.warning("Test is passed!")

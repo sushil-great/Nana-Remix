@@ -1,7 +1,7 @@
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings
-from nana.helpers.PyroHelpers import ReplyCheck
+from nana import app, COMMAND_PREFIXES, AdminSettings
+from nana.utils.Pyroutils import ReplyCheck
 
 __HELP__ = """
 ──「 **LastFM** 」──
@@ -15,7 +15,8 @@ __MODULE__ = "Last.FM"
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command(["lastfm", "lf"], Command)
+    filters.user(AdminSettings) &
+    filters.command(["lastfm", "lf"], COMMAND_PREFIXES)
 )
 async def lastfm(client, message):
     x = await client.get_inline_bot_results("lastfmrobot", "")

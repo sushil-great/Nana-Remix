@@ -1,7 +1,7 @@
 import os
 import requests
 from pyrogram import filters
-from nana import app, Command, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 
 __MODULE__ = "OCR"
@@ -35,7 +35,10 @@ async def ocr_space_file(
     return r.json()
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("ocr", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("ocr", COMMAND_PREFIXES)
+)
 async def ocr(client, message):
     cmd = message.command
     lang_code = ""
@@ -63,16 +66,22 @@ async def ocr(client, message):
         reply_p = replied.photo
     elif replied.sticker:
         reply_p = replied.sticker
-    downloaded_file_name = await client.download_media(reply_p, "nana/cache/file.png")
-    test_file = await ocr_space_file(filename=downloaded_file_name, language=lang_code)
+    downloaded_file_name = await client.download_media(
+        reply_p,
+        "nana/cache/file.png"
+    )
+    test_file = await ocr_space_file(
+        filename=downloaded_file_name,
+        language=lang_code
+    )
     try:
         ParsedText = test_file["ParsedResults"][0]["ParsedText"]
     except BaseException as e:
-        await edrep(message, text=e)
+        await edit_or_reply(message, text=e)
     else:
         if ParsedText == "ParsedResults":
             await message.delete()
             return
         else:
-            await edrep(message, text=f"`{ParsedText}`")
+            await edit_or_reply(message, text=f"`{ParsedText}`")
     os.remove(downloaded_file_name)

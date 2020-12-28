@@ -2,7 +2,7 @@ import asyncio
 
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 
 __MODULE__ = "Deezer"
@@ -15,7 +15,9 @@ Search a track on Deezer and send into a chat
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("music", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("music", COMMAND_PREFIXES)
+)
 async def send_music(client, message):
     try:
         cmd = message.command
@@ -24,15 +26,19 @@ async def send_music(client, message):
             song_name = " ".join(cmd[1:])
         elif message.reply_to_message and len(cmd) == 1:
             song_name = (
-                message.reply_to_message.text or message.reply_to_message.caption
+                message.reply_to_message.text
+                or message.reply_to_message.caption
             )
         elif len(cmd) == 1:
-            await edrep(message, text="Give a song name")
+            await edit_or_reply(message, text="Give a song name")
             await asyncio.sleep(2)
             await message.delete()
             return
 
-        song_results = await client.get_inline_bot_results("deezermusicbot", song_name)
+        song_results = await client.get_inline_bot_results(
+            "deezermusicbot",
+            song_name
+        )
 
         try:
             # send to Saved Messages because hide_via doesn't work sometimes
@@ -44,7 +50,10 @@ async def send_music(client, message):
             )
 
             # forward as a new message from Saved Messages
-            saved = await client.get_messages("me", int(saved.updates[1].message.id))
+            saved = await client.get_messages(
+                "me",
+                int(saved.updates[1].message.id)
+            )
             reply_to = (
                 message.reply_to_message.message_id
                 if message.reply_to_message
@@ -59,11 +68,11 @@ async def send_music(client, message):
             # delete the message from Saved Messages
             await client.delete_messages("me", saved.message_id)
         except TimeoutError:
-            await edrep(message, text="That didn't work out")
+            await edit_or_reply(message, text="That didn't work out")
             await asyncio.sleep(2)
         await message.delete()
     except Exception as e:
         print(e)
-        await edrep(message, text="`Failed to find song`")
+        await edit_or_reply(message, text="`Failed to find song`")
         await asyncio.sleep(2)
         await message.delete()

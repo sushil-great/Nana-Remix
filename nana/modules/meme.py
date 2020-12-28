@@ -9,12 +9,13 @@ from pyrogram import filters
 from pyrogram.raw import functions
 
 import nana.modules.meme_strings as meme_strings
-from nana.helpers.PyroHelpers import ReplyCheck
-from nana import app, Command, AdminSettings, edrep
+from nana.utils.Pyroutils import ReplyCheck
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 __MODULE__ = "Memes"
 __HELP__ = """
-This module can help you for generate memes and style text, just take a look and try in here!
+This module can help you for generate memes and style text,
+just take a look and try in here!
 
 ──「 **Stretch Text** 」──
 -> `str`
@@ -28,7 +29,13 @@ __add randoms emoji to text.__
 -> `scam <action>`
 __chat input action.__
 
-**scame types**: '`typing`', '`upload_photo`', '`record_video`', '`upload_video`', '`record_audio`', '`upload_audio`', '`upload_document`', '`find_location`', '`record_video_note`', '`upload_video_note`', '`playing`'
+**scame types**:
+`typing` `upload_photo`
+`record_video` `upload_video`
+`record_audio` `upload_audio`
+`upload_document` `find_location`
+`record_video_note` `upload_video_note`
+`playing`
 
 ──「 **Mock text** 」──
 -> `mocktxt`
@@ -67,19 +74,22 @@ async def mocking_text(text):
     teks = list(text)
     for i, ele in enumerate(teks):
         teks[i] = ele.upper() if i % 2 != 0 else ele.lower()
-    pesan = ""
-    for tek in teks:
-        pesan += tek
-    return pesan
+    return "".join(teks)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("pat", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("pat", COMMAND_PREFIXES)
+)
 async def pat(client, message):
     async with aiohttp.ClientSession() as session:
         URL = "https://some-random-api.ml/animu/pat"
         async with session.get(URL) as request:
             if request.status == 404:
-                return await edrep(message, text="**no Pats for u :c**")
+                return await edit_or_reply(
+                    message,
+                    text="**no Pats for u :c**"
+                )
             result = await request.json()
             url = result.get("link", None)
             await message.delete()
@@ -88,13 +98,17 @@ async def pat(client, message):
             )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("scam", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("scam", COMMAND_PREFIXES)
+)
 async def scam(client, message):
     input_str = message.command
-    if len(input_str) == 1:  # Let bot decide action and time
+    if len(input_str) == 1:
         scam_action = random.choice(meme_strings.options)
         scam_time = random.randint(30, 60)
-    elif len(input_str) == 2:  # User decides time/action, bot decides the other.
+    # User decides time/action, bot decides the other.
+    elif len(input_str) == 2:
         try:
             scam_action = str(input_str[1]).lower()
             scam_time = random.randint(30, 60)
@@ -105,7 +119,7 @@ async def scam(client, message):
         scam_action = str(input_str[1]).lower()
         scam_time = int(input_str[2])
     else:
-        await edrep(message, text="**Invalid Syntax!**")
+        await edit_or_reply(message, text="**Invalid Syntax!**")
         return
     try:
         if scam_time > 0:
@@ -120,12 +134,18 @@ async def scam(client, message):
         return
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("shg", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("shg", COMMAND_PREFIXES)
+)
 async def shg(_, message):
-    await edrep(message, text=random.choice(meme_strings.shgs))
+    await edit_or_reply(message, text=random.choice(meme_strings.shgs))
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("spam", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("spam", COMMAND_PREFIXES)
+)
 async def spam(client, message):
     await message.delete()
     times = message.command[1]
@@ -133,7 +153,9 @@ async def spam(client, message):
     if message.chat.type in ["supergroup", "group"]:
         for _ in range(int(times)):
             await client.send_message(
-                message.chat.id, to_spam, reply_to_message_id=ReplyCheck(message)
+                message.chat.id,
+                to_spam,
+                reply_to_message_id=ReplyCheck(message)
             )
             await asyncio.sleep(0.20)
 
@@ -143,13 +165,19 @@ async def spam(client, message):
             await asyncio.sleep(0.20)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("spamstk", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("spamstk", COMMAND_PREFIXES)
+)
 async def spam_stick(client, message):
     if not message.reply_to_message:
-        await edrep(message, text="**reply to a sticker with amount you want to spam**")
+        await edit_or_reply(
+            message, text="**reply to a sticker with amount you want to spam**"
+        )
         return
     if not message.reply_to_message.sticker:
-        await edrep(message, text="**reply to a sticker with amount you want to spam**")
+        await edit_or_reply(
+            message, text="**reply to a sticker with amount you want to spam**"
+        )
         return
     else:
         times = message.command[1]
@@ -165,12 +193,16 @@ async def spam_stick(client, message):
         if message.chat.type == "private":
             for _ in range(int(times)):
                 await client.send_message(
-                    message.chat.id, sticker=message.reply_to_message.sticker.file_id
+                    message.chat.id,
+                    sticker=message.reply_to_message.sticker.file_id
                 )
                 await asyncio.sleep(0.20)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("owo", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("owo", COMMAND_PREFIXES)
+)
 async def owo(_, message):
     cmd = message.command
     text = ""
@@ -179,7 +211,7 @@ async def owo(_, message):
     elif message.reply_to_message and len(cmd) == 1:
         text = message.reply_to_message.text
     elif len(cmd) == 1:
-        await edrep(message, text="**cant uwu the void.**")
+        await edit_or_reply(message, text="**cant uwu the void.**")
         await asyncio.sleep(2)
         await message.delete()
         return
@@ -192,15 +224,24 @@ async def owo(_, message):
     reply_text = re.sub(r"ｎ([ａｅｉｏｕ])", r"ｎｙ\1", reply_text)
     reply_text = re.sub(r"N([aeiouAEIOU])", r"Ny\1", reply_text)
     reply_text = re.sub(r"Ｎ([ａｅｉｏｕＡＥＩＯＵ])", r"Ｎｙ\1", reply_text)
-    reply_text = re.sub(r"\!+", " " + random.choice(meme_strings.faces), reply_text)
-    reply_text = re.sub(r"！+", " " + random.choice(meme_strings.faces), reply_text)
+    reply_text = re.sub(
+        r"\!+", " " + random.choice(meme_strings.faces),
+        reply_text
+    )
+    reply_text = re.sub(
+        r"！+", " " + random.choice(meme_strings.faces),
+        reply_text
+    )
     reply_text = reply_text.replace("ove", "uv")
     reply_text = reply_text.replace("ｏｖｅ", "ｕｖ")
     reply_text += " " + random.choice(meme_strings.faces)
-    await edrep(message, text=reply_text)
+    await edit_or_reply(message, text=reply_text)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("str", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("str", COMMAND_PREFIXES)
+)
 async def stretch(_, message):
     cmd = message.command
     stretch_text = ""
@@ -209,7 +250,10 @@ async def stretch(_, message):
     elif message.reply_to_message and len(cmd) == 1:
         stretch_text = message.reply_to_message.text
     elif len(cmd) == 1:
-        await edrep(message, text="`Giiiiiiiv sooooooomeeeeeee teeeeeeext!`")
+        await edit_or_reply(
+            message,
+            text="`Giiiiiiiv sooooooomeeeeeee teeeeeeext!`"
+        )
         await asyncio.sleep(2)
         await message.delete()
         return
@@ -217,10 +261,13 @@ async def stretch(_, message):
     reply_text = re.sub(
         r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count), stretch_text
     )
-    await edrep(message, text=reply_text)
+    await edit_or_reply(message, text=reply_text)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("cp", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("cp", COMMAND_PREFIXES)
+)
 async def haha_emojis(_, message):
     if not message.reply_to_message.message_id:
         return
@@ -237,24 +284,31 @@ async def haha_emojis(_, message):
         elif c.lower() == b_char:
             reply_text += "🅱️"
         else:
-            reply_text += c.upper() if bool(random.getrandbits(1)) else c.lower()
+            reply_text += c.upper() if bool(
+                random.getrandbits(1)
+            ) else c.lower()
     reply_text += random.choice(meme_strings.emojis)
-    await edrep(message, text=reply_text)
+    await edit_or_reply(message, text=reply_text)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("mocktxt", Command))
-async def mock_text(client, message):
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("mocktxt", COMMAND_PREFIXES)
+)
+async def mock_text(_, message):
     if message.reply_to_message:
         teks = message.reply_to_message.text
         if teks is None:
             teks = message.reply_to_message.caption
         if teks is None:
             return
-        pesan = await mocking_text(teks)
-        await client.edit_message_text(message.chat.id, message.message_id, pesan)
+        await message.edit((await mocking_text(teks)))
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("fakess", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("fakess", COMMAND_PREFIXES)
+)
 async def fake_ss(client, message):
     await asyncio.gather(
         message.delete(),
@@ -268,7 +322,10 @@ async def fake_ss(client, message):
     )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("g", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("g", COMMAND_PREFIXES)
+)
 async def glitch(client, message):
     cmd = message.command
     amount = ""
@@ -283,7 +340,10 @@ async def glitch(client, message):
         await message.delete()
         return
     user = await client.get_users(replied.from_user.id)
-    await client.download_media(user.photo.big_file_id, file_name=profile_photo)
+    await client.download_media(
+        user.photo.big_file_id,
+        file_name=profile_photo
+    )
     subprocess.run(
         ["glitch_this", profile_photo, f"{amount}", "--gif"],
         capture_output=True,

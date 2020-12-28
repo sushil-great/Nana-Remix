@@ -2,8 +2,8 @@ import asyncio
 
 from pyrogram import filters
 
-from nana import Command, app, AdminSettings, edrep
-from nana.helpers.aiohttp_helper import AioHttp
+from nana import COMMAND_PREFIXES, app, AdminSettings, edit_or_reply
+from nana.utils.aiohttp_helper import AioHttp
 
 __MODULE__ = "Covid"
 __HELP__ = """
@@ -15,7 +15,9 @@ Check info of cases corona virus disease 2019
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("covid", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("covid", COMMAND_PREFIXES)
+)
 async def corona(_, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
@@ -32,18 +34,26 @@ async def corona(_, message):
  - **Cases/Mil:** `{r['casesPerOneMillion']}`
  - **Deaths/Mil:** `{r['deathsPerOneMillion']}``
 """
-            await edrep(message, text=f"{reply_text}")
+            await edit_or_reply(message, text=f"{reply_text}")
             return
         except Exception as e:
-            await edrep(message, text="`The corona API could not be reached`")
+            await edit_or_reply(
+                message,
+                text="`The corona API could not be reached`"
+            )
             print(e)
             await asyncio.sleep(3)
             await message.delete()
             return
     country = args[1]
-    r = await AioHttp().get_json(f"https://corona.lmao.ninja/v2/countries/{country}")
+    r = await AioHttp().get_json(
+        f"https://corona.lmao.ninja/v2/countries/{country}"
+    )
     if "cases" not in r:
-        await edrep(message, text="```The country could not be found!```")
+        await edit_or_reply(
+            message,
+            text="```The country could not be found!```"
+        )
         await asyncio.sleep(3)
         await message.delete()
     else:
@@ -59,9 +69,12 @@ async def corona(_, message):
  - **Cases/Mil:** `{r['casesPerOneMillion']}`
  - **Deaths/Mil:** `{r['deathsPerOneMillion']}`
 """
-            await edrep(message, text=reply_text)
+            await edit_or_reply(message, text=reply_text)
         except Exception as e:
-            await edrep(message, text="`The corona API could not be reached`")
+            await edit_or_reply(
+                message,
+                text="`The corona API could not be reached`"
+            )
             print(e)
             await asyncio.sleep(3)
             await message.delete()

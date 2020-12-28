@@ -1,6 +1,6 @@
 from pyrogram import filters
-from nana import setbot, AdminSettings, BotUsername, app, Command
-from nana.helpers.PyroHelpers import ReplyCheck
+from nana import setbot, AdminSettings, BotUsername, app, COMMAND_PREFIXES
+from nana.utils.Pyroutils import ReplyCheck
 import speedtest
 import re
 
@@ -40,7 +40,10 @@ async def speedtestxyz_callback(client, query):
         if query.data == "speedtest_image":
             speedtest_image = speed.results.share()
             replym = (
-                f"{tld('speed_test_result')}[\u200c\u200c\u200e]({speedtest_image})"
+                "{}[\u200c\u200c\u200e]({})".format(
+                    tld('speed_test_result'),
+                    speedtest_image
+                )
             )
             await setbot.edit_inline_text(
                 query.inline_message_id, replym, parse_mode="markdown"
@@ -48,10 +51,19 @@ async def speedtestxyz_callback(client, query):
 
         elif query.data == "speedtest_text":
             result = speed.results.dict()
-            replymsg += f"\n - {tld('speed_test_isp')} `{result['client']['isp']}`"
-            replymsg += f"\n - {tld('speed_test_download')} `{speed_convert(result['download'])}`"
+            replymsg += "\n - {} `{}`".format(
+                tld('speed_test_isp'),
+                result['client']['isp']
+            )
+            replymsg += "\n - {} `{}`".format(
+                tld('speed_test_download'),
+                speed_convert(result['download'])
+            )
             replymsg += (
-                f"\n - {tld('speed_test_upload')} `{speed_convert(result['upload'])}`"
+                "\n - {} `{}`".format(
+                    tld('speed_test_upload'),
+                    speed_convert(result['upload'])
+                )
             )
             replymsg += f"\n - {tld('speed_test_ping')} `{result['ping']}`"
             await setbot.edit_inline_text(
@@ -63,7 +75,10 @@ async def speedtestxyz_callback(client, query):
         )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("speedtest", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("speedtest", COMMAND_PREFIXES)
+)
 async def speed_test_inline(client, message):
     x = await client.get_inline_bot_results(f"{BotUsername}", "speedtest")
     await message.delete()

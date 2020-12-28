@@ -2,12 +2,19 @@ from datetime import datetime
 from pytz import timezone
 from pyrogram import filters
 
-from nana import app, Command, time_country, AdminSettings, edrep
+from nana import (
+    app,
+    COMMAND_PREFIXES,
+    time_country,
+    AdminSettings,
+    edit_or_reply
+)
 
 __MODULE__ = "Time"
 __HELP__ = """
 Modules that helps a user to get date and time
-here are the timezone list: [link](https://telegra.ph/Time-Zone-list-for-Nana-Remix-07-21)
+here are the timezone list:
+[link](https://telegra.ph/Time-Zone-list-for-Nana-Remix-07-21)
 
 ──「 **Time and Date** 」──
 -> `time`
@@ -16,7 +23,10 @@ Returns the Date and Time for a selected country
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("time", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("time", COMMAND_PREFIXES)
+)
 async def grabTime(_, message):
     if not time_country:
         await message.delete()
@@ -34,4 +44,4 @@ async def grabTime(_, message):
         + "__in__ "
         + f"**{tz}**"
     )
-    await edrep(message, text=time_string)
+    await edit_or_reply(message, text=time_string)

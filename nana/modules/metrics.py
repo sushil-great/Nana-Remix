@@ -4,13 +4,13 @@ import time
 import timeago
 
 from pyrogram import filters
-from pyrogram.utils import get_channel_id
 
-from nana import Command, app, AdminSettings, edrep
+from nana import COMMAND_PREFIXES, app, AdminSettings, edit_or_reply
 
 __MODULE__ = "Metrics"
 __HELP__ = """
-This module can help you do the wordcount in the last 1000 messages in a groupchat or private chat.
+This module can help you do the wordcount in the last 1000 messages
+in a groupchat or private chat.
 
 ──「 **Word Count** 」──
 -> `wordcount` or `wc`
@@ -49,11 +49,9 @@ async def get_inactive(client, message):
 
     return "\n".join(
         [
-            "[{}](tg://user?id={}) last [message](https://t.me/c/{}/{}) was {}".format(
-                m.from_user.first_name,
-                m.from_user.id,
-                get_channel_id(m.chat.id),
-                m.message_id,
+            "{} last [message]({}) was {}".format(
+                m.from_user.mention,
+                m.link,
                 timeago.format(m.date),
             )
             for m in messages
@@ -63,7 +61,11 @@ async def get_inactive(client, message):
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command(["wordcount", "wc"], Command)
+    filters.user(AdminSettings) &
+    filters.command(
+        ["wordcount", "wc"],
+        COMMAND_PREFIXES
+    )
 )
 async def word_count(client, message):
     await message.delete()
@@ -86,7 +88,7 @@ async def word_count(client, message):
     await progress.edit_text(out)
 
 
-@app.on_message(filters.me & filters.command("msg", Command))
+@app.on_message(filters.me & filters.command("msg", COMMAND_PREFIXES))
 async def inactive_msg(client, message):
     text = await get_inactive(client, message)
-    await edrep(message, text=text)
+    await edit_or_reply(message, text=text)

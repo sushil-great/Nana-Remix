@@ -27,7 +27,11 @@ def check_fav(user_id, data):
 def get_fav(user_id):
     try:
         return (
-            SESSION.query(Favourites).filter(Favourites.user_id == int(user_id)).all()
+            SESSION.query(
+                Favourites
+            ).filter(
+                Favourites.user_id == int(user_id)
+            ).all()
         )
     finally:
         SESSION.close()

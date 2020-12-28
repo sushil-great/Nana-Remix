@@ -1,21 +1,17 @@
-import asyncio
 import json
-import logging
 import math
 import os
 import re
 import time
 import urllib.parse
 from random import choice
-from typing import Dict, Tuple
 
 import requests
 from bs4 import BeautifulSoup
 from pyDownload import Downloader
 from pyrogram import filters
-from pyrogram.types import Message
 
-from nana import app, Command, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 __MODULE__ = "Downloads"
 __HELP__ = """
@@ -47,58 +43,6 @@ yadi.sk    | mediafire    | osdn.net
 github.com | Sourceforge
 androidfilehost.com`
 """
-
-
-
-@app.on_message(filters.user(AdminSettings) & filters.command("ls", Command))
-async def ls(_, message):
-    args = message.text.split(None, 1)
-    basepath = "nana/{}".format(args[1]) if len(args) == 2 else "nana/"
-    directory = "".join(
-        "\n{}".format(entry)
-        for entry in os.listdir(basepath)
-        if os.path.isdir(os.path.join(basepath, entry))
-    )
-
-    listfile = "".join(
-        "\n{}".format(entry)
-        for entry in os.listdir(basepath)
-        if os.path.isfile(os.path.join(basepath, entry))
-    )
-
-    await edrep(
-        message,
-        text="**List directory :**`{}`\n**List file :**`{}`".format(
-            directory, listfile
-        ),
-    )
-
-
-@app.on_message(filters.user(AdminSettings) & filters.command("upload", Command))
-async def upload_file(client, message):
-    args = message.text.split(None, 1)
-    if len(args) == 1:
-        await edrep(message, text="usage : upload (path)")
-        return
-    c_time = time.time()
-    path = "nana/{}".format(args[1])
-    try:
-        await app.send_document(
-            message.chat.id,
-            path,
-            progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
-            ),
-        )
-        
-    except Exception as e:
-        logging.error("Exception occured", exc_info=True)
-        logging.error(e)
-        await edrep(message, text="`File not found!`")
-        return
-    await edrep(message, text="`Success!`")
-    await asyncio.sleep(5)
-    await client.delete_messages(message.chat.id, message.message_id)
 
 
 async def time_parser(start, end):
@@ -154,10 +98,13 @@ async def download_url(url, file_name):
     return downlaoded
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("dl", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("dl", COMMAND_PREFIXES)
+)
 async def download_from_url(_, message):
     if len(message.text.split()) == 1:
-        await edrep(message, text="Usage: `dl <url> <filename>`")
+        await edit_or_reply(message, text="Usage: `dl <url> <filename>`")
         return
     if len(message.text.split()) == 2:
         url = message.text.split(None, 1)[1]
@@ -166,39 +113,42 @@ async def download_from_url(_, message):
         url = message.text.split(None, 2)[1]
         file_name = message.text.split(None, 2)[2]
     else:
-        await edrep(message, text="Invaild args given!")
+        await edit_or_reply(message, text="Invaild args given!")
         return
     try:
         os.listdir("nana/downloads/")
     except FileNotFoundError:
-        await edrep(message, text="Invalid download path in config!")
+        await edit_or_reply(message, text="Invalid download path in config!")
         return
-    await edrep(message, text="Downloading...")
+    dl_msg = await edit_or_reply(message, text="Downloading...")
     download = await download_url(url, file_name)
-    await edrep(message, text=download)
+    await dl_msg.edit(download)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("download", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("download", COMMAND_PREFIXES)
+)
 async def dssownload_from_telegram(client, message):
     if message.reply_to_message:
         await download_file_from_tg(client, message)
     else:
-        await edrep(message, text="Reply document to download it")
+        await edit_or_reply(message, text="Reply document to download it")
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("direct", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("direct", COMMAND_PREFIXES)
+)
 async def direct_link_generator(_, message):
     args = message.text.split(None, 1)
-    await edrep(message, text="`Processing...`")
     if len(args) == 1:
-        await edrep(message, text="Write any args here!")
+        await edit_or_reply(message, text="Write any args here!")
         return
     downloadurl = args[1]
     reply = ""
     links = re.findall(r"\bhttps?://.*\.\S+", downloadurl)
     if not links:
         reply = "`No links found!`"
-        await edrep(message, text=reply)
+        await edit_or_reply(message, text=reply)
     for link in links:
         if "drive.google.com" in link:
             reply += gdrive(link)
@@ -217,8 +167,10 @@ async def direct_link_generator(_, message):
         elif "androidfilehost.com" in link:
             reply += androidfilehost(link)
         else:
-            reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + "is not supported"
-    await edrep(message, text=reply)
+            reply += re.findall(
+                r"\bhttps?://(.*?[^/]+)", link
+            )[0] + "is not supported"
+    await edit_or_reply(message, text=reply)
 
 
 def gdrive(url: str) -> str:
@@ -271,9 +223,12 @@ def yandex_disk(url: str) -> str:
     except IndexError:
         reply = "`No Yandex.Disk links found`\n"
         return reply
-    api = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}"
+    url = "https://cloud-api.yandex.net/v1/disk/"
+    api = "{}public/resources/download?public_key={}".format(
+        url, link
+    )
     try:
-        dl_url = requests.get(api.format(link)).json()["href"]
+        dl_url = requests.get(api).json()["href"]
         name = dl_url.split("filename=")[1].split("&disposition")[0]
         reply += f"[{name}]({dl_url})\n"
     except KeyError:
@@ -318,7 +273,11 @@ def sourceforge(url: str) -> str:
     for mirror in info[1:]:
         name = re.findall(r"\((.*)\)", mirror.text.strip())[0]
         dl_url = (
-            f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}'
+            'https://{}.dl.sourceforge.net/project/{}/{}'.format(
+                mirror["id"],
+                project,
+                file_path
+            )
         )
         reply += f"[{name}]({dl_url}) "
     return reply
@@ -332,7 +291,11 @@ def osdn(url: str) -> str:
     except IndexError:
         reply = "`No OSDN links found`\n"
         return reply
-    page = BeautifulSoup(requests.get(link, allow_redirects=True).content, "lxml")
+    page = BeautifulSoup(
+        requests.get(
+            link, allow_redirects=True
+        ).content, "lxml"
+    )
     info = page.find("a", {"class": "mirror_link"})
     link = urllib.parse.unquote(osdn_link + info["href"])
     reply = f"Mirrors for __{link.split('/')[-1]}__\n"
@@ -388,7 +351,11 @@ def androidfilehost(url: str) -> str:
         "authority": "androidfilehost.com",
         "x-requested-with": "XMLHttpRequest",
     }
-    data = {"submit": "submit", "action": "getdownloadmirrors", "fid": f"{fid}"}
+    data = {
+        "submit": "submit",
+        "action": "getdownloadmirrors",
+        "fid": f"{fid}"
+    }
     mirrors = None
     reply = ""
     error = "`Error: Can't find Mirrors for the link`\n"
@@ -440,7 +407,7 @@ async def progressdl(current, total, event, start, type_of_ps, file_name=None):
             "".join("▱" for i in range(10 - math.floor(percentage / 10))),
             round(percentage, 2),
         )
-        tmp = progress_str + "{0} of {1}\nETA: {2}".format(
+        tmp = progress_str + "`{0}` of `{1}`\nETA: `{2}`".format(
             humanbytes(current),
             humanbytes(total),
             await time_formatter(estimated_total_time),
@@ -450,7 +417,13 @@ async def progressdl(current, total, event, start, type_of_ps, file_name=None):
                 "{}\nFile Name: `{}`\n{}".format(type_of_ps, file_name, tmp)
             )
         else:
-            await event.edit("{}\n{}".format(type_of_ps, tmp))
+            await event.edit(
+                "{}\n{}\nSpeed: `{}/s`".format(
+                    type_of_ps,
+                    tmp,
+                    humanbytes((total - current) / (time.time() - start)),
+                )
+            )
 
 
 def humanbytes(size):
@@ -461,7 +434,7 @@ def humanbytes(size):
     # 2 ** 10 = 1024
     power = 2 ** 10
     raised_to_pow = 0
-    dict_power_n = {0: "", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
+    dict_power_n = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}
     while size > power:
         size /= power
         raised_to_pow += 1
@@ -487,7 +460,8 @@ async def time_formatter(milliseconds: int) -> str:
 async def download_reply_nocall(client, message):
     if message.reply_to_message.photo:
         nama = "photo_{}_{}.png".format(
-            message.reply_to_message.photo.file_id, message.reply_to_message.photo.date
+            message.reply_to_message.photo.file_id,
+            message.reply_to_message.photo.date
         )
         await client.download_media(
             message.reply_to_message.photo, file_name="nana/downloads/" + nama
@@ -498,7 +472,8 @@ async def download_reply_nocall(client, message):
             message.reply_to_message.animation.file_size,
         )
         await client.download_media(
-            message.reply_to_message.animation, file_name="nana/downloads/" + nama
+            message.reply_to_message.animation,
+            file_name="nana/downloads/" + nama
         )
     elif message.reply_to_message.video:
         nama = "video_{}-{}.mp4".format(
@@ -514,7 +489,8 @@ async def download_reply_nocall(client, message):
             message.reply_to_message.sticker.set_name,
         )
         await client.download_media(
-            message.reply_to_message.sticker, file_name="nana/downloads/" + nama
+            message.reply_to_message.sticker,
+            file_name="nana/downloads/" + nama
         )
     elif message.reply_to_message.audio:
         nama = "{}".format(message.reply_to_message.audio.file_name)
@@ -529,7 +505,8 @@ async def download_reply_nocall(client, message):
     elif message.reply_to_message.document:
         nama = "{}".format(message.reply_to_message.document.file_name)
         await client.download_media(
-            message.reply_to_message.document, file_name="nana/downloads/" + nama
+            message.reply_to_message.document,
+            file_name="nana/downloads/" + nama
         )
     else:
         return False
@@ -596,18 +573,22 @@ async def download_file_from_tg(client, message):
             ),
         )
     else:
-        await edrep(message, text="Unknown file!")
+        await edit_or_reply(message, text="Unknown file!")
         return
     end = int(time.time())
     times = await time_parser(c_time, end)
-    text = f"**⬇ Downloaded!**\n🗂 File name: `{name}`\n🏷 Saved to: `nana/downloads/`\n⏲ Downloaded in: {times}"
-    await edrep(message, text=text)
+    text = "**⬇ Downloaded!**\n"
+    text += f"🗂 File name: `{name}`\n"
+    text += "🏷 Saved to: `nana/downloads/`\n"
+    text += f"⏲ Downloaded in: {times}"
+    await edit_or_reply(message, text=text)
 
 
 async def name_file(_, message):
     if message.reply_to_message.photo:
         return "photo_{}_{}.png".format(
-            message.reply_to_message.photo.date, message.reply_to_message.photo.date
+            message.reply_to_message.photo.date,
+            message.reply_to_message.photo.date
         )
     elif message.reply_to_message.animation:
         return "giphy_{}-{}.gif".format(
@@ -631,5 +612,5 @@ async def name_file(_, message):
     elif message.reply_to_message.document:
         return "{}".format(message.reply_to_message.document.file_name)
     else:
-        await edrep(message, text="Unknown file!")
+        await edit_or_reply(message, text="Unknown file!")
         return

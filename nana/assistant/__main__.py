@@ -1,5 +1,6 @@
 import os
 from platform import python_version
+import asyncio
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -56,7 +57,12 @@ async def start(_, message):
         if len(message.text.split()) >= 2:
             helparg = message.text.split()[1]
             if helparg == "help_inline":
-                await message.reply(tld("inline_help_text").format(BotUsername))
+                await message.reply(tld(
+                        "inline_help_text"
+                    ).format(
+                        BotUsername
+                    )
+                )
                 return
         try:
             me = await app.get_me()
@@ -112,8 +118,9 @@ async def get_myself(client, message):
     except ConnectionError:
         await message.reply("Bot is currently turned off!")
         return
-    getphoto = await client.get_profile_photos(me.id)
-    getpp = None if len(getphoto) == 0 else getphoto[0].file_id
+    getpp = await client.download_media(
+        me.photo.big_file_id, file_name="nana/downloads/pfp.png"
+    )
     text = "**ℹ️ Your profile:**\n"
     text += "First name: {}\n".format(me.first_name)
     if me.last_name:
@@ -125,14 +132,25 @@ async def get_myself(client, message):
     text += "`Nana Version    : v{}`\n".format(USERBOT_VERSION)
     text += "`Manager Version : v{}`".format(ASSISTANT_VERSION)
     button = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]]
+        [
+            [
+                InlineKeyboardButton(
+                    "Hide phone number",
+                    callback_data="hide_number"
+                )
+            ]
+        ]
     )
     if me.photo:
-        await client.send_photo(
-            message.chat.id, photo=getpp, caption=text, reply_markup=button
+        await message.reply_photo(
+            photo=getpp,
+            caption=text,
+            reply_markup=button
         )
     else:
         await message.reply(text, reply_markup=button)
+    if os.path.exists(getpp):
+        os.remove(getpp)
 
 
 # For callback query button
@@ -163,11 +181,22 @@ async def get_myself_btn(client, query):
 
     if "***" not in text.split("Phone number: `")[1].split("`")[0]:
         text = text.replace(
-            "Phone number: `{}`\n".format(me.phone_number),
-            "Phone number: `{}`\n".format("".join(num)),
+            "Phone number: `{}`\n".format(
+                me.phone_number
+            ),
+            "Phone number: `{}`\n".format(
+                "".join(num)
+            ),
         )
         button = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Show phone number", callback_data="hide_number")]]
+            [
+                [
+                    InlineKeyboardButton(
+                        "Show phone number",
+                        callback_data="hide_number"
+                    )
+                ]
+            ]
         )
     else:
         text = text.replace(
@@ -175,7 +204,14 @@ async def get_myself_btn(client, query):
             "Phone number: `{}`\n".format(me.phone_number),
         )
         button = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Hide phone number", callback_data="hide_number")]]
+            [
+                [
+                    InlineKeyboardButton(
+                        "Hide phone number",
+                        callback_data="hide_number"
+                    )
+                ]
+            ]
         )
 
     if query.message.caption:
@@ -196,8 +232,14 @@ async def lang_back(_, query):
     buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(text=tld("help_btn"), callback_data="help_back"),
-                InlineKeyboardButton(tld("language_btn"), callback_data="set_lang_"),
+                InlineKeyboardButton(
+                    text=tld("help_btn"),
+                    callback_data="help_back"
+                ),
+                InlineKeyboardButton(
+                    tld("language_btn"),
+                    callback_data="set_lang_"
+                ),
             ]
         ]
     )
@@ -233,10 +275,16 @@ async def lang_back(_, query):
 @setbot.on_callback_query(dynamic_data_filter("report_errors"))
 async def report_some_errors(client, query):
     await app.join_chat("@nanabotsupport")
-    text = "Hi @DeprecatedUser, i got an error for you.\nPlease take a look and fix it if possible.\n\nThank you ❤️"
+    text = "Hi @DeprecatedUser, i got an error for you."
     err = query.message.text
     open("nana/cache/errors.txt", "w").write(err)
-    await query.message.edit_reply_markup(reply_markup=None)
-    await app.send_document("nanabotsupport", "nana/cache/errors.txt", caption=text)
+    await asyncio.gather(
+        query.message.edit_reply_markup(reply_markup=None),
+        app.send_document(
+            "nanabotsupport",
+            "nana/cache/errors.txt",
+            caption=text
+        ),
+        client.answer_callback_query(query.id, "Report was sent!"),
+    )
     os.remove("nana/cache/errors.txt")
-    await client.answer_callback_query(query.id, "Report was sent!")

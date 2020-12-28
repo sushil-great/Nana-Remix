@@ -15,7 +15,10 @@ USER_SET = {}
 TODEL = {}
 
 
-@setbot.on_message(filters.user(AdminSettings) & filters.command(["setsticker"]))
+@setbot.on_message(
+    filters.user(AdminSettings) &
+    filters.command(["setsticker"])
+)
 async def get_stickers(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
@@ -37,7 +40,10 @@ async def get_stickers(_, message):
     USER_SET["type"] = 1
 
 
-@setbot.on_message(filters.user(AdminSettings) & filters.command(["setanimation"]))
+@setbot.on_message(
+    filters.user(AdminSettings) &
+    filters.command(["setanimation"])
+)
 async def get_stickers_animation(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
@@ -76,7 +82,10 @@ async def set_stickers(client, message):
         return
     global TEMP_KEYBOARD, USER_SET
     if message.text in TEMP_KEYBOARD:
-        await client.delete_messages(message.chat.id, USER_SET[message.from_user.id])
+        await client.delete_messages(
+            message.chat.id,
+            USER_SET[message.from_user.id]
+        )
         if USER_SET["type"] == 1:
             set_sticker_set(message.from_user.id, message.text)
         elif USER_SET["type"] == 2:
@@ -105,7 +114,7 @@ async def settings_sticker(_, message):
     try:
         keyboard = await app.get_history("@Stickers", limit=1)
         keyboard = keyboard[0].reply_markup.keyboard
-    except:
+    except IndexError:
         await message.edit(
             "You dont have any sticker pack!\nAdd stickers pack in @Stickers "
         )

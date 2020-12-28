@@ -3,7 +3,7 @@ import sre_constants
 
 from pyrogram import filters
 
-from nana import app, edrep, AdminSettings
+from nana import app, edit_or_reply, AdminSettings
 
 __MODULE__ = "Sed"
 __HELP__ = """
@@ -58,7 +58,11 @@ async def separate_sed(sed_string):
             and counter + 1 < len(sed_string)
             and sed_string[counter + 1] == delim
         ):
-            sed_string = sed_string[:counter] + sed_string[counter + 1 :]
+            sed_string = sed_string[
+                :counter
+            ] + sed_string[
+                counter + 1:
+            ]
 
         elif sed_string[counter] == delim:
             replace_with = sed_string[start:counter]
@@ -98,18 +102,24 @@ async def sed_msg(_, message):
             if "i" in flags and "g" in flags:
                 text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
             elif "i" in flags:
-                text = re.sub(repl, repl_with, to_fix, count=1, flags=re.I).strip()
+                text = re.sub(
+                    repl,
+                    repl_with,
+                    to_fix,
+                    count=1,
+                    flags=re.I
+                ).strip()
             elif "g" in flags:
                 text = re.sub(repl, repl_with, to_fix).strip()
             else:
                 text = re.sub(repl, repl_with, to_fix, count=1).strip()
         except sre_constants.error:
             print("SRE constant error")
-            await edrep(
+            await edit_or_reply(
                 message,
-                text="SRE constant error. You can learn regex in [here](https://regexone.com)",
+                text="SRE constant error. [learn regex](https://regexone.com)",
                 disable_web_page_preview=True,
             )
             return
         if text:
-            await edrep(message, text="```{}```".format(text))
+            await edit_or_reply(message, text="```{}```".format(text))

@@ -3,16 +3,25 @@ import re
 
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings, BotUsername, edrep, Owner, setbot
-from nana.helpers.PyroHelpers import ReplyCheck
-from nana.helpers.sauce import airing_sauce, character_sauce, manga_sauce
+from nana import (
+    app,
+    COMMAND_PREFIXES,
+    AdminSettings,
+    BotUsername,
+    edit_or_reply,
+    Owner,
+    setbot,
+)
+from nana.utils.Pyroutils import ReplyCheck
+from nana.utils.sauce import airing_sauce, character_sauce, manga_sauce
 from nana.modules.database import anime_db as sql
 
 
 __MODULE__ = "Anilist"
 
 __HELP__ = """
-Get information about anime, manga or characters from [Anilist](https://anilist.co).
+Get information about anime,
+manga or characters from [Anilist](https://anilist.co).
 
 ──「 **Anime** 」──
 -> `anime <anime>`
@@ -72,31 +81,42 @@ def t(milliseconds: int) -> str:
     return tmp[:-2]
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("airing", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("airing", COMMAND_PREFIXES)
+)
 async def anime_airing(_, message):
     search_str = message.text.split(" ", 1)
     if len(search_str) == 1:
-        await edrep(message, text="Format: `airing <anime name>`")
+        await edit_or_reply(message, text="Format: `airing <anime name>`")
         return
     response = (await airing_sauce(search_str[1]))["data"]["Media"]
-    ms_g = f"**Name**: **{response['title']['romaji']}**(`{response['title']['native']}`)\n**ID**: `{response['id']}`"
+    ms_g = "**Name**: **{}**(`{}`)\n**ID**: `{}`".format(
+        response['title']['romaji'],
+        response['title']['native'],
+        response['id']
+    )
     if response["nextAiringEpisode"]:
         airing_time = response["nextAiringEpisode"]["timeUntilAiring"] * 1000
         airing_time_final = t(airing_time)
-        ms_g += f"\n**Episode**: `{response['nextAiringEpisode']['episode']}`\n**Airing In**: `{airing_time_final}`"
+        ms_g += "\n**Episode**: `{}`\n**Airing In**: `{}`".format(
+            response['nextAiringEpisode']['episode'],
+            airing_time_final
+        )
     else:
         ms_g += f"\n**Episode**:{response['episodes']}\n**Status**: `N/A`"
-    await edrep(message, text=ms_g)
+    await edit_or_reply(message, text=ms_g)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("anime", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("anime", COMMAND_PREFIXES)
+)
 async def anime_search(client, message):
     cmd = message.command
     mock = ""
     if len(cmd) > 1:
         mock = " ".join(cmd[1:])
     elif len(cmd) == 1:
-        await edrep(message, text="`Format: anime <anime name>`")
+        await edit_or_reply(message, text="`Format: anime <anime name>`")
         await asyncio.sleep(2)
         await message.delete()
         return
@@ -111,7 +131,10 @@ async def anime_search(client, message):
     )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("character", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("character", COMMAND_PREFIXES)
+)
 async def character_search(client, message):
     search = message.text.split(" ", 1)
     if len(search) == 1:
@@ -120,7 +143,10 @@ async def character_search(client, message):
     json = (await character_sauce(search[1]))["data"].get("Character", None)
     if json:
         ms_g = (
-            f"**{json.get('name').get('full')}**(`{json.get('name').get('native')}`)\n"
+            "**{}**(`{}`)\n".format(
+                json.get('name').get('full'),
+                json.get('name').get('native')
+            )
         )
         description = f"{json['description']}"
         site_url = json.get("siteUrl")
@@ -131,10 +157,12 @@ async def character_search(client, message):
             await message.delete()
             await client.send_photo(message.chat.id, photo=image, caption=ms_g)
         else:
-            await edrep(message, text=ms_g)
+            await edit_or_reply(message, text=ms_g)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("manga", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("manga", COMMAND_PREFIXES)
+)
 async def manga_search(client, message):
     search = message.text.split(" ", 1)
     if len(search) == 1:
@@ -144,7 +172,9 @@ async def manga_search(client, message):
     json = (await manga_sauce(search[1]))["data"].get("Media", None)
     ms_g = ""
     if json:
-        title, title_native = json["title"].get("romaji", False), json["title"].get(
+        title, title_native = json["title"].get(
+            "romaji", False
+        ), json["title"].get(
             "native", False
         )
         start_date, status, score = (
@@ -172,15 +202,22 @@ async def manga_search(client, message):
         if image:
             try:
                 await message.delete()
-                await client.send_photo(message.chat.id, photo=image, caption=ms_g)
-            except:
+                await client.send_photo(
+                    message.chat.id,
+                    photo=image,
+                    caption=ms_g
+                )
+            except BaseException:
                 ms_g += f" [〽️]({image})"
-                await edrep(message, text=ms_g)
+                await edit_or_reply(message, text=ms_g)
         else:
-            await edrep(message, text=ms_g)
+            await edit_or_reply(message, text=ms_g)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("favourite", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("favourite", COMMAND_PREFIXES)
+)
 async def favourite_animelist(client, message):
     x = await client.get_inline_bot_results(f"{BotUsername}", "favourite")
     await message.delete()
@@ -211,9 +248,15 @@ async def add_favorite(_, query):
         if add:
             await query.answer("Added to Favourites", show_alert=True)
         else:
-            await query.answer("Anime already Exists in Favourites", show_alert=True)
+            await query.answer(
+                "Anime already Exists in Favourites",
+                show_alert=True
+            )
     else:
-        await query.answer("You are not Allowed to Press this", show_alert=True)
+        await query.answer(
+            "You are not Allowed to Press this",
+            show_alert=True
+        )
 
 
 @setbot.on_callback_query(filters.create(remfav_callback))
@@ -224,4 +267,7 @@ async def rem_favorite(_, query):
             query.inline_message_id, "Removed from Favourites"
         )
     else:
-        await query.answer("You are not Allowed to Press this", show_alert=True)
+        await query.answer(
+            "You are not Allowed to Press this",
+            show_alert=True
+        )

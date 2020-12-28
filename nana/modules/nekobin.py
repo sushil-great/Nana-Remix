@@ -3,8 +3,8 @@ import aiohttp
 import os
 
 from pyrogram import filters
-from nana import Command, app, AdminSettings, edrep
-from nana.helpers.aiohttp_helper import AioHttp
+from nana import COMMAND_PREFIXES, app, AdminSettings, edit_or_reply
+from nana.utils.aiohttp_helper import AioHttp
 
 __MODULE__ = "Nekobin"
 __HELP__ = """
@@ -15,7 +15,10 @@ Create a Nekobin paste using replied to message.
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("neko", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("neko", COMMAND_PREFIXES)
+)
 async def paste(client, message):
     if message.reply_to_message:
         text = message.reply_to_message.text
@@ -32,7 +35,9 @@ async def paste(client, message):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                "https://nekobin.com/api/documents", json={"content": text}, timeout=3
+                "https://nekobin.com/api/documents",
+                json={"content": text},
+                timeout=3
             ) as response:
                 key = (await response.json())["result"]["key"]
     except Exception:
@@ -66,32 +71,34 @@ async def paste(client, message):
             )
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command(["gpaste"], Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command(["gpaste"], COMMAND_PREFIXES)
+)
 async def get_paste_(_, message):
     """fetches the content of a dogbin or nekobin URL."""
     link = message.reply_to_message.text
     if not link:
-        await edrep(message, text="input not found!")
+        await edit_or_reply(message, text="input not found!")
         return
-    await edrep(message, text="`Getting paste content...`")
+    await edit_or_reply(message, text="`Getting paste content...`")
     format_view = "https://del.dog/v/"
     if link.startswith(format_view):
-        link = link[len(format_view) :]
+        link = link[len(format_view):]
         raw_link = f"https://del.dog/raw/{link}"
     elif link.startswith("https://del.dog/"):
-        link = link[len("https://del.dog/") :]
+        link = link[len("https://del.dog/"):]
         raw_link = f"https://del.dog/raw/{link}"
     elif link.startswith("del.dog/"):
-        link = link[len("del.dog/") :]
+        link = link[len("del.dog/"):]
         raw_link = f"https://del.dog/raw/{link}"
     elif link.startswith("https://nekobin.com/"):
-        link = link[len("https://nekobin.com/") :]
+        link = link[len("https://nekobin.com/"):]
         raw_link = f"https://nekobin.com/raw/{link}"
     elif link.startswith("nekobin.com/"):
-        link = link[len("nekobin.com/") :]
+        link = link[len("nekobin.com/"):]
         raw_link = f"https://nekobin.com/raw/{link}"
     else:
-        await edrep(message, text="Is that even a paste url?")
+        await edit_or_reply(message, text="Is that even a paste url?")
         return
     resp = await AioHttp().get_text(raw_link)
-    await edrep(message, text=f"**URL content** :\n`{resp}`")
+    await edit_or_reply(message, text=f"**URL content**:\n`{resp}`")

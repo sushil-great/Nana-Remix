@@ -1,9 +1,9 @@
 from pyrogram import filters
 from asyncio import sleep
 
-from nana import app, Command, AdminSettings, edrep
-from nana.helpers.string import replace_text
-from nana.helpers.aiohttp_helper import AioHttp
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from nana.utils.string import replace_text
+from nana.utils.aiohttp_helper import AioHttp
 
 __MODULE__ = "Urban"
 __HELP__ = """
@@ -15,10 +15,13 @@ Search urban for dictionary
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("ud", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("ud", COMMAND_PREFIXES)
+)
 async def urban_dictionary(_, message):
     if len(message.text.split()) == 1:
-        await edrep(message, text="Usage: `ud example`")
+        await edit_or_reply(message, text="Usage: `ud example`")
         return
     try:
         text = message.text.split(None, 1)[1]
@@ -28,11 +31,17 @@ async def urban_dictionary(_, message):
         word = response["list"][0]["word"]
         definition = response["list"][0]["definition"]
         example = response["list"][0]["example"]
-        teks = f"**Text: {replace_text(word)}**\n**Meaning:**\n`{replace_text(definition)}`\n\n**Example:**\n`{replace_text(example)}`"
-        await edrep(message, text=teks)
+        teks = "**Text: {}**\n**Meaning:**\n`{}`\n\n**Example:**\n`{}`".format(
+            replace_text(word),
+            replace_text(definition),
+            replace_text(example)
+        )
+        await edit_or_reply(message, text=teks)
         return
     except Exception as e:
-        await edrep(message, text="`The Unban Dictionary API could not be reached`")
+        await edit_or_reply(
+            message, text="`The Unban Dictionary API could not be reached`"
+        )
         print(e)
         await sleep(3)
         await message.delete()

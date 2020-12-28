@@ -79,69 +79,70 @@ def get_note_type(msg):
     data_type = None
     content = None
     raw_text = msg.text.markdown if msg.text else msg.caption.markdown
-    args = raw_text.split(None, 2)  # use python's maxsplit to separate cmd and args
+    args = raw_text.split(None, 2)
+    # use python's maxsplit to separate cmd and args
     note_name = args[1]
-
+    reply = msg.reply_to_message
     # determine what the contents of the filter are - text, image, sticker, etc
     if len(args) >= 3:
         text = args[2]
         data_type = Types.TEXT
 
-    elif msg.reply_to_message:
-        if msg.reply_to_message.text:
-            text = msg.reply_to_message.text.markdown
-        elif msg.reply_to_message.caption:
-            text = msg.reply_to_message.caption.markdown
+    elif reply:
+        if reply.text:
+            text = reply.text.markdown
+        elif reply.caption:
+            text = reply.caption.markdown
         else:
             text = ""
-        if len(args) >= 2 and msg.reply_to_message.text:  # not caption, text
+        if len(args) >= 2 and reply.text:  # not caption, text
             data_type = Types.TEXT
 
-        elif msg.reply_to_message.sticker:
-            content = msg.reply_to_message.sticker.file_id
+        elif reply.sticker:
+            content = reply.sticker.file_id
             data_type = Types.STICKER
 
-        elif msg.reply_to_message.document:
-            if msg.reply_to_message.document.mime_type == "application/x-bad-tgsticker":
+        elif reply.document:
+            if reply.document.mime_type == "application/x-bad-tgsticker":
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.DOCUMENT
-            content = msg.reply_to_message.document.file_id
+            content = reply.document.file_id
 
-        elif msg.reply_to_message.photo:
-            content = msg.reply_to_message.photo.file_id  # last elem = best quality
+        elif reply.photo:
+            content = reply.photo.file_id  # last elem = best quality
             data_type = Types.PHOTO
 
-        elif msg.reply_to_message.audio:
-            content = msg.reply_to_message.audio.file_id
+        elif reply.audio:
+            content = reply.audio.file_id
             data_type = Types.AUDIO
 
-        elif msg.reply_to_message.voice:
-            content = msg.reply_to_message.voice.file_id
+        elif reply.voice:
+            content = reply.voice.file_id
             data_type = Types.VOICE
 
-        elif msg.reply_to_message.video:
-            content = msg.reply_to_message.video.file_id
+        elif reply.video:
+            content = reply.video.file_id
             data_type = Types.VIDEO
 
-        elif msg.reply_to_message.video_note:
-            content = msg.reply_to_message.video_note.file_id
+        elif reply.video_note:
+            content = reply.video_note.file_id
             data_type = Types.VIDEO_NOTE
 
-        elif msg.reply_to_message.animation:
-            content = msg.reply_to_message.animation.file_id
+        elif reply.animation:
+            content = reply.animation.file_id
             # text = None
             data_type = Types.ANIMATION
 
     # TODO
-    # elif msg.reply_to_message.contact:
-    # 	content = msg.reply_to_message.contact.phone_number
+    # elif reply.contact:
+    # 	content = reply.contact.phone_number
     # 	# text = None
     # 	data_type = Types.CONTACT
 
     # TODO
-    # elif msg.reply_to_message.animated_sticker:
-    # 	content = msg.reply_to_message.animation.file_id
+    # elif reply.animated_sticker:
+    # 	content = reply.animation.file_id
     # 	text = None
     # 	data_type = Types.ANIMATED_STICKER
 
@@ -154,71 +155,71 @@ def get_note_type(msg):
 def get_welcome_type(msg):
     data_type = None
     content = None
-
-    if msg.reply_to_message:
-        if msg.reply_to_message.text:
-            text = msg.reply_to_message.text.markdown
-        elif msg.reply_to_message.caption:
-            text = msg.reply_to_message.caption.markdown
+    reply = msg.reply_to_message
+    if reply:
+        if reply.text:
+            text = reply.text.markdown
+        elif reply.caption:
+            text = reply.caption.markdown
         else:
             text = None
     else:
         text = msg.text.split(None, 1)
 
-    if msg.reply_to_message:
-        if msg.reply_to_message.text:
-            text = msg.reply_to_message.text.markdown
+    if reply:
+        if reply.text:
+            text = reply.text.markdown
             data_type = Types.TEXT
 
-        elif msg.reply_to_message.sticker:
-            if msg.reply_to_message.document.mime_type == "application/x-tgsticker":
+        elif reply.sticker:
+            if reply.document.mime_type == "application/x-tgsticker":
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.STICKER
-            content = msg.reply_to_message.sticker.file_id
+            content = reply.sticker.file_id
             text = None
 
-        elif msg.reply_to_message.document:
-            if msg.reply_to_message.document.mime_type == "application/x-bad-tgsticker":
+        elif reply.document:
+            if reply.document.mime_type == "application/x-bad-tgsticker":
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.DOCUMENT
-            content = msg.reply_to_message.document.file_id
-        # text = msg.reply_to_message.caption
+            content = reply.document.file_id
+        # text = reply.caption
 
-        elif msg.reply_to_message.photo:
-            content = msg.reply_to_message.photo[-1].file_id  # last elem = best quality
-            # text = msg.reply_to_message.caption
+        elif reply.photo:
+            content = reply.photo[-1].file_id  # last elem = best quality
+            # text = reply.caption
             data_type = Types.PHOTO
 
-        elif msg.reply_to_message.audio:
-            content = msg.reply_to_message.audio.file_id
-            # text = msg.reply_to_message.caption
+        elif reply.audio:
+            content = reply.audio.file_id
+            # text = reply.caption
             data_type = Types.AUDIO
 
-        elif msg.reply_to_message.voice:
-            content = msg.reply_to_message.voice.file_id
+        elif reply.voice:
+            content = reply.voice.file_id
             text = None
             data_type = Types.VOICE
 
-        elif msg.reply_to_message.video:
-            content = msg.reply_to_message.video.file_id
-            # text = msg.reply_to_message.caption
+        elif reply.video:
+            content = reply.video.file_id
+            # text = reply.caption
             data_type = Types.VIDEO
 
-        elif msg.reply_to_message.video_note:
-            content = msg.reply_to_message.video_note.file_id
+        elif reply.video_note:
+            content = reply.video_note.file_id
             text = None
             data_type = Types.VIDEO_NOTE
 
-        elif msg.reply_to_message.animation:
-            content = msg.reply_to_message.animation.file_id
+        elif reply.animation:
+            content = reply.animation.file_id
             # text = None
             data_type = Types.ANIMATION
 
     # TODO
-    # elif msg.reply_to_message.animated_sticker:
-    # 	content = msg.reply_to_message.animation.file_id
+    # elif reply.animated_sticker:
+    # 	content = reply.animation.file_id
     # 	text = None
     # 	data_type = Types.ANIMATED_STICKER
 

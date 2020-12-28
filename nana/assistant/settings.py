@@ -46,7 +46,8 @@ async def get_button_settings():
         [
             InlineKeyboardButton(toggle, callback_data="toggle_startbot"),
             InlineKeyboardButton(
-                tld("settings_userbot_restartbutton"), callback_data="restart_bot"
+                tld("settings_userbot_restartbutton"),
+                callback_data="restart_bot"
             ),
         ],
         [
@@ -54,13 +55,20 @@ async def get_button_settings():
                 tld("settings_setstickerbutton"), callback_data="setsticker"
             )
         ],
-        [InlineKeyboardButton("Select Branch", callback_data="change_branches")],
+        [
+            InlineKeyboardButton(
+                "Select Branch",
+                callback_data="change_branches"
+            )
+        ],
     ]
     return InlineKeyboardMarkup(list_button)
 
 
 @setbot.on_message(
-    filters.user(AdminSettings) & filters.command(["settings"]) & filters.private
+    filters.user(AdminSettings) &
+    filters.command(["settings"]) &
+    filters.private
 )
 async def settings(_, message):
     text = await get_text_settings()
@@ -84,7 +92,10 @@ async def start_stop_bot(client, query):
             await query.message.edit_text(text, reply_markup=button)
         except errors.exceptions.bad_request_400.MessageNotModified:
             pass
-        await client.answer_callback_query(query.id, tld("settings_stats_botstart"))
+        await client.answer_callback_query(
+            query.id,
+            tld("settings_stats_botstart")
+        )
         return
     text = await get_text_settings()
     button = await get_button_settings()
@@ -112,7 +123,10 @@ async def reboot_bot(client, query):
         await query.message.edit_text(text, reply_markup=button)
     except errors.exceptions.bad_request_400.MessageNotModified:
         pass
-    await client.answer_callback_query(query.id, tld("settings_bot_restarting"))
+    await client.answer_callback_query(
+        query.id,
+        tld("settings_bot_restarting")
+    )
 
 
 # Back button

@@ -99,11 +99,12 @@ async def terminal(client, message):
                 shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except Exception as err:
+            print(err)
             exc_type, exc_obj, exc_tb = sys.exc_info()
             errors = traceback.format_exception(
                 etype=exc_type, value=exc_obj, tb=exc_tb
             )
-            await message.reply("""**Error:**\n```{}```""".format("".join(errors)))
+            await message.reply("**Error:**\n```{}```".format("".join(errors)))
             return
         output = process.stdout.read()[:-1].decode("utf-8")
     if str(output) == "\n":
@@ -121,6 +122,9 @@ async def terminal(client, message):
             )
             os.remove("nana/cache/output.txt")
             return
-        await message.reply(f"**Output:**\n```{output}```", parse_mode="markdown")
+        await message.reply(
+            f"**Output:**\n```{output}```",
+            parse_mode="markdown"
+        )
     else:
         await message.reply("**Output:**\n`No Output`")

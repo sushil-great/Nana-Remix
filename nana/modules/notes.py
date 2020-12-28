@@ -1,10 +1,18 @@
 from pyrogram import filters, errors
 from pyrogram.types import InlineKeyboardMarkup
 
-from nana import app, setbot, Command, Owner, BotUsername, DB_AVAILABLE, edrep
-from nana.helpers.msg_types import Types, get_note_type
-from nana.helpers.string import parse_button, build_keyboard
-from nana.helpers.PyroHelpers import ReplyCheck
+from nana import (
+    app,
+    setbot,
+    COMMAND_PREFIXES,
+    Owner,
+    BotUsername,
+    DB_AVAILABLE,
+    edit_or_reply,
+)
+from nana.utils.msg_types import Types, get_note_type
+from nana.utils.string import parse_button, build_keyboard
+from nana.utils.Pyroutils import ReplyCheck
 
 if DB_AVAILABLE:
     from nana.modules.database import notes_db as db
@@ -33,7 +41,9 @@ Delete that note, if avaiable.
 ──「 **All Notes** 」──
 -> `saved`
 -> `notes`
-Get all your notes, if too much notes, please use this in your saved message instead!
+Get all your notes,
+if too much notes,
+please use this in your saved message instead!
 
 
 ── **Note Format** ──
@@ -62,7 +72,10 @@ GET_FORMAT = {
 }
 
 
-@app.on_message(filters.user(Owner) & filters.command("save", Command))
+@app.on_message(
+    filters.user(Owner) &
+    filters.command("save", COMMAND_PREFIXES)
+)
 async def save_note(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
@@ -71,7 +84,9 @@ async def save_note(_, message):
 
     if not note_name:
         await message.edit(
-            "```" + message.text + "```\n\nError: You must give a name for this note!"
+            "```"
+            + message.text +
+            "```\n\nError: You must give a name for this note!"
         )
         return
 
@@ -79,7 +94,9 @@ async def save_note(_, message):
         teks, _ = parse_button(text)
         if not teks:
             await message.edit(
-                "```" + message.text + "```\n\nError: There is no text in here!"
+                "```"
+                + message.text
+                + "```\n\nError: There is no text in here!"
             )
             return
 
@@ -87,7 +104,7 @@ async def save_note(_, message):
     await message.edit(f"Saved note `{note_name}`!")
 
 
-@app.on_message(filters.user(Owner) & filters.command("get", Command))
+@app.on_message(filters.user(Owner) & filters.command("get", COMMAND_PREFIXES))
 async def get_note(client, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
@@ -113,17 +130,14 @@ async def get_note(client, message):
                 )
             except errors.exceptions.bad_request_400.BotInlineDisabled:
                 await message.edit(
-                    "Your bot inline isn't available!\nCheck your bot for more information!"
+                    "Your bot inline isn't available!"
+                    "Check your bot for more information!"
                 )
                 await setbot.send_message(
                     Owner,
-                    "Hello, your notes is look like include button, but i can't do that "
-                    "because **inline mode** is not enabled.\n\n**To enable inline "
-                    "mode:**\n1. Go to @BotFather and type `/mybots`\n2. Select your bot, "
-                    "then click **Bot Settings**, click **Inline Mode**, then click "
-                    "**Turn on**.\nOther option is optional, you can edit inline "
-                    "placeholder as you like!\n\nAfter that, you can try again to get "
-                    "that note!",
+                    "Hello, your notes is look like include button,"
+                    "but i can't do that "
+                    "because **inline mode** is not enabled.",
                 )
                 return
             try:
@@ -136,7 +150,8 @@ async def get_note(client, message):
                 )
             except IndexError:
                 await message.edit(
-                    "An error has accured! Check your assistant for more information!"
+                    "An error has accured!"
+                    "Check your assistant for more information!"
                 )
                 return
         else:
@@ -149,7 +164,8 @@ async def get_note(client, message):
         Types.ANIMATED_STICKER,
     ):
         await GET_FORMAT[getnotes["type"]](
-            message.chat.id, getnotes["file"], reply_to_message_id=ReplyCheck(message)
+            message.chat.id, getnotes["file"],
+            reply_to_message_id=ReplyCheck(message)
         )
     else:
         if getnotes.get("value"):
@@ -166,16 +182,14 @@ async def get_note(client, message):
                 )
             except errors.exceptions.bad_request_400.BotInlineDisabled:
                 await message.edit(
-                    "Your bot inline isn't available!\nCheck your bot for more information!"
+                    "Your bot inline isn't available!\n"
+                    "Check your bot for more information!"
                 )
                 await setbot.send_message(
                     Owner,
-                    "Hello, your notes is look like include button, but i can't do that because "
-                    "**inline mode** is not enabled.\n\n**To enable inline mode:**\n1. Go to "
-                    "@BotFather and type `/mybots`\n2. Select your bot, then click **Bot "
-                    "Settings**, click **Inline Mode**, then click **Turn on**.\nOther option is "
-                    "optional, you can edit inline placeholder as you like!\n\nAfter that, "
-                    "you can try again to get that note!",
+                    "Hello, your notes is look like include button,"
+                    "but i can't do that because "
+                    "**inline mode** is not enabled."
                 )
                 return
             try:
@@ -188,7 +202,7 @@ async def get_note(client, message):
                 )
             except IndexError:
                 message.edit(
-                    "An error has accured! Check your assistant for more information!"
+                    "An error has accured!"
                 )
                 return
         else:
@@ -200,7 +214,9 @@ async def get_note(client, message):
             )
 
 
-@app.on_message(filters.user(Owner) & filters.command(["notes", "saved"], Command))
+@app.on_message(
+    filters.user(Owner) & filters.command(["notes", "saved"], COMMAND_PREFIXES)
+)
 async def local_notes(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")
@@ -212,14 +228,17 @@ async def local_notes(_, message):
     rply = "**Local notes:**\n"
     for x in getnotes:
         if len(rply) >= 1800:
-            await edrep(message, text=rply)
+            await edit_or_reply(message, text=rply)
             rply = "**Local notes:**\n"
         rply += f"- `{x}`\n"
 
     await message.edit(rply)
 
 
-@app.on_message(filters.user(Owner) & filters.command("clear", Command))
+@app.on_message(
+    filters.user(Owner) &
+    filters.command("clear", COMMAND_PREFIXES)
+)
 async def clear_note(_, message):
     if not DB_AVAILABLE:
         await message.edit("Your database is not avaiable!")

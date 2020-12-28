@@ -4,69 +4,94 @@ import time
 
 from PIL import Image
 
-from nana import app, setbot, Command, DB_AVAILABLE, AdminSettings, edrep
+from nana import (
+    app,
+    setbot,
+    COMMAND_PREFIXES,
+    DB_AVAILABLE,
+    AdminSettings,
+    edit_or_reply,
+)
 
 if DB_AVAILABLE:
-    from nana.assistant.database.stickers_db import get_sticker_set, get_stanim_set
+    from nana.assistant.database.stickers_db import (
+        get_sticker_set,
+        get_stanim_set
+    )
 
 from pyrogram import filters
 
 __MODULE__ = "Stickers"
 __HELP__ = """
-This module can help you steal sticker, just reply that sticker, type kang, and sticker is your.
+This module can help you steal sticker,
+just reply that sticker,
+type kang, and sticker is your.
 
 ──「 **Steal Sticker** 」──
 -> `kang`
 Reply a sticker/image, and sticker is your.
 
-──「 **Set Sticker Pack** 」── -> /setsticker This command only for Assistant bot, to set your sticker pack. When 
-sticker pack is full, type that command and select another or create new from @Stickers! 
+──「 **Set Sticker Pack** 」──
+-> /setsticker This command only for Assistant bot,
+to set your sticker pack. When sticker pack is full,
+type that command and select another or create new from @Stickers!
 
--> /setanimation This command is used to set animated pack through Assistant bot. When sticker pack is full, 
-type that command and select another or create new from @Stickers! 
+-> /setanimation This command is used to set animated pack through Assistant.
+When sticker pack is full,
+type that command and select another or create new from @Stickers!
 
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("kang", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("kang", COMMAND_PREFIXES)
+)
 async def kang_stickers(client, message):
     if not DB_AVAILABLE:
-        await edrep(message, text="Your database is not avaiable!")
+        await edit_or_reply(message, text="Your database is not avaiable!")
         return
     sticker_pack = get_sticker_set(message.from_user.id)
     animation_pack = get_stanim_set(message.from_user.id)
     if not sticker_pack:
-        await edrep(
+        await edit_or_reply(
             message,
-            text="You're not setup sticker pack!\nCheck your assistant for more information!",
+            text="Sticker pack doesnt exist.",
         )
         await setbot.send_message(
             message.from_user.id,
-            "Hello 🙂\nYou're look like want to steal a sticker, but sticker pack was not set. "
+            "Hello 🙂\nYou're look like want to"
+            " steal a sticker, but sticker pack was not set."
             "To set a sticker pack, type /setsticker and follow setup.",
         )
         return
     sticker_pack = sticker_pack.sticker
     if message.reply_to_message and message.reply_to_message.sticker:
-        if message.reply_to_message.sticker.mime_type == "application/x-tgsticker":
+        doc_mime = message.reply_to_message.sticker.mime_type
+        if doc_mime == "application/x-tgsticker":
             if not animation_pack:
-                await edrep(
+                await edit_or_reply(
                     message,
-                    text="You're not setup animation sticker pack!\nCheck your assistant for more information!",
+                    text="You're not setup animation sticker pack!\n"
+                    "Check your assistant for more information!",
                 )
                 await setbot.send_message(
                     message.from_user.id,
-                    "Hello 🙂\nYou're look like want to steal a animation sticker, but sticker "
-                    "pack was not set. To set a sticker pack, type /setanimation and follow "
+                    "Hello 🙂\nYou're look like want to"
+                    "steal a animation sticker, but sticker "
+                    "pack was not set. To set a sticker pack,"
+                    "type /setanimation and follow "
                     "setup.",
                 )
                 return
             await client.download_media(
-                message.reply_to_message.sticker, file_name="nana/cache/sticker.tgs"
+                message.reply_to_message.sticker,
+                file_name="nana/cache/sticker.tgs"
             )
         else:
             await client.download_media(
-                message.reply_to_message.sticker, file_name="nana/cache/sticker.png"
+                message.reply_to_message.sticker,
+                file_name="nana/cache/sticker.png"
             )
     elif message.reply_to_message and message.reply_to_message.photo:
         await client.download_media(
@@ -75,15 +100,18 @@ async def kang_stickers(client, message):
     elif (
         message.reply_to_message
         and message.reply_to_message.document
-        and message.reply_to_message.document.mime_type in ["image/png", "image/jpeg"]
+        and message.reply_to_message.document.mime_type
+        in ["image/png", "image/jpeg"]
     ):
         await client.download_media(
-            message.reply_to_message.document, file_name="nana/cache/sticker.png"
+            message.reply_to_message.document,
+            file_name="nana/cache/sticker.png"
         )
     else:
-        await edrep(
+        await edit_or_reply(
             message,
-            text="Reply a sticker or photo to kang it!\nCurrent sticker pack is: {}\nCurrent animation pack is: {}".format(
+            text="Current sticker pack is: {}\n"
+            "Current animation pack is: {}".format(
                 sticker_pack, animation_pack.sticker
             ),
         )
@@ -114,12 +142,12 @@ async def kang_stickers(client, message):
             maxsize = (512, 512)
             im.thumbnail(maxsize)
         im.save("nana/cache/sticker.png", "PNG")
-
+    mime_type = message.reply_to_message.sticker.mime_type
     await client.send_message("@Stickers", "/addsticker")
     time.sleep(0.2)
     if (
         message.reply_to_message.sticker
-        and message.reply_to_message.sticker.mime_type == "application/x-tgsticker"
+        and mime_type == "application/x-tgsticker"
     ):
         await client.send_message("@Stickers", animation_pack.sticker)
     else:
@@ -128,18 +156,18 @@ async def kang_stickers(client, message):
     checkfull = await app.get_history("@Stickers", limit=1)
     if (
         checkfull[0].text
-        == "Whoa! That's probably enough stickers for one pack, give it a break. A pack can't have more than "
+        == "Mnough stickers for one pack,"
         "120 stickers at the moment."
     ):
-        await edrep(
+        await edit_or_reply(
             message,
-            text="Your sticker pack was full!\nPlease change one from your Assistant",
+            text="Your sticker pack was full!",
         )
         os.remove("nana/cache/sticker.png")
         return
     if (
         message.reply_to_message.sticker
-        and message.reply_to_message.sticker.mime_type == "application/x-tgsticker"
+        and mime_type == "application/x-tgsticker"
     ):
         await client.send_document("@Stickers", "nana/cache/sticker.tgs")
         os.remove("nana/cache/sticker.tgs")
@@ -157,17 +185,18 @@ async def kang_stickers(client, message):
     await client.send_message("@Stickers", "/done")
     if (
         message.reply_to_message.sticker
-        and message.reply_to_message.sticker.mime_type == "application/x-tgsticker"
+        and mime_type == "application/x-tgsticker"
     ):
-        await edrep(
+        await edit_or_reply(
             message,
-            text="**Animation Sticker added!**\nYour animated sticker has been saved on [This sticker animated pack]("
-            "https://t.me/addstickers/{})".format(animation_pack.sticker),
+            text="**Animation Sticker added!**\n[ [Pack]("
+            "https://t.me/addstickers/{}) ]".format(animation_pack.sticker),
         )
     else:
-        await edrep(
+        await edit_or_reply(
             message,
-            text="**Sticker added!**\nYour sticker has been saved on [This sticker pack](https://t.me/addstickers/{})".format(
+            text="**Sticker added!**\n[ "
+            "[Pack](https://t.me/addstickers/{}) ]".format(
                 sticker_pack
             ),
         )

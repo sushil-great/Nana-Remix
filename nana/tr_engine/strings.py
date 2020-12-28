@@ -21,7 +21,11 @@ LANGUAGES = [
     "ar",
 ]
 
-strings = {i: yaml.full_load(open("locales/" + i + ".yml", "r")) for i in LANGUAGES}
+strings = {
+    i: yaml.full_load(
+        open("locales/" + i + ".yml", "r")
+    ) for i in LANGUAGES
+}
 
 
 def tld(t, _show_none=True):
@@ -109,7 +113,12 @@ def tld(t, _show_none=True):
 
     if t in strings["en-US"]:
         result = decode(
-            encode(strings["en-US"][t], "latin-1", "backslashreplace"), "unicode-escape"
+            encode(
+                strings["en-US"][t],
+                "latin-1",
+                "backslashreplace"
+            ),
+            "unicode-escape"
         )
         return result
 

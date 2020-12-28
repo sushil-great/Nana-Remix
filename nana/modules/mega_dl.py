@@ -3,7 +3,7 @@ from glob import glob
 from mega import Mega
 from pyrogram import filters
 
-from nana import app, Command, AdminSettings, edrep
+from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 __MODULE__ = "Mega"
 __HELP__ = """
@@ -13,7 +13,8 @@ Download any file from URL or from telegram
 Give url as args to download it.
 
 **Note**
-this is a sync module. you cannot use your userbot while mega is downloading a file
+this is a sync module.
+you cannot use your userbot while mega is downloading a file
 For now folders are not supported yet
 """
 
@@ -23,13 +24,15 @@ async def megadl(url):
     mega.download_url(url, "nana/downloads/mega")
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command(["mega"], Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command(["mega"], COMMAND_PREFIXES)
+)
 async def mega_download(_, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
-        await edrep(message, text="usage: mega (url)")
+        await edit_or_reply(message, text="usage: mega (url)")
         return
-    await edrep(message, text="__Processing...__")
+    await edit_or_reply(message, text="__Processing...__")
     if not os.path.exists("nana/downloads/mega"):
         os.makedirs("nana/downloads/mega")
     await megadl(args[1])

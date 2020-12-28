@@ -3,23 +3,28 @@ from datetime import datetime
 import asyncio
 from pyrogram import filters
 
-from nana.helpers.admincheck import admin_check
-from nana import Owner, app, Command, AdminSettings, edrep
+from nana.utils.admincheck import admin_check
+from nana import Owner, app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
 
 __MODULE__ = "Purges"
 __HELP__ = """
-Purge many messages in less than one seconds, you need to became admin to do this.
+Purge many messages in less than one seconds,
+you need to became admin to do this.
 Except for purgeme feature
 Do with you own risk!
 
 Developer create this module only for managing group, not for trolling user!
 Read this before take an action!
 -> All deleted message cannot restore
--> **DON'T DESTROY/DELETE ALL MESSAGES**, developer will not responsible if you're nuked your chat group. Except for cleaning group purposes.
-Ok look like you're understand what happened if you playing with this powerful weapon.
+-> **DON'T DESTROY/DELETE ALL MESSAGES**,
+developer will not responsible if you're nuked your chat group.
+Except for cleaning group purposes.
+Ok look like you're understand
+what happened if you playing with this powerful weapon.
 ──「 **Purge** 」──
 -> `purge`
-Purge from bellow to that replyed message, you need to became admins to do this!
+Purge from bellow to that replyed message,
+you need to became admins to do this!
 Give a number **without reply** to purge for x messages.
 
 ──「 **Purge My Messages** 」──
@@ -33,7 +38,10 @@ Delete's a message that you reply to
 """
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("purge", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("purge", COMMAND_PREFIXES)
+)
 async def purge_message(client, message):
     if message.chat.type not in ("supergroup", "channel"):
         return
@@ -52,7 +60,9 @@ async def purge_message(client, message):
             message_ids.append(a_s_message_id)
             if len(message_ids) == 100:
                 await client.delete_messages(
-                    chat_id=message.chat.id, message_ids=message_ids, revoke=True
+                    chat_id=message.chat.id,
+                    message_ids=message_ids,
+                    revoke=True
                 )
                 count_del_etion_s += len(message_ids)
                 message_ids = []
@@ -71,12 +81,14 @@ async def purge_message(client, message):
     await ms_g.delete()
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("purgeme", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("purgeme", COMMAND_PREFIXES)
+)
 async def purge_myself(client, message):
     if len(message.text.split()) >= 2 and message.text.split()[1].isdigit():
         target = int(message.text.split()[1])
     else:
-        await edrep(message, text="Give me a number for a range!")
+        await edit_or_reply(message, text="Give me a number for a range!")
     get_msg = await client.get_history(message.chat.id)
     listall = []
     counter = 0
@@ -110,7 +122,10 @@ async def purge_myself(client, message):
         await client.delete_messages(message.chat.id, message_ids=listall)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("del", Command))
+@app.on_message(
+    filters.user(AdminSettings) &
+    filters.command("del", COMMAND_PREFIXES)
+)
 async def delete_replied(client, message):
     msg_ids = [message.message_id]
     if message.reply_to_message:

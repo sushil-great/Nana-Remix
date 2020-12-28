@@ -2,9 +2,16 @@ import time
 
 from pyrogram import filters
 
-from nana import setbot, AdminSettings, BotUsername, app, Command, OwnerUsername
+from nana import (
+    setbot,
+    AdminSettings,
+    BotUsername,
+    app,
+    COMMAND_PREFIXES,
+    OwnerUsername,
+)
 from nana import StartTime
-from nana.helpers.PyroHelpers import ReplyCheck
+from nana.utils.Pyroutils import ReplyCheck
 from nana.assistant.__main__ import dynamic_data_filter
 
 
@@ -16,7 +23,9 @@ def get_readable_time(seconds: int) -> str:
 
     while count < 4:
         count += 1
-        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
+        remainder, result = divmod(
+            seconds, 60
+        ) if count < 3 else divmod(seconds, 24)
         if seconds == 0 and remainder == 0:
             break
         time_list.append(int(result))
@@ -46,7 +55,9 @@ async def alivemsg_callback(client, query):
     await client.answer_callback_query(query.id, reply_msg, show_alert=True)
 
 
-@app.on_message(filters.user(AdminSettings) & filters.command("alive", Command))
+@app.on_message(
+    filters.user(AdminSettings) & filters.command("alive", COMMAND_PREFIXES)
+)
 async def google_search(client, message):
     x = await client.get_inline_bot_results(f"{BotUsername}", "alive")
     await message.delete()
