@@ -3,12 +3,11 @@ import importlib
 import sys
 import traceback
 
-from pyrogram import idle
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram import idle, types
 
 from nana import app, Owner, log, setbot, get_self, get_bot
-from nana.assistant import ALL_SETTINGS
-from nana.modules import ALL_MODULES
+from nana.plugins.assistant import ALL_SETTINGS
+from nana.plugins import ALL_MODULES
 
 try:
     from nana import TEST_DEVELOP
@@ -28,7 +27,7 @@ async def get_runtime():
 async def reload_userbot():
     await app.start()
     for modul in ALL_MODULES:
-        imported_module = importlib.import_module("nana.modules." + modul)
+        imported_module = importlib.import_module("nana.plugins." + modul)
         importlib.reload(imported_module)
 
 
@@ -39,8 +38,8 @@ async def reinitial_restart():
 
 async def reboot():
     global BOT_RUNTIME, HELP_COMMANDS
-    importlib.reload(importlib.import_module("nana.modules"))
-    importlib.reload(importlib.import_module("nana.assistant"))
+    importlib.reload(importlib.import_module("nana.plugins"))
+    importlib.reload(importlib.import_module("nana.plugins.assistant"))
     # await setbot.send_message(Owner, "Bot is restarting...")
     await setbot.restart()
     await app.restart()
@@ -50,11 +49,13 @@ async def reboot():
     HELP_COMMANDS = {}
     # Assistant bot
     for setting in ALL_SETTINGS:
-        imported_module = importlib.import_module("nana.assistant." + setting)
+        imported_module = importlib.import_module(
+            "nana.plugins.assistant." + setting
+        )
         importlib.reload(imported_module)
     # Nana userbot
     for modul in ALL_MODULES:
-        imported_module = importlib.import_module("nana.modules." + modul)
+        imported_module = importlib.import_module("nana.plugins." + modul)
         if hasattr(
             imported_module,
             "__MODULE__"
@@ -95,10 +96,10 @@ RANDOM_STICKERS = [
 async def except_hook(errtype, value, tback):
     sys.__excepthook__(errtype, value, tback)
     errors = traceback.format_exception(etype=errtype, value=value, tb=tback)
-    button = InlineKeyboardMarkup(
+    button = types.InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(
+                types.InlineKeyboardButton(
                     "🐞 Report bugs",
                     callback_data="report_errors"
                 )
@@ -121,18 +122,20 @@ async def reinitial():
 
 
 async def start_bot():
-    # sys.excepthook = except_hook
+    # sys.excepthook = await except_hook
     print("----- Checking user and bot... -----")
     await reinitial()
     print("----------- Check done! ------------")
     # Assistant bot
     await setbot.start()
     for setting in ALL_SETTINGS:
-        imported_module = importlib.import_module("nana.assistant." + setting)
+        imported_module = importlib.import_module(
+            "nana.plugins.assistant." + setting
+        )
     # Nana userbot
     await app.start()
     for modul in ALL_MODULES:
-        imported_module = importlib.import_module("nana.modules." + modul)
+        imported_module = importlib.import_module("nana.plugins." + modul)
         if hasattr(
             imported_module,
             "__MODULE__"
@@ -170,16 +173,16 @@ async def start_bot():
         else:
             assistant_modules += "|{:<15}".format(i)
         j += 1
-    print("+=============================================================+")
-    print("|                     Userbot Modules                         |")
-    print("+=============+===============+===============+===============+")
+    print("+===========================================================+")
+    print("|                   Userbot Modules                         |")
+    print("+=============+==============+==============+===============+")
     print(userbot_modules)
-    print("+=============+===============+===============+===============+\n")
-    print("+=============================================================+")
-    print("|                   Assistant Modules                         |")
-    print("+=============+===============+===============+===============+")
+    print("+=============+=================+===========+===============+\n")
+    print("+===========================================================+")
+    print("|                   Assistant Modules                       |")
+    print("+=============+===============+=============+===============+")
     print(assistant_modules)
-    print("+===============+=============+===============+===============+")
+    print("+===============+===========+=============+=================+")
     print("Bot run successfully!")
     if TEST_DEVELOP:
         log.warning("Test is passed!")

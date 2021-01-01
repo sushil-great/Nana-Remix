@@ -15,7 +15,7 @@ from sqlalchemy import create_engine, exc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from .startup.variable import get_var
+from .src.variable import get_var
 
 StartTime = time.time()
 
@@ -53,8 +53,6 @@ ASSISTANT_BOT_TOKEN = get_var("ASSISTANT_BOT_TOKEN", None)
 
 # From config
 COMMAND_PREFIXES = get_var("Command", "! . - ^").split()
-NANA_WORKER = int(get_var("NANA_WORKER", 8))
-ASSISTANT_WORKER = int(get_var("ASSISTANT_WORKER", 2))
 # APIs
 SCREENSHOTLAYER_API = get_var("screenshotlayer_API", None)
 GDRIVE_CREDENTIALS = get_var("gdrive_credentials", None)
@@ -93,8 +91,8 @@ Owner = 0
 BotName = ""
 OwnerUsername = ""
 
-if os.path.exists("nana/logs/error.log"):
-    f = open("nana/logs/error.log", "w")
+if os.path.exists("nana/logs/error.txt"):
+    f = open("nana/logs/error.txt", "w")
     f.write("PEAK OF THE LOGS FILE")
 LOG_FORMAT = (
     "%(filename)s:%(lineno)s %(levelname)s: %(message)s"
@@ -103,7 +101,7 @@ logging.basicConfig(
     level=logging.ERROR,
     format=LOG_FORMAT,
     datefmt="%m-%d %H:%M",
-    filename="nana/logs/error.log",
+    filename="nana/logs/error.txt",
     filemode="w",
 )
 console = logging.StreamHandler()
@@ -175,7 +173,7 @@ setbot = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=ASSISTANT_BOT_TOKEN,
-    workers=ASSISTANT_WORKER,
+    workers=2,
 )
 
 app = Client(
@@ -186,7 +184,7 @@ app = Client(
     device_model=DEVICE_MODEL,
     system_version=SYSTEM_VERSION,
     lang_code=LANG_CODE,
-    workers=NANA_WORKER,
+    workers=8,
 )
 
 

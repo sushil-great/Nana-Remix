@@ -10,9 +10,7 @@ git clone https://github.com/pokurt/Nana-Remix.git
 cd Nana-Remix
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
-cd nana
-mv config.example.py config.py
-cd ..
+mv sample.config.ini config.ini
 echo Done.
-echo Now edit config.py with nano or anything you want, then run the userbot with py -m nana.
+echo Now edit config.ini with nano or anything you want, then run the userbot with python3 -m nana.
 echo Good luck!

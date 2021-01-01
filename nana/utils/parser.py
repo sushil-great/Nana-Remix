@@ -2,6 +2,28 @@ import html
 import re
 
 
+MAX_MESSAGE_LENGTH = 2048
+
+
+def split_limits(text):
+    if len(text) < MAX_MESSAGE_LENGTH:
+        return [text]
+
+    lines = text.splitlines(True)
+    small_msg = ""
+    result = []
+    for line in lines:
+        if len(small_msg) + len(line) < MAX_MESSAGE_LENGTH:
+            small_msg += line
+        else:
+            result.append(small_msg)
+            small_msg = line
+    else:
+        result.append(small_msg)
+
+    return result
+
+
 def cleanhtml(raw_html):
     cleanr = re.compile("<.*?>")
     return re.sub(cleanr, "", raw_html)
