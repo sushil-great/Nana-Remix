@@ -112,49 +112,49 @@ query ($id: Int,$search: String) {
 """
 
 
-url = "https://graphql.anilist.co"
+url = 'https://graphql.anilist.co'
 
 
 async def airing_sauce(query):
-    variables = {"search": query}
+    variables = {'search': query}
     async with aiohttp.ClientSession() as ses:
         async with ses.post(
-            url, json={"query": airing_query, "variables": variables}
+            url, json={'query': airing_query, 'variables': variables},
         ) as resp:
             return await resp.json()
 
 
 async def fav_sauce(query):
-    variables = {"search": query}
+    variables = {'search': query}
     async with aiohttp.ClientSession() as ses:
         async with ses.post(
-            url, json={"query": fav_query, "variables": variables}
+            url, json={'query': fav_query, 'variables': variables},
         ) as resp:
             return await resp.json()
 
 
 async def anime_sauce(query):
-    variables = {"search": query}
+    variables = {'search': query}
     async with aiohttp.ClientSession() as ses:
         async with ses.post(
-            url, json={"query": anime_query, "variables": variables}
+            url, json={'query': anime_query, 'variables': variables},
         ) as resp:
             return await resp.json()
 
 
 async def character_sauce(query):
-    variables = {"search": query}
+    variables = {'search': query}
     async with aiohttp.ClientSession() as ses:
         async with ses.post(
-            url, json={"query": character_query, "variables": variables}
+            url, json={'query': character_query, 'variables': variables},
         ) as resp:
             return await resp.json()
 
 
 async def manga_sauce(query):
-    variables = {"search": query}
+    variables = {'search': query}
     async with aiohttp.ClientSession() as ses:
         async with ses.post(
-            url, json={"query": manga_query, "variables": variables}
+            url, json={'query': manga_query, 'variables': variables},
         ) as resp:
             return await resp.json()

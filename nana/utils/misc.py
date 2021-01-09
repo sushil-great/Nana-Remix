@@ -3,15 +3,15 @@ from pyrogram.types import InlineKeyboardButton
 
 class EqInlineKeyboardButton(InlineKeyboardButton):
     def __eq__(self, other):
-        "inline keyboard open for bot"
+        'inline keyboard open for bot'
         return self.text == other.text
 
     def __lt__(self, other):
-        "inline method for text"
+        'inline method for text'
         return self.text < other.text
 
     def __gt__(self, other):
-        "inline method for text and others"
+        'inline method for text and others'
         return self.text > other.text
 
 
@@ -21,31 +21,31 @@ def paginate_modules(_page_n, module_dict, prefix, chat=None):
             [
                 EqInlineKeyboardButton(
                     x.__MODULE__,
-                    callback_data="{}_module({})".format(
-                        prefix, x.__MODULE__.lower()
+                    callback_data='{}_module({})'.format(
+                        prefix, x.__MODULE__.lower(),
                     ),
                 )
                 for x in module_dict.values()
-            ]
+            ],
         )
     else:
         modules = sorted(
             [
                 EqInlineKeyboardButton(
                     x.__MODULE__,
-                    callback_data="{}_module({},{})".format(
-                        prefix, chat, x.__MODULE__.lower()
+                    callback_data='{}_module({},{})'.format(
+                        prefix, chat, x.__MODULE__.lower(),
                     ),
                 )
                 for x in module_dict.values()
-            ]
+            ],
         )
 
     pairs = [
         modules[
             i * 3: (i + 1) * 3
         ] for i in range(
-            (len(modules) + 3 - 1) // 3
+            (len(modules) + 3 - 1) // 3,
         )
     ]
     round_num = len(modules) / 3

@@ -1,11 +1,14 @@
 from gpytranslate import Translator
 from pyrogram import filters
 
-from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
 
 trl = Translator()
 
-__MODULE__ = "Translate"
+__MODULE__ = 'Translate'
 __HELP__ = """
 Translate some text by give a text or reply that text/caption.
 Translate by Google Translate
@@ -21,7 +24,7 @@ Reply a message to translate that.
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("tr", COMMAND_PREFIXES)
+    filters.command('tr', COMMAND_PREFIXES),
 )
 async def translate(_, message):
     trl = Translator()
@@ -40,7 +43,7 @@ async def translate(_, message):
             tekstr = await trl(text, targetlang=target)
         except ValueError as err:
             await edit_or_reply(
-                message, text=f"Error: `{str(err)}`", parse_mode="Markdown"
+                message, text=f'Error: `{str(err)}`', parse_mode='Markdown',
             )
             return
     else:
@@ -54,18 +57,18 @@ async def translate(_, message):
         except ValueError as err:
             await edit_or_reply(
                 message,
-                text="Error: `{}`".format(
-                    str(err)
+                text='Error: `{}`'.format(
+                    str(err),
                 ),
-                parse_mode="Markdown"
+                parse_mode='Markdown',
             )
             return
 
     await edit_or_reply(
         message,
-        text="**Translated:**\n```{}```\n\n**Detected Language:** `{}`".format(
+        text='**Translated:**\n```{}```\n\n**Detected Language:** `{}`'.format(
             tekstr.text,
-            (await trl.detect(text))
+            (await trl.detect(text)),
         ),
-        parse_mode="Markdown",
+        parse_mode='Markdown',
     )

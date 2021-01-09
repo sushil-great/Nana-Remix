@@ -2,32 +2,30 @@ import asyncio
 from time import time
 
 from coffeehouse.api import API
-from coffeehouse.lydia import LydiaAI
 from coffeehouse.exception import CoffeeHouseError as CFError
+from coffeehouse.lydia import LydiaAI
 from pyrogram import filters
 
-from nana import (
-    LYDIA_API,
-    app,
-    COMMAND_PREFIXES,
-    setbot,
-    Owner,
-    OwnerUsername,
-    AdminSettings,
-    edit_or_reply,
-)
 import nana.plugins.database.lydia_db as sql
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
+from nana import LYDIA_API
+from nana import Owner
+from nana import OwnerUsername
+from nana import setbot
 
-__MODULE__ = "Chatbot"
+__MODULE__ = 'Chatbot'
 __HELP__ = """
 An AI Powered Chat Bot Module
 
 ──「 **Chatbot** 」──
 -> `addchat`
-Enables AI on chat
+Enables AI on chat.
 
 -> `rmchat`
-Removes AI on chat
+Removes AI on chat.
 
 Powered by CoffeeHouse API created by @Intellivoid.
 """
@@ -38,7 +36,7 @@ api_ = LydiaAI(CoffeeHouseAPI)
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("addchat", COMMAND_PREFIXES)
+    filters.command('addchat', COMMAND_PREFIXES),
 )
 async def add_chat(_, message):
     global api_
@@ -51,12 +49,12 @@ async def add_chat(_, message):
         sql.set_ses(chat_id, ses_id, expires)
         await edit_or_reply(
             message,
-            text="`AI successfully enabled for this chat!`"
+            text='`AI successfully enabled for this chat!`',
         )
     else:
         await edit_or_reply(
             message,
-            text="`AI is already enabled for this chat!`"
+            text='`AI is already enabled for this chat!`',
         )
 
     await asyncio.sleep(5)
@@ -65,7 +63,7 @@ async def add_chat(_, message):
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("rmchat", COMMAND_PREFIXES)
+    filters.command('rmchat', COMMAND_PREFIXES),
 )
 async def remove_chat(_, message):
     chat_id = message.chat.id
@@ -73,11 +71,11 @@ async def remove_chat(_, message):
     if not is_chat:
         await edit_or_reply(
             message,
-            text="`AI isn't enabled here in the first place!`"
+            text="`AI isn't enabled here in the first place!`",
         )
     else:
         sql.rem_chat(chat_id)
-        await edit_or_reply(message, text="`AI disabled successfully!`")
+        await edit_or_reply(message, text='`AI disabled successfully!`')
 
     await asyncio.sleep(5)
     await message.delete()
@@ -110,20 +108,20 @@ async def chat_bot(client, message):
         except ValueError:
             pass
         try:
-            await client.send_chat_action(chat_id, action="typing")
+            await client.send_chat_action(chat_id, action='typing')
             rep = api_.think_thought(sesh, query)
             await asyncio.sleep(0.3)
             await message.reply_text(rep)
         except CFError as e:
             await setbot.send_message(
-                Owner, f"Chatbot error: {e} occurred in {chat_id}!"
+                Owner, f'Chatbot error: {e} occurred in {chat_id}!',
             )
 
 
 async def check_message(_, message):
-    if message.chat.type == "private":
+    if message.chat.type == 'private':
         return True
-    if message.text.lower() == f"@{OwnerUsername}":
+    if message.text.lower() == f'@{OwnerUsername}':
         return True
     if message.reply_to_message:
         return message.reply_to_message.from_user.id == Owner

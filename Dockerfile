@@ -44,6 +44,7 @@ RUN apt update && apt upgrade -y && \
     zlib1g-dev \
     xvfb \
     unzip \
+    make \
     libopus0 \
     libopus-dev \
     gcc \
@@ -60,10 +61,11 @@ ENV ENV True
 
 # Install requirements
 COPY requirements.txt .
-RUN pip3 install -U -r requirements.txt
 
 # copy the content of the local src directory to the working directory
 COPY . .
 
+RUN make install
+
 # Starting Worker
-CMD ["python3","-m","nana"]
+CMD ["make","run"]

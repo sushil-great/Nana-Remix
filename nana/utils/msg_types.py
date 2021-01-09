@@ -1,4 +1,5 @@
-from enum import IntEnum, unique
+from enum import IntEnum
+from enum import unique
 
 
 @unique
@@ -25,7 +26,7 @@ def get_message_type(msg):
         message_type = Types.STICKER
 
     elif msg.document:
-        if msg.document.mime_type == "application/x-bad-tgsticker":
+        if msg.document.mime_type == 'application/x-bad-tgsticker':
             message_type = Types.ANIMATED_STICKER
         else:
             message_type = Types.DOCUMENT
@@ -94,7 +95,7 @@ def get_note_type(msg):
         elif reply.caption:
             text = reply.caption.markdown
         else:
-            text = ""
+            text = ''
         if len(args) >= 2 and reply.text:  # not caption, text
             data_type = Types.TEXT
 
@@ -103,7 +104,7 @@ def get_note_type(msg):
             data_type = Types.STICKER
 
         elif reply.document:
-            if reply.document.mime_type == "application/x-bad-tgsticker":
+            if reply.document.mime_type == 'application/x-bad-tgsticker':
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.DOCUMENT
@@ -172,7 +173,7 @@ def get_welcome_type(msg):
             data_type = Types.TEXT
 
         elif reply.sticker:
-            if reply.document.mime_type == "application/x-tgsticker":
+            if reply.document.mime_type == 'application/x-tgsticker':
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.STICKER
@@ -180,7 +181,7 @@ def get_welcome_type(msg):
             text = None
 
         elif reply.document:
-            if reply.document.mime_type == "application/x-bad-tgsticker":
+            if reply.document.mime_type == 'application/x-bad-tgsticker':
                 data_type = Types.ANIMATED_STICKER
             else:
                 data_type = Types.DOCUMENT

@@ -1,13 +1,16 @@
 import threading
 
-from sqlalchemy import Column, UnicodeText, Integer
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import UnicodeText
 
-from nana import BASE, SESSION
+from nana import BASE
+from nana import SESSION
 from nana.utils.msg_types import Types
 
 
 class SelfNotes(BASE):
-    __tablename__ = "self_notes"
+    __tablename__ = 'self_notes'
     user_id = Column(Integer, primary_key=True)
     name = Column(UnicodeText, primary_key=True)
     value = Column(UnicodeText, nullable=False)
@@ -24,7 +27,7 @@ class SelfNotes(BASE):
 
     def __repr__(self):
         """get db message"""
-        return "<Note %s>" % self.name
+        return '<Note %s>' % self.name
 
 
 SelfNotes.__table__.create(checkfirst=True)
@@ -59,7 +62,7 @@ def save_selfnote(user_id, note_name, note_data, msgtype, file=None):
             note_name,
             note_data,
             msgtype=int(msgtype),
-            file=file
+            file=file,
         )
         SESSION.add(note)
         SESSION.commit()
@@ -67,9 +70,9 @@ def save_selfnote(user_id, note_name, note_data, msgtype, file=None):
         if not SELF_NOTES.get(user_id):
             SELF_NOTES[user_id] = {}
         SELF_NOTES[user_id][note_name] = {
-            "value": note_data,
-            "type": msgtype,
-            "file": file,
+            'value': note_data,
+            'type': msgtype,
+            'file': file,
         }
 
 
@@ -123,9 +126,9 @@ def __load_allnotes():
         if not SELF_NOTES.get(x.user_id):
             SELF_NOTES[x.user_id] = {}
         SELF_NOTES[x.user_id][x.name] = {
-            "value": x.value,
-            "type": x.msgtype,
-            "file": x.file,
+            'value': x.value,
+            'type': x.msgtype,
+            'file': x.file,
         }
 
 

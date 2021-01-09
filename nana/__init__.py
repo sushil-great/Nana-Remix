@@ -1,19 +1,20 @@
 """The initial start of Nana-Remix."""
-
-
 import logging
-import sys
 import os
-from inspect import getfullargspec
 import platform
+import sys
 import time
+from inspect import getfullargspec
 
 from pydrive.auth import GoogleAuth
-from pyrogram import Client, errors
+from pyrogram import Client
+from pyrogram import errors
 from pyrogram.types import Message
-from sqlalchemy import create_engine, exc
+from sqlalchemy import create_engine
+from sqlalchemy import exc
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
 
 from .src.variable import get_var
 
@@ -22,93 +23,93 @@ StartTime = time.time()
 
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    logging.error("Python version Lower than 3.6! Abort!")
+    logging.error('Python version Lower than 3.6! Abort!')
     sys.exit()
 
-USERBOT_VERSION = "3.2"
-ASSISTANT_VERSION = "3.2"
+USERBOT_VERSION = '3.2.1'
+ASSISTANT_VERSION = '3.2.1'
 
-OFFICIAL_BRANCH = ["master", "dev", "translations"]
+OFFICIAL_BRANCH = ['master', 'translations']
 RANDOM_STICKERS = [
-    "CAADAgAD6EoAAuCjggf4LTFlHEcvNAI",
-    "CAADAgADf1AAAuCjggfqE-GQnopqyAI",
-    "CAADAgADaV0AAuCjggfi51NV8GUiRwI",
+    'CAADAgAD6EoAAuCjggf4LTFlHEcvNAI',
+    'CAADAgADf1AAAuCjggfqE-GQnopqyAI',
+    'CAADAgADaV0AAuCjggfi51NV8GUiRwI',
 ]
 
-ENV = get_var("ENV", False)
-logger = get_var("LOGGER", False)
+ENV = get_var('ENV', False)
+logger = get_var('LOGGER', False)
 # Version
-LANG_CODE = get_var("lang_code", "en")
+LANG_CODE = get_var('lang_code', 'en')
 DEVICE_MODEL = platform.machine()
 SYSTEM_VERSION = platform.platform()
-time_country = get_var("time_country", None)
+time_country = get_var('time_country', None)
 
 # Must be filled
-API_ID = int(get_var("api_id", None))
-API_HASH = get_var("api_hash", None)
+API_ID = int(get_var('api_id', None))
+API_HASH = get_var('api_hash', None)
 
 # Session
-USERBOT_SESSION = get_var("USERBOT_SESSION", None)
-ASSISTANT_BOT_TOKEN = get_var("ASSISTANT_BOT_TOKEN", None)
+USERBOT_SESSION = get_var('USERBOT_SESSION', None)
+ASSISTANT_BOT_TOKEN = get_var('ASSISTANT_BOT_TOKEN', None)
 
 # From config
-COMMAND_PREFIXES = get_var("Command", "! . - ^").split()
+COMMAND_PREFIXES = get_var('Command', '! . - ^').split()
 # APIs
-SCREENSHOTLAYER_API = get_var("screenshotlayer_API", None)
-GDRIVE_CREDENTIALS = get_var("gdrive_credentials", None)
-LYDIA_API = get_var("lydia_api", None)
-REMOVE_BG_API = get_var("remove_bg_api", None)
-SPAMWATCH_API = get_var("sw_api", None)
-IBM_WATSON_CRED_URL = get_var("IBM_WATSON_CRED_URL", None)
-IBM_WATSON_CRED_PASSWORD = get_var("IBM_WATSON_CRED_PASSWORD", None)
+SCREENSHOTLAYER_API = get_var('screenshotlayer_API', None)
+GDRIVE_CREDENTIALS = get_var('gdrive_credentials', None)
+LYDIA_API = get_var('lydia_api', None)
+REMOVE_BG_API = get_var('remove_bg_api', None)
+SPAMWATCH_API = get_var('sw_api', None)
+IBM_WATSON_CRED_URL = get_var('IBM_WATSON_CRED_URL', None)
+IBM_WATSON_CRED_PASSWORD = get_var('IBM_WATSON_CRED_PASSWORD', None)
 
 # LOADER
-USERBOT_LOAD = get_var("USERBOT_LOAD", "").split()
-USERBOT_NOLOAD = get_var("USERBOT_NOLOAD", "").split()
-ASSISTANT_LOAD = get_var("ASSISTANT_LOAD", "").split()
-ASSISTANT_NOLOAD = get_var("ASSISTANT_NOLOAD", "").split()
+USERBOT_LOAD = get_var('USERBOT_LOAD', '').split()
+USERBOT_NOLOAD = get_var('USERBOT_NOLOAD', '').split()
+ASSISTANT_LOAD = get_var('ASSISTANT_LOAD', '').split()
+ASSISTANT_NOLOAD = get_var('ASSISTANT_NOLOAD', '').split()
 
 # Git Repository for Pulling Updates
-REPOSITORY = get_var("REPOSITORY", False)
+REPOSITORY = get_var('REPOSITORY', False)
 
 # Postgresql Database
 DB_URI = get_var(
-    "DB_URI", "postgres://username:password@localhost:5432/database"
+    'DB_URI', 'postgres://username:password@localhost:5432/database',
 )
 
-AdminSettings = [int(x) for x in get_var("AdminSettings", "").split()]
-REMINDER_UPDATE = bool(get_var("REMINDER_UPDATE", True))
-NANA_IMG = get_var("NANA_IMG", False)
-PM_PERMIT = bool(get_var("PM_PERMIT", False))
+AdminSettings = [int(x) for x in get_var('AdminSettings', '').split()]
+REMINDER_UPDATE = bool(get_var('REMINDER_UPDATE', True))
+NANA_IMG = get_var('NANA_IMG', False)
+PM_PERMIT = bool(get_var('PM_PERMIT', False))
 
-OwnerName = ""
-app_version = "💝 Nana-Remix (v{})".format(USERBOT_VERSION)
-BotUsername = ""
+OwnerName = ''
+app_version = f'💝 Nana-Remix (v{USERBOT_VERSION})'
+BotUsername = ''
 BotID = 0
 # Required for some features
 # Set temp var for load later
 Owner = 0
-BotName = ""
-OwnerUsername = ""
+BotName = ''
+OwnerUsername = ''
 
-if os.path.exists("nana/logs/error.txt"):
-    f = open("nana/logs/error.txt", "w")
-    f.write("PEAK OF THE LOGS FILE")
+if os.path.exists('nana/logs/error.txt'):
+    f = open('nana/logs/error.txt', 'w')
+    f.write('PEAK OF THE LOGS FILE')
 LOG_FORMAT = (
-    "%(filename)s:%(lineno)s %(levelname)s: %(message)s"
+    '%(filename)s:%(lineno)s %(levelname)s: %(message)s'
 )
 logging.basicConfig(
     level=logging.ERROR,
     format=LOG_FORMAT,
-    datefmt="%m-%d %H:%M",
-    filename="nana/logs/error.txt",
-    filemode="w",
+    datefmt='%m-%d %H:%M',
+    filename='nana/logs/error.txt',
+    filemode='w',
 )
 console = logging.StreamHandler()
 console.setLevel(logging.ERROR)
 formatter = logging.Formatter(LOG_FORMAT)
 console.setFormatter(formatter)
-logging.getLogger("").addHandler(console)
+logging.getLogger('').addHandler(console)
 
 log = logging.getLogger()
 
@@ -121,7 +122,7 @@ BOTINLINE_AVAIABLE = False
 # Postgresql
 def mulaisql() -> scoped_session:
     global DB_AVAILABLE
-    engine = create_engine(DB_URI, client_encoding="utf8")
+    engine = create_engine(DB_URI, client_encoding='utf8')
     BASE.metadata.bind = engine
     try:
         BASE.metadata.create_all(engine)
@@ -137,7 +138,7 @@ async def get_bot_inline(bot):
     if setbot:
         try:
             await app.get_inline_bot_results(
-                "@{}".format(bot.username), "test"
+                f'@{bot.username}', 'test',
             )
             BOTINLINE_AVAIABLE = True
         except errors.exceptions.bad_request_400.BotInlineDisabled:
@@ -149,7 +150,7 @@ async def get_self():
     getself = await app.get_me()
     Owner = getself.id
     if getself.last_name:
-        OwnerName = getself.first_name + " " + getself.last_name
+        OwnerName = getself.first_name + ' ' + getself.last_name
     else:
         OwnerName = getself.first_name
     OwnerUsername = getself.username
@@ -169,7 +170,7 @@ BASE = declarative_base()
 SESSION = mulaisql()
 
 setbot = Client(
-    ":memory:",
+    ':memory:',
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=ASSISTANT_BOT_TOKEN,

@@ -11,15 +11,18 @@ from bs4 import BeautifulSoup
 from pyDownload import Downloader
 from pyrogram import filters
 
-from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
 
-__MODULE__ = "Downloads"
+__MODULE__ = 'Downloads'
 __HELP__ = """
-Download any file from URL or from telegram
+Download any file from a URL or Telegram.
 
 ──「 **Download From URL** 」──
 -> `dl (url)`
-Give url as args to download it.
+Give a url as an arg to download it.
 
 ──「 **Download From Telegram** 」──
 -> `download`
@@ -27,21 +30,21 @@ Reply a document to download it.
 
 ──「 **Upload To Telegram** 」──
 -> `upload (path)`
-give path of file to send to telegram.
+Give a path of a file as an arg to upload to Telegram.
 
-──「 **List files and directories** 」──
--> `ls (path)`
-see list of files and directories, path is optional
+──「 **List Files & Directories** 」──
+-> `ls (*path)`
+See a list of files and dirs.
 
-──「 **Direct Link Download** 」──
+──「 **Direct Download Link** 」──
 -> `direct (url)`
-Create A direct link download
+Create a direct download link.
 
-Supported Link
-`gdrive     | zippyshare   | mega
+Supported Sites
+```gdrive     | zippyshare   | mega
 yadi.sk    | mediafire    | osdn.net
 github.com | Sourceforge
-androidfilehost.com`
+androidfilehost.com```
 """
 
 
@@ -53,19 +56,19 @@ async def time_parser(start, end):
     minutes = time_end // 60 % 60
     seconds = time_end % 60
 
-    times = ""
+    times = ''
     if month:
-        times += "{} month, ".format(month)
+        times += f'{month} month, '
     if days:
-        times += "{} days, ".format(days)
+        times += f'{days} days, '
     if hours:
-        times += "{} hours, ".format(hours)
+        times += f'{hours} hours, '
     if minutes:
-        times += "{} minutes, ".format(minutes)
+        times += f'{minutes} minutes, '
     if seconds:
-        times += "{} seconds".format(seconds)
-    if times == "":
-        times = "{} miliseconds".format(time_end)
+        times += f'{seconds} seconds'
+    if times == '':
+        times = f'{time_end} miliseconds'
 
     return times
 
@@ -75,164 +78,169 @@ async def download_url(url, file_name):
     downloader = Downloader(url=url)
     end = int(time.time())
     times = await time_parser(start, end)
-    downlaoded = f"⬇️ Downloaded `{file_name}` in {times}"
-    downlaoded += "\n🗂 File name: {}".format(file_name)
+    downlaoded = f'⬇️ Downloaded `{file_name}` in {times}'
+    downlaoded += f'\n🗂 File name: {file_name}'
     size = os.path.getsize(downloader.file_name)
     if size > 1024000000:
         file_size = round(size / 1024000000, 3)
-        downlaoded += "\n💿 File size: `" + str(file_size) + " GB`\n"
+        downlaoded += '\n💿 File size: `' + str(file_size) + ' GB`\n'
     elif 1024000 < size < 1024000000:
         file_size = round(size / 1024000, 3)
-        downlaoded += "\n💿 File size: `" + str(file_size) + " MB`\n"
+        downlaoded += '\n💿 File size: `' + str(file_size) + ' MB`\n'
     elif 1024 < size < 1024000:
         file_size = round(size / 1024, 3)
-        downlaoded += "\n💿 File size: `" + str(file_size) + " KB`\n"
+        downlaoded += '\n💿 File size: `' + str(file_size) + ' KB`\n'
     elif size < 1024:
         file_size = round(size, 3)
-        downlaoded += "\n💿 File size: `" + str(file_size) + " Byte`\n"
+        downlaoded += '\n💿 File size: `' + str(file_size) + ' Byte`\n'
 
     try:
-        os.rename(downloader.file_name, "nana/downloads/" + file_name)
+        os.rename(downloader.file_name, 'nana/downloads/' + file_name)
     except OSError:
-        return "Failed to download file\nInvaild file name!"
+        return 'Failed to download file\nInvaild file name!'
     return downlaoded
 
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("dl", COMMAND_PREFIXES)
+    filters.command('dl', COMMAND_PREFIXES),
 )
 async def download_from_url(_, message):
     if len(message.text.split()) == 1:
-        await edit_or_reply(message, text="Usage: `dl <url> <filename>`")
+        await edit_or_reply(message, text='Usage: `dl <url> <filename>`')
         return
     if len(message.text.split()) == 2:
         url = message.text.split(None, 1)[1]
-        file_name = url.split("/")[-1]
+        file_name = url.split('/')[-1]
     elif len(message.text.split()) == 3:
         url = message.text.split(None, 2)[1]
         file_name = message.text.split(None, 2)[2]
     else:
-        await edit_or_reply(message, text="Invaild args given!")
+        await edit_or_reply(message, text='Invaild args given!')
         return
     try:
-        os.listdir("nana/downloads/")
+        os.listdir('nana/downloads/')
     except FileNotFoundError:
-        await edit_or_reply(message, text="Invalid download path in config!")
+        await edit_or_reply(
+            message,
+            text='Invalid download path is provided in config!',
+        )
         return
-    await edit_or_reply(message, text="Downloading...")
+    await edit_or_reply(message, text='Downloading...')
     download = await download_url(url, file_name)
     await edit_or_reply(message, text=download)
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command("download", COMMAND_PREFIXES)
+    filters.user(AdminSettings) & filters.command(
+        'download', COMMAND_PREFIXES,
+    ),
 )
 async def dssownload_from_telegram(client, message):
     if message.reply_to_message:
         await download_file_from_tg(client, message)
     else:
-        await edit_or_reply(message, text="Reply document to download it")
+        await edit_or_reply(message, text='Reply a document to download it.')
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command("direct", COMMAND_PREFIXES)
+    filters.user(AdminSettings) & filters.command('direct', COMMAND_PREFIXES),
 )
 async def direct_link_generator(_, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
-        await edit_or_reply(message, text="Write any args here!")
+        await edit_or_reply(message, text='Give me some arg(s).')
         return
     downloadurl = args[1]
-    reply = ""
-    links = re.findall(r"\bhttps?://.*\.\S+", downloadurl)
+    reply = ''
+    links = re.findall(r'\bhttps?://.*\.\S+', downloadurl)
     if not links:
-        reply = "`No links found!`"
+        reply = '`No links found!`'
         await edit_or_reply(message, text=reply)
     for link in links:
-        if "drive.google.com" in link:
+        if 'drive.google.com' in link:
             reply += gdrive(link)
-        elif "zippyshare.com" in link:
-            reply += "Zippy Share disabled of security reasons"
-        elif "yadi.sk" in link:
+        elif 'zippyshare.com' in link:
+            reply += 'Zippy Share disabled of security reasons'
+        elif 'yadi.sk' in link:
             reply += yandex_disk(link)
-        elif "mediafire.com" in link:
+        elif 'mediafire.com' in link:
             reply += mediafire(link)
-        elif "sourceforge.net" in link:
+        elif 'sourceforge.net' in link:
             reply += sourceforge(link)
-        elif "osdn.net" in link:
+        elif 'osdn.net' in link:
             reply += osdn(link)
-        elif "github.com" in link:
+        elif 'github.com' in link:
             reply += github(link)
-        elif "androidfilehost.com" in link:
+        elif 'androidfilehost.com' in link:
             reply += androidfilehost(link)
         else:
             reply += re.findall(
-                r"\bhttps?://(.*?[^/]+)", link
-            )[0] + "is not supported"
+                r'\bhttps?://(.*?[^/]+)', link,
+            )[0] + 'is not supported'
     await edit_or_reply(message, text=reply)
 
 
 def gdrive(url: str) -> str:
     """GDrive direct links generator"""
-    drive = "https://drive.google.com"
+    drive = 'https://drive.google.com'
     try:
-        link = re.findall(r"\bhttps?://drive\.google\.com\S+", url)[0]
+        link = re.findall(r'\bhttps?://drive\.google\.com\S+', url)[0]
     except IndexError:
-        reply = "`No Google drive links found`\n"
+        reply = '`No Google drive links found`\n'
         return reply
-    file_id = ""
-    reply = ""
-    if link.find("view") != -1:
-        file_id = link.split("/")[-2]
-    elif link.find("open?id=") != -1:
-        file_id = link.split("open?id=")[1].strip()
-    elif link.find("uc?id=") != -1:
-        file_id = link.split("uc?id=")[1].strip()
-    url = f"{drive}/uc?export=download&id={file_id}"
+    file_id = ''
+    reply = ''
+    if link.find('view') != -1:
+        file_id = link.split('/')[-2]
+    elif link.find('open?id=') != -1:
+        file_id = link.split('open?id=')[1].strip()
+    elif link.find('uc?id=') != -1:
+        file_id = link.split('uc?id=')[1].strip()
+    url = f'{drive}/uc?export=download&id={file_id}'
     download = requests.get(url, stream=True, allow_redirects=False)
     cookies = download.cookies
     try:
         # In case of small file size, Google downloads directly
-        dl_url = download.headers["location"]
-        if "accounts.google.com" in dl_url:  # non-public file
-            reply += "`Link is not public!`\n"
+        dl_url = download.headers['location']
+        if 'accounts.google.com' in dl_url:  # non-public file
+            reply += '`Link is not public!`\n'
             return reply
-        name = "Direct Download Link"
+        name = 'Direct Download Link'
     except KeyError:
         # In case of download warning page
-        page = BeautifulSoup(download.content, "lxml")
-        export = drive + page.find("a", {"id": "uc-download-link"}).get("href")
-        name = page.find("span", {"class": "uc-name-size"}).text
+        page = BeautifulSoup(download.content, 'lxml')
+        export = drive + page.find('a', {'id': 'uc-download-link'}).get('href')
+        name = page.find('span', {'class': 'uc-name-size'}).text
         response = requests.get(
-            export, stream=True, allow_redirects=False, cookies=cookies
+            export, stream=True, allow_redirects=False, cookies=cookies,
         )
-        dl_url = response.headers["location"]
-        if "accounts.google.com" in dl_url:
-            reply += "Link is not public!"
+        dl_url = response.headers['location']
+        if 'accounts.google.com' in dl_url:
+            reply += 'Link is not public!'
             return reply
-    reply += f"[{name}]({dl_url})\n"
+    reply += f'[{name}]({dl_url})\n'
     return reply
 
 
 def yandex_disk(url: str) -> str:
     """Yandex.Disk direct links generator"""
-    reply = ""
+    reply = ''
     try:
-        link = re.findall(r"\bhttps?://.*yadi\.sk\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*yadi\.sk\S+', url)[0]
     except IndexError:
-        reply = "`No Yandex.Disk links found`\n"
+        reply = '`No Yandex.Disk links found`\n'
         return reply
-    url = "https://cloud-api.yandex.net/v1/disk/"
-    api = "{}public/resources/download?public_key={}".format(
-        url, link
+    url = 'https://cloud-api.yandex.net/v1/disk/'
+    api = '{}public/resources/download?public_key={}'.format(
+        url, link,
     )
     try:
-        dl_url = requests.get(api).json()["href"]
-        name = dl_url.split("filename=")[1].split("&disposition")[0]
-        reply += f"[{name}]({dl_url})\n"
+        dl_url = requests.get(api).json()['href']
+        name = dl_url.split('filename=')[1].split('&disposition')[0]
+        reply += f'[{name}]({dl_url})\n'
     except KeyError:
-        reply += "`Error: File not found / Download limit reached`\n"
+        reply += '`Error: File not found / Download limit reached`\n'
         return reply
     return reply
 
@@ -240,142 +248,142 @@ def yandex_disk(url: str) -> str:
 def mediafire(url: str) -> str:
     """MediaFire direct links generator"""
     try:
-        link = re.findall(r"\bhttps?://.*mediafire\.com\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*mediafire\.com\S+', url)[0]
     except IndexError:
-        reply = "`No MediaFire links found`\n"
+        reply = '`No MediaFire links found`\n'
         return reply
-    reply = ""
-    page = BeautifulSoup(requests.get(link).content, "lxml")
-    info = page.find("a", {"aria-label": "Download file"})
-    dl_url = info.get("href")
-    size = re.findall(r"\(.*\)", info.text)[0]
-    name = page.find("div", {"class": "filename"}).text
-    reply += f"[{name} {size}]({dl_url})\n"
+    reply = ''
+    page = BeautifulSoup(requests.get(link).content, 'lxml')
+    info = page.find('a', {'aria-label': 'Download file'})
+    dl_url = info.get('href')
+    size = re.findall(r'\(.*\)', info.text)[0]
+    name = page.find('div', {'class': 'filename'}).text
+    reply += f'[{name} {size}]({dl_url})\n'
     return reply
 
 
 def sourceforge(url: str) -> str:
     """SourceForge direct links generator"""
     try:
-        link = re.findall(r"\bhttps?://.*sourceforge\.net\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*sourceforge\.net\S+', url)[0]
     except IndexError:
-        reply = "`No SourceForge links found`\n"
+        reply = '`No SourceForge links found`\n'
         return reply
-    file_path = re.findall(r"files(.*)/download", link)[0]
+    file_path = re.findall(r'files(.*)/download', link)[0]
     reply = f"Mirrors for __{file_path.split('/')[-1]}__\n"
-    project = re.findall(r"projects?/(.*?)/files", link)[0]
+    project = re.findall(r'projects?/(.*?)/files', link)[0]
     mirrors = (
-        f"https://sourceforge.net/settings/mirror_choices?"
-        f"projectname={project}&filename={file_path}"
+        f'https://sourceforge.net/settings/mirror_choices?'
+        f'projectname={project}&filename={file_path}'
     )
-    page = BeautifulSoup(requests.get(mirrors).content, "html.parser")
-    info = page.find("ul", {"id": "mirrorList"}).findAll("li")
+    page = BeautifulSoup(requests.get(mirrors).content, 'html.parser')
+    info = page.find('ul', {'id': 'mirrorList'}).findAll('li')
     for mirror in info[1:]:
-        name = re.findall(r"\((.*)\)", mirror.text.strip())[0]
+        name = re.findall(r'\((.*)\)', mirror.text.strip())[0]
         dl_url = (
             'https://{}.dl.sourceforge.net/project/{}/{}'.format(
-                mirror["id"],
+                mirror['id'],
                 project,
-                file_path
+                file_path,
             )
         )
-        reply += f"[{name}]({dl_url}) "
+        reply += f'[{name}]({dl_url}) '
     return reply
 
 
 def osdn(url: str) -> str:
     """OSDN direct links generator"""
-    osdn_link = "https://osdn.net"
+    osdn_link = 'https://osdn.net'
     try:
-        link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*osdn\.net\S+', url)[0]
     except IndexError:
-        reply = "`No OSDN links found`\n"
+        reply = '`No OSDN links found`\n'
         return reply
     page = BeautifulSoup(
         requests.get(
-            link, allow_redirects=True
-        ).content, "lxml"
+            link, allow_redirects=True,
+        ).content, 'lxml',
     )
-    info = page.find("a", {"class": "mirror_link"})
-    link = urllib.parse.unquote(osdn_link + info["href"])
+    info = page.find('a', {'class': 'mirror_link'})
+    link = urllib.parse.unquote(osdn_link + info['href'])
     reply = f"Mirrors for __{link.split('/')[-1]}__\n"
-    mirrors = page.find("form", {"id": "mirror-select-form"}).findAll("tr")
+    mirrors = page.find('form', {'id': 'mirror-select-form'}).findAll('tr')
     for data in mirrors[1:]:
-        mirror = data.find("input")["value"]
-        name = re.findall(r"\((.*)\)", data.findAll("td")[-1].text.strip())[0]
-        dl_url = re.sub(r"m=(.*)&f", f"m={mirror}&f", link)
-        reply += f"[{name}]({dl_url}) "
+        mirror = data.find('input')['value']
+        name = re.findall(r'\((.*)\)', data.findAll('td')[-1].text.strip())[0]
+        dl_url = re.sub(r'm=(.*)&f', f'm={mirror}&f', link)
+        reply += f'[{name}]({dl_url}) '
     return reply
 
 
 def github(url: str) -> str:
     """GitHub direct links generator"""
     try:
-        link = re.findall(r"\bhttps?://.*github\.com.*releases\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*github\.com.*releases\S+', url)[0]
     except IndexError:
-        reply = "`No GitHub Releases links found`\n"
+        reply = '`No GitHub Releases links found`\n'
         return reply
-    reply = ""
-    dl_url = ""
+    reply = ''
+    dl_url = ''
     download = requests.get(url, stream=True, allow_redirects=False)
     try:
-        dl_url = download.headers["location"]
+        dl_url = download.headers['location']
     except KeyError:
         reply += "`Error: Can't extract the link`\n"
-    name = link.split("/")[-1]
-    reply += f"[{name}]({dl_url}) "
+    name = link.split('/')[-1]
+    reply += f'[{name}]({dl_url}) '
     return reply
 
 
 def androidfilehost(url: str) -> str:
     """AFH direct links generator"""
     try:
-        link = re.findall(r"\bhttps?://.*androidfilehost.*fid.*\S+", url)[0]
+        link = re.findall(r'\bhttps?://.*androidfilehost.*fid.*\S+', url)[0]
     except IndexError:
-        reply = "`No AFH links found`\n"
+        reply = '`No AFH links found`\n'
         return reply
-    fid = re.findall(r"\?fid=(.*)", link)[0]
+    fid = re.findall(r'\?fid=(.*)', link)[0]
     session = requests.Session()
     user_agent = useragent()
-    headers = {"user-agent": user_agent}
+    headers = {'user-agent': user_agent}
     res = session.get(link, headers=headers, allow_redirects=True)
     headers = {
-        "origin": "https://androidfilehost.com",
-        "accept-encoding": "gzip, deflate, br",
-        "accept-language": "en-US,en;q=0.9",
-        "user-agent": user_agent,
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "x-mod-sbb-ctype": "xhr",
-        "accept": "*/*",
-        "referer": f"https://androidfilehost.com/?fid={fid}",
-        "authority": "androidfilehost.com",
-        "x-requested-with": "XMLHttpRequest",
+        'origin': 'https://androidfilehost.com',
+        'accept-encoding': 'gzip, deflate, br',
+        'accept-language': 'en-US,en;q=0.9',
+        'user-agent': user_agent,
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'x-mod-sbb-ctype': 'xhr',
+        'accept': '*/*',
+        'referer': f'https://androidfilehost.com/?fid={fid}',
+        'authority': 'androidfilehost.com',
+        'x-requested-with': 'XMLHttpRequest',
     }
     data = {
-        "submit": "submit",
-        "action": "getdownloadmirrors",
-        "fid": f"{fid}"
+        'submit': 'submit',
+        'action': 'getdownloadmirrors',
+        'fid': f'{fid}',
     }
     mirrors = None
-    reply = ""
+    reply = ''
     error = "`Error: Can't find Mirrors for the link`\n"
     try:
         req = session.post(
-            "https://androidfilehost.com/libs/otf/mirrors.otf.php",
+            'https://androidfilehost.com/libs/otf/mirrors.otf.php',
             headers=headers,
             data=data,
             cookies=res.cookies,
         )
-        mirrors = req.json()["MIRRORS"]
+        mirrors = req.json()['MIRRORS']
     except (json.decoder.JSONDecodeError, TypeError):
         reply += error
     if not mirrors:
         reply += error
         return reply
     for item in mirrors:
-        name = item["name"]
-        dl_url = item["url"]
-        reply += f"[{name}]({dl_url}) "
+        name = item['name']
+        dl_url = item['url']
+        reply += f'[{name}]({dl_url}) '
     return reply
 
 
@@ -383,11 +391,11 @@ def useragent():
     """useragent random setter"""
     useragents = BeautifulSoup(
         requests.get(
-            "https://developers.whatismybrowser.com/"
-            "useragents/explore/operating_system_name/android/"
+            'https://developers.whatismybrowser.com/'
+            'useragents/explore/operating_system_name/android/',
         ).content,
-        "lxml",
-    ).findAll("td", {"class": "useragent"})
+        'lxml',
+    ).findAll('td', {'class': 'useragent'})
     user_agent = choice(useragents)
     return user_agent.text
 
@@ -402,27 +410,27 @@ async def progressdl(current, total, event, start, type_of_ps, file_name=None):
         elapsed_time = round(diff) * 1000
         time_to_completion = round((total - current) / speed) * 1000
         estimated_total_time = elapsed_time + time_to_completion
-        progress_str = "[{0}{1}] {2}%\n".format(
-            "".join("▰" for i in range(math.floor(percentage / 10))),
-            "".join("▱" for i in range(10 - math.floor(percentage / 10))),
+        progress_str = '[{}{}] {}%\n'.format(
+            ''.join('▰' for i in range(math.floor(percentage / 10))),
+            ''.join('▱' for i in range(10 - math.floor(percentage / 10))),
             round(percentage, 2),
         )
-        tmp = progress_str + "`{0}` of `{1}`\nETA: `{2}`".format(
+        tmp = progress_str + '`{}` of `{}`\nETA: `{}`'.format(
             humanbytes(current),
             humanbytes(total),
             await time_formatter(estimated_total_time),
         )
         if file_name:
             await event.edit(
-                "{}\nFile Name: `{}`\n{}".format(type_of_ps, file_name, tmp)
+                f'{type_of_ps}\nFile Name: `{file_name}`\n{tmp}',
             )
         else:
             await event.edit(
-                "{}\n{}\nSpeed: `{}/s`".format(
+                '{}\n{}\nSpeed: `{}/s`'.format(
                     type_of_ps,
                     tmp,
                     humanbytes((total - current) / (time.time() - start)),
-                )
+                ),
             )
 
 
@@ -430,15 +438,15 @@ def humanbytes(size):
     """Input size in bytes"""
     # https://stackoverflow.com/a/49361727/4723940
     if not size:
-        return ""
+        return ''
     # 2 ** 10 = 1024
     power = 2 ** 10
     raised_to_pow = 0
-    dict_power_n = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}
+    dict_power_n = {0: '', 1: 'K', 2: 'M', 3: 'G', 4: 'T'}
     while size > power:
         size /= power
         raised_to_pow += 1
-    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+    return str(round(size, 2)) + ' ' + dict_power_n[raised_to_pow] + 'B'
 
 
 async def time_formatter(milliseconds: int) -> str:
@@ -448,69 +456,69 @@ async def time_formatter(milliseconds: int) -> str:
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " day(s), ") if days else "")
-        + ((str(hours) + " hour(s), ") if hours else "")
-        + ((str(minutes) + " minute(s), ") if minutes else "")
-        + ((str(seconds) + " second(s), ") if seconds else "")
-        + ((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
+        ((str(days) + ' day(s), ') if days else '')
+        + ((str(hours) + ' hour(s), ') if hours else '')
+        + ((str(minutes) + ' minute(s), ') if minutes else '')
+        + ((str(seconds) + ' second(s), ') if seconds else '')
+        + ((str(milliseconds) + ' millisecond(s), ') if milliseconds else '')
     )
     return tmp[:-2]
 
 
 async def download_reply_nocall(client, message):
     if message.reply_to_message.photo:
-        nama = "photo_{}_{}.png".format(
+        nama = 'photo_{}_{}.png'.format(
             message.reply_to_message.photo.file_id,
-            message.reply_to_message.photo.date
+            message.reply_to_message.photo.date,
         )
         await client.download_media(
-            message.reply_to_message.photo, file_name="nana/downloads/" + nama
+            message.reply_to_message.photo, file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.animation:
-        nama = "giphy_{}-{}.gif".format(
+        nama = 'giphy_{}-{}.gif'.format(
             message.reply_to_message.animation.date,
             message.reply_to_message.animation.file_size,
         )
         await client.download_media(
             message.reply_to_message.animation,
-            file_name="nana/downloads/" + nama
+            file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.video:
-        nama = "video_{}-{}.mp4".format(
+        nama = 'video_{}-{}.mp4'.format(
             message.reply_to_message.video.date,
             message.reply_to_message.video.file_size,
         )
         await client.download_media(
-            message.reply_to_message.video, file_name="nana/downloads/" + nama
+            message.reply_to_message.video, file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.sticker:
-        nama = "sticker_{}_{}.webp".format(
+        nama = 'sticker_{}_{}.webp'.format(
             message.reply_to_message.sticker.date,
             message.reply_to_message.sticker.set_name,
         )
         await client.download_media(
             message.reply_to_message.sticker,
-            file_name="nana/downloads/" + nama
+            file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.audio:
-        nama = "{}".format(message.reply_to_message.audio.file_name)
+        nama = f'{message.reply_to_message.audio.file_name}'
         await client.download_media(
-            message.reply_to_message.audio, file_name="nana/downloads/" + nama
+            message.reply_to_message.audio, file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.voice:
-        nama = "audio_{}.ogg".format(message.reply_to_message.voice.date)
+        nama = f'audio_{message.reply_to_message.voice.date}.ogg'
         await client.download_media(
-            message.reply_to_message.voice, file_name="nana/downloads/" + nama
+            message.reply_to_message.voice, file_name='nana/downloads/' + nama,
         )
     elif message.reply_to_message.document:
-        nama = "{}".format(message.reply_to_message.document.file_name)
+        nama = f'{message.reply_to_message.document.file_name}'
         await client.download_media(
             message.reply_to_message.document,
-            file_name="nana/downloads/" + nama
+            file_name='nana/downloads/' + nama,
         )
     else:
         return False
-    return "nana/downloads/" + nama
+    return 'nana/downloads/' + nama
 
 
 async def download_file_from_tg(client, message):
@@ -519,98 +527,98 @@ async def download_file_from_tg(client, message):
     if message.reply_to_message.photo:
         await client.download_media(
             message.reply_to_message.photo,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.animation:
         await client.download_media(
             message.reply_to_message.animation,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.video:
         await client.download_media(
             message.reply_to_message.video,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.sticker:
         await client.download_media(
             message.reply_to_message.sticker,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.audio:
         await client.download_media(
             message.reply_to_message.audio,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.voice:
         await client.download_media(
             message.reply_to_message.voice,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     elif message.reply_to_message.document:
         await client.download_media(
             message.reply_to_message.document,
-            file_name="nana/downloads/" + name,
+            file_name='nana/downloads/' + name,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         )
     else:
-        await edit_or_reply(message, text="Unknown file!")
+        await edit_or_reply(message, text='Unknown file!')
         return
     end = int(time.time())
     times = await time_parser(c_time, end)
-    text = "**⬇ Downloaded!**\n"
-    text += f"🗂 File name: `{name}`\n"
-    text += "🏷 Saved to: `nana/downloads/`\n"
-    text += f"⏲ Downloaded in: {times}"
+    text = '**⬇ Downloaded!**\n'
+    text += f'🗂 File name: `{name}`\n'
+    text += '🏷 Saved to: `nana/downloads/`\n'
+    text += f'⏲ Downloaded in: {times}'
     await edit_or_reply(message, text=text)
 
 
 async def name_file(_, message):
     if message.reply_to_message.photo:
-        return "photo_{}_{}.png".format(
+        return 'photo_{}_{}.png'.format(
             message.reply_to_message.photo.date,
-            message.reply_to_message.photo.date
+            message.reply_to_message.photo.date,
         )
     elif message.reply_to_message.animation:
-        return "giphy_{}-{}.gif".format(
+        return 'giphy_{}-{}.gif'.format(
             message.reply_to_message.animation.date,
             message.reply_to_message.animation.file_size,
         )
     elif message.reply_to_message.video:
-        return "video_{}-{}.mp4".format(
+        return 'video_{}-{}.mp4'.format(
             message.reply_to_message.video.date,
             message.reply_to_message.video.file_size,
         )
     elif message.reply_to_message.sticker:
-        return "sticker_{}_{}.webp".format(
+        return 'sticker_{}_{}.webp'.format(
             message.reply_to_message.sticker.date,
             message.reply_to_message.sticker.set_name,
         )
     elif message.reply_to_message.audio:
-        return "{}".format(message.reply_to_message.audio.file_name)
+        return f'{message.reply_to_message.audio.file_name}'
     elif message.reply_to_message.voice:
-        return "audio_{}.ogg".format(message.reply_to_message.voice.date)
+        return f'audio_{message.reply_to_message.voice.date}.ogg'
     elif message.reply_to_message.document:
-        return "{}".format(message.reply_to_message.document.file_name)
+        return f'{message.reply_to_message.document.file_name}'
     else:
-        await edit_or_reply(message, text="Unknown file!")
+        await edit_or_reply(message, text='Unknown file!')
         return

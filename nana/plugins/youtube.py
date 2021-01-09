@@ -1,25 +1,25 @@
 import os
 import time
-
-from pyrogram import filters
 from pathlib import Path
 
+from pyrogram import filters
 from youtube_dl import YoutubeDL
-from youtube_dl.utils import (
-    ContentTooShortError,
-    DownloadError,
-    ExtractorError,
-    GeoRestrictedError,
-    MaxDownloadsReached,
-    PostProcessingError,
-    UnavailableVideoError,
-    XAttrMetadataError,
-)
+from youtube_dl.utils import ContentTooShortError
+from youtube_dl.utils import DownloadError
+from youtube_dl.utils import ExtractorError
+from youtube_dl.utils import GeoRestrictedError
+from youtube_dl.utils import MaxDownloadsReached
+from youtube_dl.utils import PostProcessingError
+from youtube_dl.utils import UnavailableVideoError
+from youtube_dl.utils import XAttrMetadataError
 
-from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
 from nana.plugins.downloads import progressdl
 
-__MODULE__ = "YouTube"
+__MODULE__ = 'YouTube'
 __HELP__ = """
 download, convert music from youtube!
 
@@ -35,75 +35,75 @@ Download youtube music, and then send to tg as music.
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("ytdl", COMMAND_PREFIXES)
+    filters.command('ytdl', COMMAND_PREFIXES),
 )
 async def youtube_download(client, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
-        await edit_or_reply(message, text="missing [url] parameter!!")
+        await edit_or_reply(message, text='missing [url] parameter!!')
         return
     url = args[1]
     opts = {
-        "format": "best",
-        "addmetadata": True,
-        "key": "FFmpegMetadata",
-        "writethumbnail": True,
-        "prefer_ffmpeg": True,
-        "geo_bypass": True,
-        "nocheckcertificate": True,
-        "postprocessors": [
+        'format': 'best',
+        'addmetadata': True,
+        'key': 'FFmpegMetadata',
+        'writethumbnail': True,
+        'prefer_ffmpeg': True,
+        'geo_bypass': True,
+        'nocheckcertificate': True,
+        'postprocessors': [
             {
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4"
-            }
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': 'mp4',
+            },
         ],
-        "outtmpl": "%(id)s.mp4",
-        "logtostderr": False,
-        "quiet": True,
+        'outtmpl': '%(id)s.mp4',
+        'logtostderr': False,
+        'quiet': True,
     }
     try:
         with YoutubeDL(opts) as ytdl:
             ytdl_data = ytdl.extract_info(url)
     except DownloadError as DE:
-        await edit_or_reply(message, text=f"`{str(DE)}`")
+        await edit_or_reply(message, text=f'`{str(DE)}`')
         return
     except ContentTooShortError:
         await edit_or_reply(
             message,
-            text="`The download content was too short.`"
+            text='`The download content was too short.`',
         )
         return
     except GeoRestrictedError:
         await edit_or_reply(
             message,
-            text="`Video is not available.`",
+            text='`Video is not available.`',
         )
         return
     except MaxDownloadsReached:
         await edit_or_reply(
             message,
-            text="`Max-downloads limit has been reached.`"
+            text='`Max-downloads limit has been reached.`',
         )
         return
     except PostProcessingError:
         await edit_or_reply(
-            message, text="`There was an error during post processing.`"
+            message, text='`There was an error during post processing.`',
         )
         return
     except UnavailableVideoError:
         await edit_or_reply(
-            message, text="`Media is not available in the requested format.`"
+            message, text='`Media is not available in the requested format.`',
         )
         return
     except XAttrMetadataError as XAME:
         await edit_or_reply(
             message,
-            text=f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`"
+            text=f'`{XAME.code}: {XAME.msg}\n{XAME.reason}`',
         )
         return
     except ExtractorError:
         await edit_or_reply(
-            message, text="`There was an error during info extraction.`"
+            message, text='`There was an error during info extraction.`',
         )
         return
     thumbnail = Path(f"{ytdl_data['id']}.jpg")
@@ -112,21 +112,21 @@ async def youtube_download(client, message):
         await message.reply_video(
             f"{ytdl_data['id']}.mp4",
             supports_streaming=True,
-            duration=ytdl_data["duration"],
-            caption=ytdl_data["title"],
+            duration=ytdl_data['duration'],
+            caption=ytdl_data['title'],
             thumb=thumbnail,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         ),
     except FileNotFoundError:
         await message.reply_video(
             f"{ytdl_data['id']}.mp4",
             supports_streaming=True,
-            duration=ytdl_data["duration"],
-            caption=ytdl_data["title"],
+            duration=ytdl_data['duration'],
+            caption=ytdl_data['title'],
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         ),
     os.remove(f"{ytdl_data['id']}.mp4")
@@ -136,76 +136,76 @@ async def youtube_download(client, message):
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command("ytmusic", COMMAND_PREFIXES)
+    filters.user(AdminSettings) & filters.command('ytmusic', COMMAND_PREFIXES),
 )
 async def youtube_music(client, message):
     args = message.text.split(None, 1)
     if len(args) == 1:
-        await edit_or_reply(message, text="missing [url] parameter!")
+        await edit_or_reply(message, text='missing [url] parameter!')
         return
     url = args[1]
     opts = {
-        "format": "bestaudio",
-        "addmetadata": True,
-        "key": "FFmpegMetadata",
-        "writethumbnail": True,
-        "prefer_ffmpeg": True,
-        "geo_bypass": True,
-        "nocheckcertificate": True,
-        "postprocessors": [
+        'format': 'bestaudio',
+        'addmetadata': True,
+        'key': 'FFmpegMetadata',
+        'writethumbnail': True,
+        'prefer_ffmpeg': True,
+        'geo_bypass': True,
+        'nocheckcertificate': True,
+        'postprocessors': [
             {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "320",
-            }
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '320',
+            },
         ],
-        "outtmpl": "%(id)s.mp3",
-        "quiet": True,
-        "logtostderr": False,
+        'outtmpl': '%(id)s.mp3',
+        'quiet': True,
+        'logtostderr': False,
     }
     try:
         with YoutubeDL(opts) as ytdl:
             ytdl_data = ytdl.extract_info(url)
     except DownloadError as DE:
-        await edit_or_reply(message, text=f"`{str(DE)}`")
+        await edit_or_reply(message, text=f'`{str(DE)}`')
         return
     except ContentTooShortError:
         await edit_or_reply(
             message,
-            text="`The download content was too short.`"
+            text='`The download content was too short.`',
         )
         return
     except GeoRestrictedError:
         await edit_or_reply(
             message,
-            text="`Video is not available.`",
+            text='`Video is not available.`',
         )
         return
     except MaxDownloadsReached:
         await edit_or_reply(
             message,
-            text="`Max-downloads limit has been reached.`"
+            text='`Max-downloads limit has been reached.`',
         )
         return
     except PostProcessingError:
         await edit_or_reply(
-            message, text="`There was an error during post processing.`"
+            message, text='`There was an error during post processing.`',
         )
         return
     except UnavailableVideoError:
         await edit_or_reply(
-            message, text="`Media is not available in the requested format.`"
+            message, text='`Media is not available in the requested format.`',
         )
         return
     except XAttrMetadataError as XAME:
         await edit_or_reply(
             message,
-            text=f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`"
+            text=f'`{XAME.code}: {XAME.msg}\n{XAME.reason}`',
         )
         return
     except ExtractorError:
         await edit_or_reply(
-            message, text="`There was an error during info extraction.`"
+            message, text='`There was an error during info extraction.`',
         )
         return
     thumbnail = Path(f"{ytdl_data['id']}.jpg")
@@ -213,20 +213,20 @@ async def youtube_music(client, message):
     try:
         await message.reply_audio(
             f"{ytdl_data['id']}.mp3",
-            duration=ytdl_data["duration"],
-            caption=ytdl_data["title"],
+            duration=ytdl_data['duration'],
+            caption=ytdl_data['title'],
             thumb=thumbnail,
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         ),
     except FileNotFoundError:
         await message.reply_audio(
             f"{ytdl_data['id']}.mp3",
-            duration=ytdl_data["duration"],
-            caption=ytdl_data["title"],
+            duration=ytdl_data['duration'],
+            caption=ytdl_data['title'],
             progress=lambda d, t: client.loop.create_task(
-                progressdl(d, t, message, c_time, "Downloading...")
+                progressdl(d, t, message, c_time, 'Downloading...'),
             ),
         ),
     os.remove(f"{ytdl_data['id']}.mp3")

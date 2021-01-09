@@ -3,9 +3,11 @@ import sre_constants
 
 from pyrogram import filters
 
-from nana import app, edit_or_reply, AdminSettings
+from nana import AdminSettings
+from nana import app
+from nana import edit_or_reply
 
-__MODULE__ = "Sed"
+__MODULE__ = 'Sed'
 __HELP__ = """
 Need help?
 Learn regex here: regexone.com
@@ -24,7 +26,7 @@ Flag ex: s/test/text/g
 Flag result: `text things text`
 """
 
-DELIMITERS = ("/", ":", "|", "_")
+DELIMITERS = ('/', ':', '|', '_')
 
 
 async def separate_sed(sed_string):
@@ -38,7 +40,7 @@ async def separate_sed(sed_string):
     delim = sed_string[3]
     start = counter = 4
     while counter < len(sed_string):
-        if sed_string[counter] == "\\":
+        if sed_string[counter] == '\\':
             counter += 1
 
         elif sed_string[counter] == delim:
@@ -54,7 +56,7 @@ async def separate_sed(sed_string):
 
     while counter < len(sed_string):
         if (
-            sed_string[counter] == "\\"
+            sed_string[counter] == '\\'
             and counter + 1 < len(sed_string)
             and sed_string[counter + 1] == delim
         ):
@@ -71,17 +73,17 @@ async def separate_sed(sed_string):
 
         counter += 1
     else:
-        return replace, sed_string[start:], ""
+        return replace, sed_string[start:], ''
 
-    flags = ""
+    flags = ''
     if counter < len(sed_string):
         flags = sed_string[counter:]
     return replace, replace_with, flags.lower()
 
 
-@app.on_message(filters.user(AdminSettings) & filters.regex("^s/(.*?)"))
+@app.on_message(filters.user(AdminSettings) & filters.regex('^s/(.*?)'))
 async def sed_msg(_, message):
-    sed_result = await separate_sed("s/" + message.text)
+    sed_result = await separate_sed('s/' + message.text)
     if sed_result:
         if not message.reply_to_message:
             return
@@ -99,27 +101,27 @@ async def sed_msg(_, message):
             if check and check.group(0).lower() == to_fix.lower():
                 return
 
-            if "i" in flags and "g" in flags:
+            if 'i' in flags and 'g' in flags:
                 text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
-            elif "i" in flags:
+            elif 'i' in flags:
                 text = re.sub(
                     repl,
                     repl_with,
                     to_fix,
                     count=1,
-                    flags=re.I
+                    flags=re.I,
                 ).strip()
-            elif "g" in flags:
+            elif 'g' in flags:
                 text = re.sub(repl, repl_with, to_fix).strip()
             else:
                 text = re.sub(repl, repl_with, to_fix, count=1).strip()
         except sre_constants.error:
-            print("SRE constant error")
+            print('SRE constant error')
             await edit_or_reply(
                 message,
-                text="SRE constant error. [learn regex](https://regexone.com)",
+                text='SRE constant error. [learn regex](https://regexone.com)',
                 disable_web_page_preview=True,
             )
             return
         if text:
-            await edit_or_reply(message, text="```{}```".format(text))
+            await edit_or_reply(message, text=f'```{text}```')

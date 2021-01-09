@@ -1,7 +1,7 @@
 import random
 from git import Repo
 from git.exc import GitCommandError, NoSuchPathError, InvalidGitRepositoryError
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton
 from nana import (
     setbot,
     Owner,
@@ -16,17 +16,18 @@ from nana import (
 from nana.__main__ import restart_all, loop
 from nana.utils.dynamic_filt import dynamic_data_filter
 from nana.languages.strings import tld
+from pykeyboard import InlineKeyboard
 
 
 async def gen_chlog(repo, diff):
-    changelog = ""
-    d_form = "%H:%M - %d/%m/%y"
+    changelog = ''
+    d_form = '%H:%M - %d/%m/%y'
     try:
         for cl in repo.iter_commits(diff):
-            changelog += "• [{}]: {} <{}>\n".format(
+            changelog += '• [{}]: {} <{}>\n'.format(
                 cl.committed_datetime.strftime(d_form),
                 cl.summary,
-                cl.author
+                cl.author,
             )
     except GitCommandError:
         changelog = None
@@ -35,9 +36,9 @@ async def gen_chlog(repo, diff):
 
 async def update_changelog(changelog):
     await setbot.send_sticker(Owner, random.choice(RANDOM_STICKERS))
-    text = tld("update_successful")
-    text += tld("update_welcome").format(USERBOT_VERSION, ASSISTANT_VERSION)
-    text += tld("updated_changelog")
+    text = tld('update_successful')
+    text += tld('update_welcome').format(USERBOT_VERSION, ASSISTANT_VERSION)
+    text += tld('updated_changelog')
     text += changelog
     await setbot.send_message(Owner, text)
 
@@ -46,17 +47,17 @@ async def update_checker():
     try:
         repo = Repo()
     except NoSuchPathError as error:
-        log.warning(f"Check update failed!\nDirectory {error} is not found!")
+        log.warning(f'Check update failed!\nDirectory {error} is not found!')
         return
     except InvalidGitRepositoryError as error:
         log.warning(
-            "Check update failed!\nDirectory {} Not a git repository".format(
-                error
-            )
+            'Check update failed!\nDirectory {} Not a git repository'.format(
+                error,
+            ),
         )
         return
     except GitCommandError as error:
-        log.warning(f"Check update failed!\n{error}")
+        log.warning(f'Check update failed!\n{error}')
         return
 
     brname = repo.active_branch.name
@@ -64,58 +65,55 @@ async def update_checker():
         return
 
     try:
-        repo.create_remote("upstream", REPOSITORY)
+        repo.create_remote('upstream', REPOSITORY)
     except BaseException:
         pass
 
-    upstream = repo.remote("upstream")
+    upstream = repo.remote('upstream')
     upstream.fetch(brname)
-    changelog = await gen_chlog(repo, f"HEAD..upstream/{brname}")
+    changelog = await gen_chlog(repo, f'HEAD..upstream/{brname}')
 
     if not changelog:
-        log.info(f"Nana is up-to-date with branch {brname}")
+        log.info(f'Nana is up-to-date with branch {brname}')
         return
 
-    log.warning(f"New UPDATE available for [{brname}]!")
+    log.warning(f'New UPDATE available for [{brname}]!')
 
-    text = tld("updater_available_text").format(brname)
-    text += f"**CHANGELOG:**\n`{changelog}`"
-    button = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    tld("update_now_btn"),
-                    callback_data="update_now"
-                )
-            ]
-        ]
+    text = tld('updater_available_text').format(brname)
+    text += f'**CHANGELOG:**\n`{changelog}`'
+    button = InlineKeyboard(row_width=1)
+    button.add(
+        InlineKeyboardButton(
+            tld('update_now_btn'),
+            callback_data='update_now',
+        ),
     )
     await setbot.send_message(
         Owner,
         text,
         reply_markup=button,
-        parse_mode="markdown"
+        parse_mode='markdown',
     )
 
 
-@setbot.on_callback_query(dynamic_data_filter("update_now"))
+@setbot.on_callback_query(dynamic_data_filter('update_now'))
 async def update_button(client, query):
     await query.message.delete()
-    await client.send_message(Owner, "Updating, please wait...")
+    await client.send_message(Owner, 'Updating, please wait...')
     try:
         repo = Repo()
     except NoSuchPathError as error:
-        log.warning(f"Check update failed!\nDirectory {error} is not found!")
+        log.warning(f'Check update failed!\nDirectory {error} is not found!')
         return
     except InvalidGitRepositoryError as error:
         log.warning(
-            "Check update failed!\nDirectory {} Not a git repository".format(
-                error
-            )
+            'Check update failed!\nDirectory {} Not a git repository'.format(
+                error,
+            ),
         )
         return
     except GitCommandError as error:
-        log.warning(f"Check update failed!\n{error}")
+        log.warning(f'Check update failed!\n{error}')
         return
 
     brname = repo.active_branch.name
@@ -123,22 +121,22 @@ async def update_button(client, query):
         return
 
     try:
-        repo.create_remote("upstream", REPOSITORY)
+        repo.create_remote('upstream', REPOSITORY)
     except BaseException:
         pass
 
-    upstream = repo.remote("upstream")
+    upstream = repo.remote('upstream')
     upstream.fetch(brname)
-    changelog = await gen_chlog(repo, f"HEAD..upstream/{brname}")
+    changelog = await gen_chlog(repo, f'HEAD..upstream/{brname}')
     try:
         upstream.pull(brname)
-        await client.send_message(Owner, tld("update_successful"))
+        await client.send_message(Owner, tld('update_successful'))
     except GitCommandError:
-        repo.git.reset("--hard")
-        repo.git.clean("-fd", "nana/modules/")
-        repo.git.clean("-fd", "nana/assistant/")
-        repo.git.clean("-fd", "nana/utils/")
-        await client.send_message(Owner, tld("update_successful_force"))
+        repo.git.reset('--hard')
+        repo.git.clean('-fd', 'nana/modules/')
+        repo.git.clean('-fd', 'nana/assistant/')
+        repo.git.clean('-fd', 'nana/utils/')
+        await client.send_message(Owner, tld('update_successful_force'))
     await update_changelog(changelog)
     await restart_all()
 

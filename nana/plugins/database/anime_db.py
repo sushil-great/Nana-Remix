@@ -1,10 +1,15 @@
 import threading
-from nana import SESSION, BASE
-from sqlalchemy import Column, UnicodeText, Numeric
+
+from sqlalchemy import Column
+from sqlalchemy import Numeric
+from sqlalchemy import UnicodeText
+
+from nana import BASE
+from nana import SESSION
 
 
 class Favourites(BASE):
-    __tablename__ = "favourites"
+    __tablename__ = 'favourites'
     user_id = Column(Numeric, primary_key=True)
     data = Column(UnicodeText, primary_key=True)
 
@@ -28,9 +33,9 @@ def get_fav(user_id):
     try:
         return (
             SESSION.query(
-                Favourites
+                Favourites,
             ).filter(
-                Favourites.user_id == int(user_id)
+                Favourites.user_id == int(user_id),
             ).all()
         )
     finally:

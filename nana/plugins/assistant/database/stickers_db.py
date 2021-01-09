@@ -4,21 +4,21 @@ from nana import BASE, SESSION
 
 
 class StickerSet(BASE):
-    __tablename__ = "sticker_set"
+    __tablename__ = 'sticker_set'
     my_id = Column(Integer, primary_key=True)
     sticker = Column(UnicodeText)
 
     def __init__(self, my_id, sticker):
-        "initialize sticker id to save in db"
+        'initialize sticker id to save in db'
         self.my_id = my_id
         self.sticker = str(sticker)
 
     def __repr__(self):
-        return "<Sticker {}>".format(self.my_id)
+        return f'<Sticker {self.my_id}>'
 
 
 class StickerAnimationSet(BASE):
-    __tablename__ = "sticker_animation_set"
+    __tablename__ = 'sticker_animation_set'
     my_id = Column(Integer, primary_key=True)
     sticker = Column(UnicodeText)
 
@@ -27,7 +27,7 @@ class StickerAnimationSet(BASE):
         self.sticker = str(sticker)
 
     def __repr__(self):
-        return "<Sticker Animation {}>".format(self.my_id)
+        return f'<Sticker Animation {self.my_id}>'
 
 
 StickerSet.__table__.create(checkfirst=True)

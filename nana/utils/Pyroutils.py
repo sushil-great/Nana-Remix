@@ -11,11 +11,11 @@ def ReplyCheck(message):
 
 
 def GetUserMentionable(user: User):
-    "Get mentionable text of a user."
+    'Get mentionable text of a user.'
     if user.username:
-        return "@{}".format(user.username)
+        return f'@{user.username}'
     if user.last_name:
-        name_string = "{} {}".format(user.first_name, user.last_name)
+        name_string = f'{user.first_name} {user.last_name}'
     else:
-        name_string = "{}".format(user.first_name)
-    return "<a href='tg://user?id={}'>{}</a>".format(user.id, name_string)
+        name_string = f'{user.first_name}'
+    return f"<a href='tg://user?id={user.id}'>{name_string}</a>"

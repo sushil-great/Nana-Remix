@@ -122,3 +122,5 @@ nana/modules/test_admin.py
 *.session
 *.session-journal
 config.ini
+*.ttf
+*.jpg

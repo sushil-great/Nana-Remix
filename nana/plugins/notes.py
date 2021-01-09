@@ -1,18 +1,19 @@
-from pyrogram import filters, errors
+from pyrogram import errors
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup
 
-from nana import (
-    app,
-    setbot,
-    COMMAND_PREFIXES,
-    Owner,
-    BotUsername,
-    DB_AVAILABLE,
-    edit_or_reply,
-)
-from nana.utils.msg_types import Types, get_note_type
-from nana.utils.string import parse_button, build_keyboard
+from nana import app
+from nana import BotUsername
+from nana import COMMAND_PREFIXES
+from nana import DB_AVAILABLE
+from nana import edit_or_reply
+from nana import Owner
+from nana import setbot
+from nana.utils.msg_types import get_note_type
+from nana.utils.msg_types import Types
 from nana.utils.Pyroutils import ReplyCheck
+from nana.utils.string import build_keyboard
+from nana.utils.string import parse_button
 
 if DB_AVAILABLE:
     from nana.plugins.database import notes_db as db
@@ -20,31 +21,28 @@ if DB_AVAILABLE:
 # TODO: Add buttons support in some types
 # TODO: Add group notes, but whats for? since only you can get notes
 
-__MODULE__ = "Notes"
+__MODULE__ = 'Notes'
 __HELP__ = """
-Save a note, get that, even you can delete that note.
-This note only avaiable for yourself only!
-Also notes support inline button powered by inline query assistant bot.
+Save a note, get it or delete it.
+This is available only for yourself only!
+Also notes support inlines button powered by inline query assistant bot.
 
-──「 **Save Note** 」──
+──「 **Saving Notes** 」──
 -> `save (note)`
 Save a note, you can get or delete that later.
 
-──「 **Get Note** 」──
+──「 **Getting Notes** 」──
 -> `get (note)`
-Get that note, if avaiable.
+Get the provided note, if saved.
 
-──「 **Delete Note** 」──
+──「 **Deleting Notes** 」──
 -> `clear (note)`
-Delete that note, if avaiable.
+Delete the provided note, if saved.
 
 ──「 **All Notes** 」──
 -> `saved`
 -> `notes`
-Get all your notes,
-if too much notes,
-please use this in your saved message instead!
-
+See all of your saved notes.
 
 ── **Note Format** ──
 -> **Button**
@@ -74,19 +72,19 @@ GET_FORMAT = {
 
 @app.on_message(
     filters.user(Owner) &
-    filters.command("save", COMMAND_PREFIXES)
+    filters.command('save', COMMAND_PREFIXES),
 )
 async def save_note(_, message):
     if not DB_AVAILABLE:
-        await message.edit("Your database is not avaiable!")
+        await message.edit("You haven't set up a database!")
         return
     note_name, text, data_type, content = get_note_type(message)
 
     if not note_name:
         await message.edit(
-            "```"
+            '```'
             + message.text +
-            "```\n\nError: You must give a name for this note!"
+            '```\n\nError: you must provide a name for the note!',
         )
         return
 
@@ -94,50 +92,49 @@ async def save_note(_, message):
         teks, _ = parse_button(text)
         if not teks:
             await message.edit(
-                "```"
+                '```'
                 + message.text
-                + "```\n\nError: There is no text in here!"
+                + "```\n\nError: the note doesn't have enough content!",
             )
             return
 
     db.save_selfnote(message.from_user.id, note_name, text, data_type, content)
-    await message.edit(f"Saved note `{note_name}`!")
+    await message.edit(f'Saved note `{note_name}`!')
 
 
-@app.on_message(filters.user(Owner) & filters.command("get", COMMAND_PREFIXES))
+@app.on_message(filters.user(Owner) & filters.command('get', COMMAND_PREFIXES))
 async def get_note(client, message):
     if not DB_AVAILABLE:
-        await message.edit("Your database is not avaiable!")
+        await message.edit("You haven't set up a database!")
         return
     if len(message.text.split()) >= 2:
         note = message.text.split()[1]
     else:
-        await message.edit("Give me a note tag!")
+        await message.edit('Give me a note tag!')
 
     getnotes = db.get_selfnote(message.from_user.id, note)
     if not getnotes:
-        await message.edit("This note does not exist!")
+        await message.edit('This note does not exist!')
         return
 
-    if getnotes["type"] == Types.TEXT:
-        teks, button = parse_button(getnotes.get("value"))
+    if getnotes['type'] == Types.TEXT:
+        teks, button = parse_button(getnotes.get('value'))
         button = build_keyboard(button)
         button = InlineKeyboardMarkup(button) if button else None
         if button:
             try:
                 inlineresult = await app.get_inline_bot_results(
-                    f"@{BotUsername}", f"note {note}"
+                    f'@{BotUsername}', f'note {note}',
                 )
             except errors.exceptions.bad_request_400.BotInlineDisabled:
                 await message.edit(
-                    "Your bot inline isn't available!"
-                    "Check your bot for more information!"
+                    "Your haven't enabled inline for yout bot!",
                 )
                 await setbot.send_message(
                     Owner,
-                    "Hello, your notes is look like include button,"
-                    "but i can't do that "
-                    "because **inline mode** is not enabled.",
+                    'Hello, loosk like a note of yours include a button,'
+                    "but I can't display it "
+                    'because **inline mode** is not enabled in @BotFather.',
                 )
                 return
             try:
@@ -150,13 +147,13 @@ async def get_note(client, message):
                 )
             except IndexError:
                 await message.edit(
-                    "An error has accured!"
-                    "Check your assistant for more information!"
+                    'An error occured!'
+                    'Check your assistant for more information!',
                 )
                 return
         else:
             await message.edit(teks)
-    elif getnotes["type"] in (
+    elif getnotes['type'] in (
         Types.STICKER,
         Types.VOICE,
         Types.VIDEO_NOTE,
@@ -164,13 +161,13 @@ async def get_note(client, message):
         Types.ANIMATED_STICKER,
     ):
         await message.delete()
-        await GET_FORMAT[getnotes["type"]](
-            message.chat.id, getnotes["file"],
-            reply_to_message_id=ReplyCheck(message)
+        await GET_FORMAT[getnotes['type']](
+            message.chat.id, getnotes['file'],
+            reply_to_message_id=ReplyCheck(message),
         )
     else:
-        if getnotes.get("value"):
-            teks, button = parse_button(getnotes.get("value"))
+        if getnotes.get('value'):
+            teks, button = parse_button(getnotes.get('value'))
             button = build_keyboard(button)
             button = InlineKeyboardMarkup(button) if button else None
         else:
@@ -179,18 +176,17 @@ async def get_note(client, message):
         if button:
             try:
                 inlineresult = await app.get_inline_bot_results(
-                    f"@{BotUsername}", f"note {note}"
+                    f'@{BotUsername}', f'note {note}',
                 )
             except errors.exceptions.bad_request_400.BotInlineDisabled:
                 await message.edit(
-                    "Your bot inline isn't available!\n"
-                    "Check your bot for more information!"
+                    "Your haven't enabled inline for yout bot!",
                 )
                 await setbot.send_message(
                     Owner,
-                    "Hello, your notes is look like include button,"
-                    "but i can't do that because "
-                    "**inline mode** is not enabled."
+                    'Hello, loosk like a note of yours include a button,'
+                    "but I can't display it "
+                    'because **inline mode** is not enabled in @BotFather.',
                 )
                 return
             try:
@@ -203,55 +199,57 @@ async def get_note(client, message):
                 )
             except IndexError:
                 message.edit(
-                    "An error has accured!"
+                    'An error occured!',
                 )
                 return
         else:
-            await GET_FORMAT[getnotes["type"]](
+            await GET_FORMAT[getnotes['type']](
                 message.chat.id,
-                getnotes["file"],
+                getnotes['file'],
                 caption=teks,
                 reply_to_message_id=ReplyCheck(message),
             )
 
 
 @app.on_message(
-    filters.user(Owner) & filters.command(["notes", "saved"], COMMAND_PREFIXES)
+    filters.user(Owner) & filters.command(
+        ['notes', 'saved'], COMMAND_PREFIXES,
+    ),
 )
 async def local_notes(_, message):
     if not DB_AVAILABLE:
-        await message.edit("Your database is not avaiable!")
+        await message.edit("You haven't set up a database!")
         return
     getnotes = db.get_all_selfnotes(message.from_user.id)
     if not getnotes:
-        await message.edit("There are no notes in local notes!")
+        await message.edit('There are no notes in local notes!')
         return
-    rply = "**Local notes:**\n"
+    rply = '**Local Botes:**\n'
     for x in getnotes:
         if len(rply) >= 1800:
             await edit_or_reply(message, text=rply)
-            rply = "**Local notes:**\n"
-        rply += f"- `{x}`\n"
+            rply = '**Local Botes:**\n'
+        rply += f'- `{x}`\n'
 
     await message.edit(rply)
 
 
 @app.on_message(
     filters.user(Owner) &
-    filters.command("clear", COMMAND_PREFIXES)
+    filters.command('clear', COMMAND_PREFIXES),
 )
 async def clear_note(_, message):
     if not DB_AVAILABLE:
-        await message.edit("Your database is not avaiable!")
+        await message.edit("You haven't set up a database!")
         return
     if len(message.text.split()) <= 1:
-        await message.edit("What do you want to clear?")
+        await message.edit('What do you want to clear?')
         return
 
     note = message.text.split()[1]
     getnote = db.rm_selfnote(message.from_user.id, note)
     if not getnote:
-        await message.edit("This note does not exist!")
+        await message.edit('This note does not exist!')
         return
 
-    await message.edit(f"Deleted note `{note}`!")
+    await message.edit(f'Deleted note `{note}`!')

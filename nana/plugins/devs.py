@@ -8,37 +8,38 @@ from io import StringIO
 from pyrogram import filters
 
 from nana import COMMAND_PREFIXES, app, edit_or_reply, AdminSettings
-from nana.utils.nekobin import nekobin
 from nana.utils.parser import mention_markdown
 from nana.utils.aiohttp_helper import AioHttp
+from nekobin import NekoBin
 
-__MODULE__ = "Devs"
+__MODULE__ = 'Devs'
 __HELP__ = """
-This command means for helping development
+This module is for those who know programming or
+getting some technical information about your (user)bot or user account.
 
-──「 **Execution** 」──
+──「 **Python** 」──
 -> `eval (command)`
-Python Shell Execution
+Run Python code
 
-──「 **Command shell** 」──
+──「 **Shell** 」──
 -> `sh (command)`
-Execute command shell
+Execute shell commands
 
 ──「 **Take log** 」──
 -> `log`
-Edit log message, or nekobin instead
+Upload the recent logs on nekobin and send it
 
-──「 **Get Data Center** 」──
+──「 **Data Centers** 」──
 -> `dc`
-Get user specific data center
+Get your DC
 
-──「 **Test Your Server Internet Speed** 」──
+──「 **Testing The Internet Speed Of Your Server** 」──
 -> `speedtest`
-Obtain Server internet speed using speedtest
+See internet speed and some other info
 
-──「 **Get ID** 」──
+──「 **IDs** 」──
 -> `id`
-Send id of what you replied to
+Send ID of what you replied to
 
 ──「 **Self Destruct Reveal** 」──
 -> `reveal` or `reveal self`
@@ -49,25 +50,25 @@ Reveal Self Destruct photo untouched,
 
 async def aexec(code, client, message):
     exec(
-        "async def __aexec(client, message): "
-        + "".join(f"\n {a}" for a in code.split("\n"))
+        'async def __aexec(client, message): '
+        + ''.join(f'\n {a}' for a in code.split('\n')),
     )
-    return await locals()["__aexec"](client, message)
+    return await locals()['__aexec'](client, message)
 
 
-@app.on_message(filters.me & filters.command("reveal", COMMAND_PREFIXES))
+@app.on_message(filters.me & filters.command('reveal', COMMAND_PREFIXES))
 async def sd_reveal(client, message):
     cmd = message.command
-    self_tag = " ".join(cmd[1:])
-    tags = "self" in self_tag
+    self_tag = ' '.join(cmd[1:])
+    tags = 'self' in self_tag
     if len(message.text.split()) == 1:
         await message.delete()
         return
     await message.delete()
-    a = "nana/file.png"
+    a = 'nana/file.png'
     await client.download_media(message.reply_to_message.photo, file_name=a)
     if tags:
-        await client.send_photo("me", a)
+        await client.send_photo('me', a)
     else:
         await client.send_photo(message.chat.id, a)
 
@@ -78,11 +79,11 @@ async def sd_reveal(client, message):
     filters.user(AdminSettings)
     & ~filters.forwarded
     & ~filters.via_bot
-    & filters.command("eval", COMMAND_PREFIXES)
+    & filters.command('eval', COMMAND_PREFIXES),
 )
 async def executor(client, message):
     try:
-        cmd = message.text.split(" ", maxsplit=1)[1]
+        cmd = message.text.split(' ', maxsplit=1)[1]
     except IndexError:
         await message.delete()
         return
@@ -102,7 +103,7 @@ async def executor(client, message):
     stderr = redirected_error.getvalue()
     sys.stdout = old_stdout
     sys.stderr = old_stderr
-    evaluation = ""
+    evaluation = ''
     if exc:
         evaluation = exc
     elif stderr:
@@ -110,16 +111,16 @@ async def executor(client, message):
     elif stdout:
         evaluation = stdout
     else:
-        evaluation = "Success"
+        evaluation = 'Success'
     final_output = (
-        "**QUERY**:\n```{}```\n\n**OUTPUT**:\n```{}```".format(
+        '**Input**:\n```{}```\n\n**Result**:\n```{}```'.format(
             cmd,
-            evaluation.strip()
+            evaluation.strip(),
         )
     )
     if len(final_output) > 4096:
-        filename = "output.txt"
-        with open(filename, "w+", encoding="utf8") as out_file:
+        filename = 'output.txt'
+        with open(filename, 'w+', encoding='utf8') as out_file:
             out_file.write(str(evaluation.strip()))
         await message.reply_document(
             document=filename,
@@ -130,15 +131,19 @@ async def executor(client, message):
         os.remove(filename)
         await message.delete()
     else:
-        await edit_or_reply(message, text=final_output)
+        await edit_or_reply(
+            message,
+            text=final_output,
+            parse_mode='markdown',
+        )
 
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("ip", COMMAND_PREFIXES)
+    filters.command('ip', COMMAND_PREFIXES),
 )
 async def public_ip(_, message):
-    j = await AioHttp().get_json("http://ip-api.com/json")
+    j = await AioHttp().get_json('http://ip-api.com/json')
     stats = f"**ISP {j['isp']}:**\n"
     stats += f"**AS:** `{j['as']}`\n"
     stats += f"**IP Address:** `{j['query']}`\n"
@@ -147,29 +152,29 @@ async def public_ip(_, message):
     stats += f"**Lattitude:** `{j['lat']}`\n"
     stats += f"**Longitude:** `{j['lon']}`\n"
     stats += f"**Time Zone:** `{j['timezone']}`"
-    await edit_or_reply(message, text=stats, parse_mode="markdown")
+    await edit_or_reply(message, text=stats, parse_mode='markdown')
 
 
 @app.on_message(
     filters.user(AdminSettings)
     & ~filters.forwarded
     & ~filters.via_bot
-    & filters.command("sh", COMMAND_PREFIXES)
+    & filters.command('sh', COMMAND_PREFIXES),
 )
 async def terminal(client, message):
     if len(message.text.split()) == 1:
-        await edit_or_reply(message, text="Usage: `sh ping -c 5 google.com`")
+        await edit_or_reply(message, text='Usage: `sh ping -c 5 google.com`')
         return
     args = message.text.split(None, 1)
     teks = args[1]
-    if "\n" in teks:
-        code = teks.split("\n")
-        output = ""
+    if '\n' in teks:
+        code = teks.split('\n')
+        output = ''
         for x in code:
             shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", x)
             try:
                 process = subprocess.Popen(
-                    shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 )
             except Exception as err:
                 print(err)
@@ -182,80 +187,81 @@ async def terminal(client, message):
 **Error:**
 ```{}```
 """.format(
-                        teks, err
+                        teks, err,
                     ),
                 )
-            output += "**{}**\n".format(code)
-            output += process.stdout.read()[:-1].decode("utf-8")
-            output += "\n"
+            output += f'**{code}**\n'
+            output += process.stdout.read()[:-1].decode('utf-8')
+            output += '\n'
     else:
         shell = re.split(""" (?=(?:[^'"]|'[^']*'|"[^"]*")*$)""", teks)
         for a in range(len(shell)):
-            shell[a] = shell[a].replace('"', "")
+            shell[a] = shell[a].replace('"', '')
         try:
             process = subprocess.Popen(
-                shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
         except Exception as err:
             print(err)
             exc_type, exc_obj, exc_tb = sys.exc_info()
             errors = traceback.format_exception(
-                etype=exc_type, value=exc_obj, tb=exc_tb
+                etype=exc_type, value=exc_obj, tb=exc_tb,
             )
             await edit_or_reply(
                 message,
                 text="""**Input:**\n```{}```\n\n**Error:**\n```{}```""".format(
-                    teks, "".join(errors)
+                    teks, ''.join(errors),
                 ),
             )
             return
-        output = process.stdout.read()[:-1].decode("utf-8")
-    if str(output) == "\n":
+        output = process.stdout.read()[:-1].decode('utf-8')
+    if str(output) == '\n':
         output = None
     if output:
         if len(output) > 4096:
-            with open("nana/cache/output.txt", "w+") as file:
+            with open('nana/cache/output.txt', 'w+') as file:
                 file.write(output)
                 file.close()
             await client.send_document(
                 message.chat.id,
-                "nana/cache/output.txt",
+                'nana/cache/output.txt',
                 reply_to_message_id=message.message_id,
-                caption="`Output file`",
+                caption='`Output`',
             )
-            os.remove("nana/cache/output.txt")
+            os.remove('nana/cache/output.txt')
             return
         await edit_or_reply(
             message,
             text="""**Input:**\n```{}```\n\n**Output:**\n```{}```""".format(
-                teks, output
+                teks, output,
             ),
         )
     else:
         await edit_or_reply(
             message,
-            text="**Input: **\n`{}`\n\n**Output: **\n`No Output`".format(
-                teks
-            )
+            text='**Input: **\n`{}`\n\n**Output: **\n`No output`'.format(
+                teks,
+            ),
         )
 
 
 @app.on_message(
-    filters.user(AdminSettings) & filters.command(["log"], COMMAND_PREFIXES)
+    filters.user(AdminSettings) & filters.command(['log'], COMMAND_PREFIXES),
 )
 async def log(_, message):
-    f = open("nana/logs/error.txt", "r")
-    data = await nekobin(f.read())
+    nekobin = NekoBin()
+    with open('nana/logs/error.txt') as f:
+        data = await nekobin.nekofy(f.read())
     await edit_or_reply(
         message,
-        text=f"`Your recent logs stored here : `{data}",
+        text=f'`Your recent logs stored are here:`\n{data.raw}',
         disable_web_page_preview=True,
     )
 
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("dc", COMMAND_PREFIXES)
+    filters.command('dc', COMMAND_PREFIXES),
 )
 async def dc_id_check(_, message):
     user = message.from_user
@@ -276,36 +282,36 @@ async def dc_id_check(_, message):
         dc_id = user.dc_id
         user = mention_markdown(
             message.from_user.id,
-            message.from_user.first_name
+            message.from_user.first_name,
         )
     if dc_id == 1:
         text = "{}'s assigned DC is **DC1**, **MIA, Miami FL, USA**".format(
-            user
+            user,
         )
     elif dc_id == 2:
         text = "{}'s assigned DC is **DC2**, **AMS, Amsterdam, NL**".format(
-            user
+            user,
         )
     elif dc_id == 3:
         text = "{}'s assigned DC is **DC3**, **MIA, Miami FL, USA**".format(
-            user
+            user,
         )
     elif dc_id == 4:
         text = "{}'s assigned DC is **DC4**, **AMS, Amsterdam, NL**".format(
-            user
+            user,
         )
     elif dc_id == 5:
         text = "{}'s assigned DC is **DC5**, **SIN, Singapore, SG**".format(
-            user
+            user,
         )
     else:
-        text = "{}'s assigned DC is **Unknown**".format(user)
+        text = f"{user}'s assigned DC is **unknown**"
     await edit_or_reply(message, text=text)
 
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("id", COMMAND_PREFIXES)
+    filters.command('id', COMMAND_PREFIXES),
 )
 async def get_id(_, message):
     file_id = None
@@ -313,85 +319,85 @@ async def get_id(_, message):
     if message.reply_to_message:
         rep = message.reply_to_message
         if rep.audio:
-            file_id = f"**File ID**: `{rep.audio.file_id}`\n"
-            file_id += "**File Type**: `audio`\n"
+            file_id = f'**File ID**: `{rep.audio.file_id}`\n'
+            file_id += '**File type**: `audio`\n'
         elif rep.document:
-            file_id = f"**File ID**: `{rep.document.file_id}`\n"
-            file_id += f"**File Type**: `{rep.document.mime_type}`\n"
+            file_id = f'**File ID**: `{rep.document.file_id}`\n'
+            file_id += f'**File type**: `{rep.document.mime_type}`\n'
         elif rep.photo:
-            file_id = f"**File ID**: `{rep.photo.file_id}`\n"
-            file_id += "**File Type**: `photo`"
+            file_id = f'**File ID**: `{rep.photo.file_id}`\n'
+            file_id += '**File type**: `photo`'
         elif rep.sticker:
-            file_id = f"**Sicker ID**: `{rep.sticker.file_id}`\n"
+            file_id = f'**Sicker ID**: `{rep.sticker.file_id}`\n'
             if rep.sticker.set_name and rep.sticker.emoji:
-                file_id += "**Sticker Set**: `{}`\n".format(
-                    rep.sticker.set_name
+                file_id += '**Sticker set**: `{}`\n'.format(
+                    rep.sticker.set_name,
                 )
-                file_id += f"**Sticker Emoji**: `{rep.sticker.emoji}`\n"
+                file_id += f'**Sticker emoji**: `{rep.sticker.emoji}`\n'
                 if rep.sticker.is_animated:
-                    file_id += "**Animated Sticker**: `{}`\n".format(
-                        rep.sticker.is_animated
+                    file_id += '**Animated sticker**: `{}`\n'.format(
+                        rep.sticker.is_animated,
                     )
                 else:
-                    file_id += "**Animated Sticker**: `False`\n"
+                    file_id += '**Animated sticker**: `False`\n'
             else:
-                file_id += "**Sticker Set**: __None__\n"
-                file_id += "**Sticker Emoji**: __None__"
+                file_id += '**Sticker set**: __None__\n'
+                file_id += '**Sticker emoji**: __None__'
         elif rep.video:
-            file_id = f"**File ID**: `{rep.video.file_id}`\n"
-            file_id += "**File Type**: `video`"
+            file_id = f'**File ID**: `{rep.video.file_id}`\n'
+            file_id += '**File type**: `video`'
         elif rep.animation:
-            file_id = f"**File ID**: `{rep.animation.file_id}`\n"
-            file_id += "**File Type**: `GIF`"
+            file_id = f'**File ID**: `{rep.animation.file_id}`\n'
+            file_id += '**File type**: `GIF`'
         elif rep.voice:
-            file_id = f"**File ID**: `{rep.voice.file_id}`\n"
-            file_id += "**File Type**: `Voice Note`"
+            file_id = f'**File ID**: `{rep.voice.file_id}`\n'
+            file_id += '**File type**: `voice note`'
         elif rep.video_note:
-            file_id = f"**File ID**: `{rep.animation.file_id}`\n"
-            file_id += "**File Type**: `Video Note`"
+            file_id = f'**File ID**: `{rep.animation.file_id}`\n'
+            file_id += '**File type**: `video note`'
         elif rep.location:
-            file_id = "**Location**:\n"
-            file_id += f"**longitude**: `{rep.location.longitude}`\n"
-            file_id += f"**latitude**: `{rep.location.latitude}`"
+            file_id = '**Location**:\n'
+            file_id += f'    **Longitude**: `{rep.location.longitude}`\n'
+            file_id += f'    **Latitude**: `{rep.location.latitude}`'
         elif rep.venue:
-            file_id = "**Location**:\n"
-            file_id += f"**longitude**: `{rep.venue.location.longitude}`\n"
-            file_id += f"**latitude**: `{rep.venue.location.latitude}`\n\n"
-            file_id += "**Address**:\n"
-            file_id += f"**title**: `{rep.venue.title}`\n"
-            file_id += f"**detailed**: `{rep.venue.address}`\n\n"
+            file_id = '**Location**:\n'
+            file_id += f'    **Longitude**: `{rep.venue.location.longitude}`\n'
+            file_id += f'    **Latitude**: `{rep.venue.location.latitude}`\n\n'
+            file_id += '**Address**:\n'
+            file_id += f'    **Title**: `{rep.venue.title}`\n'
+            file_id += f'    **Detail**: `{rep.venue.address}`\n\n'
         elif rep.from_user:
             user_id = rep.from_user.id
     if user_id:
         if rep.forward_from:
             user_detail = (
-                "**Forwarded User ID**: `{}`\n".format(
-                    message.reply_to_message.forward_from.id
+                '**Forwarded from user ID**: `{}`\n'.format(
+                    message.reply_to_message.forward_from.id,
                 )
             )
         else:
-            user_detail = "**User ID**: `{}`\n".format(
-                message.reply_to_message.from_user.id
+            user_detail = '**User ID**: `{}`\n'.format(
+                message.reply_to_message.from_user.id,
             )
-        user_detail += "**Message ID**: `{}`".format(
-            message.reply_to_message.message_id
+        user_detail += '**Message ID**: `{}`'.format(
+            message.reply_to_message.message_id,
         )
         await edit_or_reply(message, text=user_detail)
     elif file_id:
         if rep.forward_from:
             user_detail = (
-                "**Forwarded User ID**: `{}`\n".format(
-                    message.reply_to_message.forward_from.id
+                '**Forwarded from user ID**: `{}`\n'.format(
+                    message.reply_to_message.forward_from.id,
                 )
             )
         else:
-            user_detail = "**User ID**: `{}`\n".format(
-                message.reply_to_message.from_user.id
+            user_detail = '**User ID**: `{}`\n'.format(
+                message.reply_to_message.from_user.id,
             )
-        user_detail += "**Message ID**: `{}`\n\n".format(
-            message.reply_to_message.message_id
+        user_detail += '**Message ID**: `{}`\n\n'.format(
+            message.reply_to_message.message_id,
         )
         user_detail += file_id
         await edit_or_reply(message, text=user_detail)
     else:
-        await edit_or_reply(message, text=f"**Chat ID**: `{message.chat.id}`")
+        await edit_or_reply(message, text=f'**Chat ID**: `{message.chat.id}`')

@@ -1,10 +1,14 @@
 import os
-from telegraph import upload_file
 
 from pyrogram import filters
-from nana import COMMAND_PREFIXES, app, AdminSettings, edit_or_reply
+from telegraph import upload_file
 
-__MODULE__ = "Telegra.ph"
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
+
+__MODULE__ = 'Telegra.ph'
 __HELP__ = """
 Paste Media Documents on Telegra.ph
 
@@ -18,33 +22,33 @@ Reply to Media as args to upload it to telegraph.
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("telegraph", COMMAND_PREFIXES)
+    filters.command('telegraph', COMMAND_PREFIXES),
 )
 async def telegraph(client, message):
     replied = message.reply_to_message
     if not replied:
-        await edit_or_reply(message, text="reply to a supported media file")
+        await edit_or_reply(message, text='reply to a supported media file')
         return
     if not (
         (replied.photo and replied.photo.file_size <= 5242880)
         or (replied.animation and replied.animation.file_size <= 5242880)
         or (
             replied.video
-            and replied.video.file_name.endswith(".mp4")
+            and replied.video.file_name.endswith('.mp4')
             and replied.video.file_size <= 5242880
         )
         or (
             replied.document
             and replied.document.file_name.endswith(
-                (".jpg", ".jpeg", ".png", ".gif", ".mp4")
+                ('.jpg', '.jpeg', '.png', '.gif', '.mp4'),
             )
             and replied.document.file_size <= 5242880
         )
     ):
-        await edit_or_reply(message, text="not supported!")
+        await edit_or_reply(message, text='not supported!')
         return
     download_location = await client.download_media(
-        message=message.reply_to_message, file_name="root/nana/"
+        message=message.reply_to_message, file_name='root/nana/',
     )
     try:
         response = upload_file(download_location)
@@ -53,7 +57,7 @@ async def telegraph(client, message):
     else:
         await edit_or_reply(
             message,
-            text=f"**Link: https://telegra.ph{response[0]}**",
+            text=f'**Link: https://telegra.ph{response[0]}**',
             disable_web_page_preview=True,
         )
     finally:

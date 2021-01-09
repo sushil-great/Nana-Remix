@@ -10,7 +10,7 @@ import threading
 
 
 class WhitelistUsers(BASE):
-    __tablename__ = "pmapprove"
+    __tablename__ = 'pmapprove'
     user_id = Column(String(14), primary_key=True)
     username = Column(String(15))
 
@@ -21,7 +21,7 @@ class WhitelistUsers(BASE):
 
 
 class ReqUsers(BASE):
-    __tablename__ = "getpmapprove"
+    __tablename__ = 'getpmapprove'
     user_id = Column(String(14), primary_key=True)
     username = Column(String(15))
 
@@ -64,7 +64,7 @@ def del_whitelist(user_id):
 
 def get_whitelist(user_id):
     user = SESSION.query(WhitelistUsers).get(str(user_id))
-    rep = ""
+    rep = ''
     if user:
         rep = str(user.username)
 
@@ -86,7 +86,7 @@ def set_req(user_id, username):
 
 def get_req(user_id):
     user = SESSION.query(ReqUsers).get(str(user_id))
-    rep = ""
+    rep = ''
     if user:
         rep = str(user.username)
 

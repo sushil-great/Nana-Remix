@@ -1,25 +1,26 @@
 from pyrogram import filters
 
-from nana import app, COMMAND_PREFIXES, AdminSettings
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
 from nana.utils.Pyroutils import ReplyCheck
 
 __HELP__ = """
 ──「 **LastFM** 」──
 -> `lastfm` or `lf`
-Share what you're what listening to with the help of this module!
+Share what you're listening to.
 
-Note: you need to go to @lastfmrobot and set your username there
-
+Note: you need to set you username in @lastfmrobot.
 """
-__MODULE__ = "Last.FM"
+__MODULE__ = 'Last.FM'
 
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command(["lastfm", "lf"], COMMAND_PREFIXES)
+    filters.command(['lastfm', 'lf'], COMMAND_PREFIXES),
 )
 async def lastfm(client, message):
-    x = await client.get_inline_bot_results("lastfmrobot", "")
+    x = await client.get_inline_bot_results('lastfmrobot', '')
     await message.delete()
     await message.reply_inline_bot_result(
         x.query_id,

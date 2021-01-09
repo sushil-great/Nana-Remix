@@ -1,10 +1,15 @@
-from sqlalchemy import Column, String, UnicodeText
 import threading
-from nana import BASE, SESSION
+
+from sqlalchemy import Column
+from sqlalchemy import String
+from sqlalchemy import UnicodeText
+
+from nana import BASE
+from nana import SESSION
 
 
 class Locales(BASE):
-    __tablename__ = "locales"
+    __tablename__ = 'locales'
     chat_id = Column(String(14), primary_key=True)
     locale_name = Column(UnicodeText)
 
@@ -19,7 +24,7 @@ LOCALES_INSERTION_LOCK = threading.RLock()
 
 def switch_to_locale(chat_id, locale_name):
     with LOCALES_INSERTION_LOCK:
-        prev = SESSION.query(Locales).get((str(chat_id)))
+        prev = SESSION.query(Locales).get(str(chat_id))
         if prev:
             SESSION.delete(prev)
         switch_locale = Locales(str(chat_id), locale_name)
@@ -29,6 +34,6 @@ def switch_to_locale(chat_id, locale_name):
 
 def prev_locale(chat_id):
     try:
-        return SESSION.query(Locales).get((str(chat_id)))
+        return SESSION.query(Locales).get(str(chat_id))
     finally:
         SESSION.close()

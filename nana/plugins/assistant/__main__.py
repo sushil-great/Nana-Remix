@@ -1,26 +1,23 @@
+import asyncio
 import os
 from platform import python_version
-import asyncio
 
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton
+from pykeyboard import InlineKeyboard
 
+from nana import AdminSettings
+from nana import app
+from nana import ASSISTANT_VERSION
+from nana import BotUsername
+from nana import DB_AVAILABLE
+from nana import NANA_IMG
+from nana import OwnerName
+from nana import setbot
+from nana import USERBOT_VERSION
 from nana.languages.strings import tld
-from nana import (
-    app,
-    setbot,
-    AdminSettings,
-    DB_AVAILABLE,
-    USERBOT_VERSION,
-    ASSISTANT_VERSION,
-    BotUsername,
-    OwnerName,
-    NANA_IMG,
-)
-from nana.plugins.assistant.settings import (
-    get_button_settings,
-    get_text_settings
-)
+from nana.plugins.assistant.settings import get_button_settings
+from nana.plugins.assistant.settings import get_text_settings
 from nana.utils.dynamic_filt import dynamic_data_filter
 
 if DB_AVAILABLE:
@@ -38,56 +35,49 @@ You must be looking forward on how I work.
 In that case I can give you helpful links to self host me on your own.
 Here are some links for you
         """
-    buttons = [
-        [
-            InlineKeyboardButton(
-                "Documentation", url="https://aman-a.gitbook.io/nana-remix/"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "Repository", url="https://github.com/pokurt/Nana-Remix"
-            ),
-            InlineKeyboardButton("Support", url="https://t.me/nanabotsupport"),
-        ],
-    ]
-    await message.reply(msg, reply_markup=InlineKeyboardMarkup(buttons))
+    buttons = InlineKeyboard(row_width=2)
+    buttons.add(
+        InlineKeyboardButton(
+            'Documentation', url='https://aman-a.gitbook.io/nana-remix/',
+        ),
+        InlineKeyboardButton(
+            'Repository', url='https://github.com/pokurt/Nana-Remix',
+        ),
+        InlineKeyboardButton('Support', url='https://t.me/nanabotsupport'),
+    )
+    await message.reply(msg, reply_markup=buttons)
 
 
-@setbot.on_message(filters.user(AdminSettings) & filters.command(["start"]))
+@setbot.on_message(filters.user(AdminSettings) & filters.command(['start']))
 async def start(_, message):
-    if message.chat.type != "private":
-        await message.reply("henlo ^0^")
+    if message.chat.type != 'private':
+        await message.reply('henlo ^0^')
     else:
         if len(message.text.split()) >= 2:
             helparg = message.text.split()[1]
-            if helparg == "help_inline":
-                await message.reply(tld(
-                        "inline_help_text"
+            if helparg == 'help_inline':
+                await message.reply(
+                    tld(
+                        'inline_help_text',
                     ).format(
-                        BotUsername
-                    )
+                        BotUsername,
+                    ),
                 )
                 return
         try:
             me = await app.get_me()
         except ConnectionError:
             me = None
-        userbot_stat = "Stopped" if not me else "Running"
-        db_stat = len(get_all_chats()) if DB_AVAILABLE else "None"
-        buttons = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text=tld("help_btn"), callback_data="help_back"
-                    ),
-                ]
-            ]
+        userbot_stat = 'Stopped' if not me else 'Running'
+        db_stat = len(get_all_chats()) if DB_AVAILABLE else 'None'
+        buttons = InlineKeyboard(row_width=1)
+        buttons.add(
+            InlineKeyboardButton(tld('help_btn'), callback_data='help_back'),
         )
         if NANA_IMG:
             await message.reply_photo(
                 NANA_IMG,
-                caption=tld("start_message").format(
+                caption=tld('start_message').format(
                     OwnerName,
                     python_version(),
                     userbot_stat,
@@ -100,7 +90,7 @@ async def start(_, message):
             )
         else:
             await message.reply(
-                tld("start_message").format(
+                tld('start_message').format(
                     OwnerName,
                     python_version(),
                     userbot_stat,
@@ -113,42 +103,36 @@ async def start(_, message):
             )
 
 
-@setbot.on_message(filters.user(AdminSettings) & filters.command(["getme"]))
+@setbot.on_message(filters.user(AdminSettings) & filters.command(['getme']))
 async def get_myself(client, message):
     try:
         me = await app.get_me()
     except ConnectionError:
-        await message.reply("Bot is currently turned off!")
+        await message.reply('Bot is currently turned off!')
         return
-    text = "**ℹ️ Your profile:**\n"
-    text += "First name: {}\n".format(me.first_name)
+    text = '**ℹ️ Your profile:**\n'
+    text += f'First name: {me.first_name}\n'
     if me.last_name:
-        text += "Last name: {}\n".format(me.last_name)
-    text += "User ID: `{}`\n".format(me.id)
+        text += f'Last name: {me.last_name}\n'
+    text += f'User ID: `{me.id}`\n'
     if me.username:
-        text += "Username: @{}\n".format(me.username)
-    text += "Phone number: `{}`\n".format(me.phone_number)
-    text += "`Nana Version    : v{}`\n".format(USERBOT_VERSION)
-    text += "`Manager Version : v{}`".format(ASSISTANT_VERSION)
-    button = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    "Hide phone number",
-                    callback_data="hide_number"
-                )
-            ]
-        ]
+        text += f'Username: @{me.username}\n'
+    text += f'Phone number: `{me.phone_number}`\n'
+    text += f'`Nana Version    : v{USERBOT_VERSION}`\n'
+    text += f'`Manager Version : v{ASSISTANT_VERSION}`'
+    button = InlineKeyboard(row_width=1)
+    button.add(
+        InlineKeyboardButton('Hide phone number', callback_data='hide_number'),
     )
     if me.photo:
         getpp = await client.download_media(
             me.photo.big_file_id,
-            file_name="nana/downloads/pfp.png"
+            file_name='nana/downloads/pfp.png',
         )
         await message.reply_photo(
             photo=getpp,
             caption=text,
-            reply_markup=button
+            reply_markup=button,
         )
     else:
         await message.reply(text, reply_markup=button)
@@ -156,13 +140,13 @@ async def get_myself(client, message):
         os.remove(getpp)
 
 
-@setbot.on_callback_query(dynamic_data_filter("hide_number"))
+@setbot.on_callback_query(dynamic_data_filter('hide_number'))
 async def get_myself_btn(client, query):
     try:
         me = await app.get_me()
     except ConnectionError:
         await client.answer_callback_query(
-            query.id, "Bot is currently turned off!", show_alert=True
+            query.id, 'Bot is currently turned off!', show_alert=True,
         )
         return
 
@@ -171,41 +155,33 @@ async def get_myself_btn(client, query):
     else:
         text = query.message.text.markdown
 
-    num = ["*" * len(me.phone_number)]
-
-    if "***" not in text.split("Phone number: `")[1].split("`")[0]:
+    num = ['*' * len(me.phone_number)]
+    button = InlineKeyboard(row_width=1)
+    if '***' not in text.split('Phone number: `')[1].split('`')[0]:
         text = text.replace(
-            "Phone number: `{}`\n".format(
-                me.phone_number
+            'Phone number: `{}`\n'.format(
+                me.phone_number,
             ),
-            "Phone number: `{}`\n".format(
-                "".join(num)
+            'Phone number: `{}`\n'.format(
+                ''.join(num),
             ),
         )
-        button = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Show phone number",
-                        callback_data="hide_number"
-                    )
-                ]
-            ]
+        button.add(
+            InlineKeyboardButton(
+                'Show phone number',
+                callback_data='hide_number',
+            ),
         )
     else:
         text = text.replace(
-            "Phone number: `{}`\n".format("".join(num)),
-            "Phone number: `{}`\n".format(me.phone_number),
+            'Phone number: `{}`\n'.format(''.join(num)),
+            f'Phone number: `{me.phone_number}`\n',
         )
-        button = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Hide phone number",
-                        callback_data="hide_number"
-                    )
-                ]
-            ]
+        button.add(
+            InlineKeyboardButton(
+                'Hide phone number',
+                callback_data='hide_number',
+            ),
         )
 
     if query.message.caption:
@@ -215,7 +191,7 @@ async def get_myself_btn(client, query):
     await query.answer()
 
 
-@setbot.on_callback_query(dynamic_data_filter("language_back"))
+@setbot.on_callback_query(dynamic_data_filter('language_back'))
 async def lang_back(_, query):
     text = await get_text_settings()
     button = await get_button_settings()
@@ -223,19 +199,19 @@ async def lang_back(_, query):
     await query.answer()
 
 
-@setbot.on_callback_query(dynamic_data_filter("report_errors"))
+@setbot.on_callback_query(dynamic_data_filter('report_errors'))
 async def report_some_errors(client, query):
-    await app.join_chat("@nanabotsupport")
-    text = "Hi @DeprecatedUser, i got an error for you."
+    await app.join_chat('@nanabotsupport')
+    text = 'Hi @DeprecatedUser, i got an error for you.'
     err = query.message.text
-    open("nana/cache/errors.txt", "w").write(err)
+    open('nana/cache/errors.txt', 'w').write(err)
     await asyncio.gather(
         query.message.edit_reply_markup(reply_markup=None),
         app.send_document(
-            "nanabotsupport",
-            "nana/cache/errors.txt",
-            caption=text
+            'nanabotsupport',
+            'nana/cache/errors.txt',
+            caption=text,
         ),
-        client.answer_callback_query(query.id, "Report was sent!"),
+        client.answer_callback_query(query.id, 'Report was sent!'),
     )
-    os.remove("nana/cache/errors.txt")
+    os.remove('nana/cache/errors.txt')

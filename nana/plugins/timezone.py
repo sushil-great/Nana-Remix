@@ -1,16 +1,15 @@
 from datetime import datetime
-from pytz import timezone
+
 from pyrogram import filters
+from pytz import timezone
 
-from nana import (
-    app,
-    COMMAND_PREFIXES,
-    time_country,
-    AdminSettings,
-    edit_or_reply
-)
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
+from nana import time_country
 
-__MODULE__ = "Time"
+__MODULE__ = 'Time'
 __HELP__ = """
 Modules that helps a user to get date and time
 here are the timezone list:
@@ -25,23 +24,23 @@ Returns the Date and Time for a selected country
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("time", COMMAND_PREFIXES)
+    filters.command('time', COMMAND_PREFIXES),
 )
 async def grabTime(_, message):
     if not time_country:
         await message.delete()
         return
-    tz = time_country.replace("_", " ")
+    tz = time_country.replace('_', ' ')
     tzDateTime = datetime.now(timezone(tz))
-    date = tzDateTime.strftime(r"%d-%m-%Y")
-    militaryTime = tzDateTime.strftime("%H:%M")
-    time = datetime.strptime(militaryTime, "%H:%M").strftime("%I:%M %p")
+    date = tzDateTime.strftime(r'%d-%m-%Y')
+    militaryTime = tzDateTime.strftime('%H:%M')
+    time = datetime.strptime(militaryTime, '%H:%M').strftime('%I:%M %p')
     time_string = (
-        "__Currently it is__"
-        + f" **{time}** "
-        + "__on__"
-        + f" **{date}** "
-        + "__in__ "
-        + f"**{tz}**"
+        '__Currently it is__'
+        + f' **{time}** '
+        + '__on__'
+        + f' **{date}** '
+        + '__in__ '
+        + f'**{tz}**'
     )
     await edit_or_reply(message, text=time_string)

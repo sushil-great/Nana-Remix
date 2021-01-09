@@ -1,22 +1,24 @@
-from pyrogram import filters
 from asyncio import sleep
 
-from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+from pyrogram import filters
+
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
 from nana.utils.expand import expand_url
 
-__MODULE__ = "Link Expander"
+__MODULE__ = 'Link Expander'
 __HELP__ = """
-This module will expand your link
-
-──「 **expand url** 」──
+──「 **Expand URL** 」──
 -> `expand (link)`
-Reply or parse arg of url to expand
+Reply a short URL or include as an arg to expand it.
 """
 
 
 @app.on_message(
-    filters.command("expand", COMMAND_PREFIXES) &
-    filters.user(AdminSettings)
+    filters.command('expand', COMMAND_PREFIXES) &
+    filters.user(AdminSettings),
 )
 async def expand(_, message):
     if message.reply_to_message:
@@ -31,13 +33,13 @@ async def expand(_, message):
         if expanded:
             await edit_or_reply(
                 message,
-                text=f"Shortened URL: {url}\nExpanded URL: {expanded}",
+                text=f'Shortened URL: {url}\nExpanded URL: {expanded}',
                 disable_web_page_preview=True,
             )
             return
         else:
-            await edit_or_reply(message, text="`i Cant expand this url :p`")
+            await edit_or_reply(message, text="`I can't expand this url :p`")
             await sleep(3)
             await message.delete()
     else:
-        await edit_or_reply(message, text="Nothing to expand")
+        await edit_or_reply(message, text='Nothing given to expand.')

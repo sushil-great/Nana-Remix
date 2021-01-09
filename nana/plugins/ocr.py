@@ -1,10 +1,15 @@
 import os
+
 import requests
 from pyrogram import filters
-from nana import app, COMMAND_PREFIXES, AdminSettings, edit_or_reply
+
+from nana import AdminSettings
+from nana import app
+from nana import COMMAND_PREFIXES
+from nana import edit_or_reply
 
 
-__MODULE__ = "OCR"
+__MODULE__ = 'OCR'
 __HELP__ = """
 Read Texts from photos and Stickers
 
@@ -15,20 +20,20 @@ Read texts from an image or photo.
 """
 
 
-OCR_SPACE_API_KEY = "30dd97e2b588957"
+OCR_SPACE_API_KEY = '30dd97e2b588957'
 
 
 async def ocr_space_file(
-    filename, overlay=False, api_key=OCR_SPACE_API_KEY, language="eng"
+    filename, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng'
 ):
     payload = {
-        "isOverlayRequired": overlay,
-        "apikey": api_key,
-        "language": language,
+        'isOverlayRequired': overlay,
+        'apikey': api_key,
+        'language': language,
     }
-    with open(filename, "rb") as f:
+    with open(filename, 'rb') as f:
         r = requests.post(
-            "https://api.ocr.space/parse/image",
+            'https://api.ocr.space/parse/image',
             files={filename: f},
             data=payload,
         )
@@ -37,15 +42,15 @@ async def ocr_space_file(
 
 @app.on_message(
     filters.user(AdminSettings) &
-    filters.command("ocr", COMMAND_PREFIXES)
+    filters.command('ocr', COMMAND_PREFIXES),
 )
 async def ocr(client, message):
     cmd = message.command
-    lang_code = ""
+    lang_code = ''
     if len(cmd) > 1:
-        lang_code = " ".join(cmd[1:])
+        lang_code = ' '.join(cmd[1:])
     elif len(cmd) == 1:
-        lang_code = "eng"
+        lang_code = 'eng'
     replied = message.reply_to_message
     if not replied:
         await message.delete()
@@ -68,20 +73,20 @@ async def ocr(client, message):
         reply_p = replied.sticker
     downloaded_file_name = await client.download_media(
         reply_p,
-        "nana/cache/file.png"
+        'nana/cache/file.png',
     )
     test_file = await ocr_space_file(
         filename=downloaded_file_name,
-        language=lang_code
+        language=lang_code,
     )
     try:
-        ParsedText = test_file["ParsedResults"][0]["ParsedText"]
+        ParsedText = test_file['ParsedResults'][0]['ParsedText']
     except BaseException as e:
         await edit_or_reply(message, text=e)
     else:
-        if ParsedText == "ParsedResults":
+        if ParsedText == 'ParsedResults':
             await message.delete()
             return
         else:
-            await edit_or_reply(message, text=f"`{ParsedText}`")
+            await edit_or_reply(message, text=f'`{ParsedText}`')
     os.remove(downloaded_file_name)
