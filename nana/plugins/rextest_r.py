@@ -17,17 +17,16 @@ Executes the give code with the given language
 
 -> **Currently Supported Languages**
 ```
-|  ada |   bash   |   brainfuck   |   c   |
-|  c++ |  elixir  |    erlang     |   f#  |
-|  go  |  fortran |    haskell    |   d   |
+| ada  |   bash   |   brainfuck   |   c   |
+| c++  |  elixir  |    erlang     |   f#  |
+| go   |  fortran |    haskell    |   d   |
 | java |  kotlin  |  objective-c  |   js  |
 | lua  |   mysql  |   postgresql  |  node |
 | lisp |   ocaml  | python3 - py3 |  php  |
 | perl |  oracle  |  python - py  |  perl |
-| nasm |  pascal  |     prolog    |  sql  |
+| vb   |   nasm   |     pascal    |  sql  |
 | ruby |  octave  |     scheme    |   r   |
-| tcl  |  scheme  |     scala     |  sql  |
-|swift |   tcl    |      vb
+| tcl  |  scheme  |     scala     | swift |
 ```
 """
 
@@ -57,6 +56,8 @@ async def rex_tester(_, message):
             final += f'**Warning:**\n`{output.warnings}`\n'
         if output.errors:
             final += f'**Error:**\n`{output.errors}`\n'
+        if output.files:
+            final += f'**Files:**\n`{output.files}`\n'
         status = output.stats.split(', ')
         final += '**Status:**\n'
         for x in status:

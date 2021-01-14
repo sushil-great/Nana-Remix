@@ -204,7 +204,8 @@ async def report_some_errors(client, query):
     await app.join_chat('@nanabotsupport')
     text = 'Hi @DeprecatedUser, i got an error for you.'
     err = query.message.text
-    open('nana/cache/errors.txt', 'w').write(err)
+    with open('nana/cache/errors.txt', 'w') as f:
+        f.write(err)
     await asyncio.gather(
         query.message.edit_reply_markup(reply_markup=None),
         app.send_document(

@@ -26,8 +26,8 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     logging.error('Python version Lower than 3.6! Abort!')
     sys.exit()
 
-USERBOT_VERSION = '3.2.1'
-ASSISTANT_VERSION = '3.2.1'
+USERBOT_VERSION = '3.2.2'
+ASSISTANT_VERSION = '3.2.2'
 
 OFFICIAL_BRANCH = ['master', 'translations']
 RANDOM_STICKERS = [
@@ -93,8 +93,8 @@ BotName = ''
 OwnerUsername = ''
 
 if os.path.exists('nana/logs/error.txt'):
-    f = open('nana/logs/error.txt', 'w')
-    f.write('PEAK OF THE LOGS FILE')
+    with open('nana/logs/error.txt', 'a') as f:
+        f.write('PEEK OF LOG FILE')
 LOG_FORMAT = (
     '%(filename)s:%(lineno)s %(levelname)s: %(message)s'
 )

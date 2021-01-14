@@ -92,13 +92,6 @@ async def restart_all():
     asyncio.get_event_loop().create_task(reboot())
 
 
-RANDOM_STICKERS = [
-    'CAADAgAD6EoAAuCjggf4LTFlHEcvNAI',
-    'CAADAgADf1AAAuCjggfqE-GQnopqyAI',
-    'CAADAgADaV0AAuCjggfi51NV8GUiRwI',
-]
-
-
 async def except_hook(errtype, value, tback):
     sys.__excepthook__(errtype, value, tback)
     errors = traceback.format_exception(etype=errtype, value=value, tb=tback)
@@ -176,17 +169,18 @@ async def start_bot():
         else:
             assistant_modules += f'|{i:<15}'
         j += 1
-    print('+===========================================================+')
-    print('|                   Userbot Modules                         |')
-    print('+=============+==============+==============+===============+')
+    print('+===============================================================+')
+    print('|                     Userbot Modules                           |')
+    print('+=============+===============+================+===============+')
     print(userbot_modules)
-    print('+=============+=================+===========+===============+\n')
-    print('+===========================================================+')
-    print('|                   Assistant Modules                       |')
-    print('+=============+===============+=============+===============+')
+    print('+=============+===================+=============+===============+')
+    print('+===============================================================+')
+    print('|                     Assistant Modules                         |')
+    print('+=============+=================+===============+===============+')
     print(assistant_modules)
-    print('+===============+===========+=============+=================+')
-    print('Bot run successfully!')
+    print('+===============+=============+===============+=================+')
+    print('Logged in User: {}'.format((await app.get_me()).first_name))
+    print('Logged in Bot: {}'.format((await setbot.get_me()).first_name))
     if TEST_DEVELOP:
         log.warning('Test is passed!')
     else:
