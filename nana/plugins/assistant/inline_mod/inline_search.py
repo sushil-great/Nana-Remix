@@ -22,14 +22,21 @@ async def inline_search(string, answers):
                 url=f'tg://user?id={user.id}',
             ),
         )
+        thumbnail = f'https://t.me/{user.username}' if user.username else None
+        try:
+            text = message.text[:45] + '...'
+        except TypeError:
+            text = message.caption[:45] + '...'
+        chat = message.chat.id
         answers.append(
             InlineQueryResultArticle(
                 title=f'From: {user.first_name} | {user.id}',
-                description=message.text,
+                description=text,
                 input_message_content=InputTextMessageContent(
-                    message.text[:60] + '...',
+                    f'**From:** `{user.id}`\n**Chat: **`{chat}`\n\n' + text,
                     parse_mode='markdown',
                 ),
-                thumb_url=user.photo.small_file_id or None,
+                reply_markup=keyboard,
+                thumb_url=thumbnail,
             ),
         )

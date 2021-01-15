@@ -5,6 +5,7 @@ from .inline_mod import note_func
 from .inline_mod import pmpermit_func
 from .inline_mod import speedtest_func
 from .inline_mod import stylish_func
+from .inline_mod import inline_search
 from nana import AdminSettings
 from nana import DB_AVAILABLE
 from nana import Owner
@@ -26,7 +27,6 @@ async def inline_query_handler(client, query):
             switch_pm_parameter='createown',
         )
         return
-
     if string == '':
         await client.answer_inline_query(
             query.id,
@@ -84,6 +84,17 @@ async def inline_query_handler(client, query):
     elif string.split()[0] == 'favourite':
         fav = sql.get_fav(Owner)
         await fav_func(fav, answers)
+
+    elif string.split()[0] == 'search':
+        if len(string.split()) == 1:
+            await client.answer_inline_query(
+                query.id,
+                results=answers,
+                switch_pm_text='Search messages Globally',
+                switch_pm_parameter='help_inline',
+            )
+            return
+        await inline_search(string, answers)
 
     await client.answer_inline_query(
         query.id,
