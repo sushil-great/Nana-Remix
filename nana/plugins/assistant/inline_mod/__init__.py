@@ -5,3 +5,4 @@ from .notes import note_func  # noqa: F401
 from .pmpermit import pmpermit_func  # noqa: F401
 from .speedtest import speedtest_func  # noqa: F401
 from .stylish import stylish_func  # noqa: F401
+from .inline_search import inline_search  # noqa: F401

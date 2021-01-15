@@ -134,7 +134,6 @@ def text_style_generator(text, text_type):
 
 
 def stylish_formatting(text):
-    # Converting to upside-down text: upside
     upside_compile = re.compile(r'<upside>(.*?)</upside>')
     src_code = upside_compile.findall(text)
     for x in src_code:

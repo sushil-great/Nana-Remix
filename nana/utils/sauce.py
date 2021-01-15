@@ -70,8 +70,8 @@ query ($id: Int,$search: String) {
 """
 
 character_query = """
-query ($query: String) {
-    Character (search: $query) {
+query ($search: String) {
+    Character (search: $search) {
         id
         name {
             first
