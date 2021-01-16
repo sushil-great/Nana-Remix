@@ -4,7 +4,7 @@
 
 ## Userbot + Assistant for Telegram
 
-A Modular Pyrogram Based Userbot with an Assitant
+A Modular Pyrogram Based Userbot with an Assistant
 
 ## Installation Guide
 
