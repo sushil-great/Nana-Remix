@@ -19,15 +19,15 @@ async def inline_search(string, answers):
             ),
         )
         try:
-            text = message.text[:45] + '...'
+            text = message.text[:99] + '...'
         except TypeError:
-            text = message.caption[:45] + '...'
+            text = message.caption[:99] + '...'
         answers.append(
             InlineQueryResultArticle(
-                title=f'From: {chat.first_name} | {chat.id}',
+                title=f'From: {chat.title} | {chat.id}',
                 description=text,
                 input_message_content=InputTextMessageContent(
-                    f'**Chat:** `{chat}`\n\n' + text,
+                    f'**Chat:** `{chat.id}`\n\n' + text,
                     parse_mode='markdown',
                 ),
                 reply_markup=keyboard,
