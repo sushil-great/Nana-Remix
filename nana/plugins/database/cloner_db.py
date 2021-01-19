@@ -22,7 +22,7 @@ class Cloner(BASE):
         self.bio = bio
 
     def __repr__(self):
-        'clooner message for db'
+        'cloner message for db'
         return f'<Cloner {self.user_id}>'
 
 

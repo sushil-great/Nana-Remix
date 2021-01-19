@@ -13,7 +13,7 @@ from nana import edit_or_reply
 __MODULE__ = 'Metrics'
 __HELP__ = """
 This module can help you do wordcount in the last 1000 messages
-in achat.
+in a chat.
 
 ──「 **Word Count** 」──
 -> `wordcount` or `wc`
