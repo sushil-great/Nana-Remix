@@ -24,10 +24,6 @@ Run Python code
 -> `sh (command)`
 Execute shell commands
 
-──「 **Take log** 」──
--> `log`
-Upload the recent logs on nekobin and send it
-
 ──「 **Data Centers** 」──
 -> `dc`
 Get your DC
@@ -313,7 +309,7 @@ async def get_id(_, message):
             file_id = f'**File ID**: `{rep.photo.file_id}`\n'
             file_id += '**File type**: `photo`'
         elif rep.sticker:
-            file_id = f'**Sicker ID**: `{rep.sticker.file_id}`\n'
+            file_id = f'**Sticker ID**: `{rep.sticker.file_id}`\n'
             if rep.sticker.set_name and rep.sticker.emoji:
                 file_id += '**Sticker set**: `{}`\n'.format(
                     rep.sticker.set_name,

@@ -132,7 +132,7 @@ async def get_note(client, message):
                 )
                 await setbot.send_message(
                     Owner,
-                    'Hello, loosk like a note of yours include a button,'
+                    'Hello, looks like a note of yours include a button,'
                     "but I can't display it "
                     'because **inline mode** is not enabled in @BotFather.',
                 )
@@ -184,7 +184,7 @@ async def get_note(client, message):
                 )
                 await setbot.send_message(
                     Owner,
-                    'Hello, loosk like a note of yours include a button,'
+                    'Hello, looks like a note of yours include a button,'
                     "but I can't display it "
                     'because **inline mode** is not enabled in @BotFather.',
                 )

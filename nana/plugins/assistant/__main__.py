@@ -110,16 +110,16 @@ async def get_myself(client, message):
     except ConnectionError:
         await message.reply('Bot is currently turned off!')
         return
-    text = '**ℹ️ Your profile:**\n'
-    text += f'First name: {me.first_name}\n'
+    text = '**Myself**\n'
+    text += f' - **First name**: `{me.first_name}`\n'
     if me.last_name:
-        text += f'Last name: {me.last_name}\n'
-    text += f'User ID: `{me.id}`\n'
+        text += f' - **Last name**: `{me.last_name}`\n'
+    text += f' - **User ID**: `{me.id}`\n'
     if me.username:
-        text += f'Username: @{me.username}\n'
-    text += f'Phone number: `{me.phone_number}`\n'
-    text += f'`Nana Version    : v{USERBOT_VERSION}`\n'
-    text += f'`Manager Version : v{ASSISTANT_VERSION}`'
+        text += f' - **Username**: `@{me.username}`\n'
+    text += f' - **Phone number**: `{me.phone_number}`\n'
+    text += f' - **Nana Version**: `v{USERBOT_VERSION}`\n'
+    text += f' - **Manager Version**: `v{ASSISTANT_VERSION}`'
     button = InlineKeyboard(row_width=1)
     button.add(
         InlineKeyboardButton('Hide phone number', callback_data='hide_number'),
@@ -155,14 +155,14 @@ async def get_myself_btn(client, query):
     else:
         text = query.message.text.markdown
 
-    num = ['*' * len(me.phone_number)]
+    num = ['#' * len(me.phone_number)]
     button = InlineKeyboard(row_width=1)
-    if '***' not in text.split('Phone number: `')[1].split('`')[0]:
+    if '###' not in text.split(' - **Phone number**: `')[1].split('`')[0]:
         text = text.replace(
-            'Phone number: `{}`\n'.format(
+            ' - **Phone number**: `{}`\n'.format(
                 me.phone_number,
             ),
-            'Phone number: `{}`\n'.format(
+            ' - **Phone number**: `{}`\n'.format(
                 ''.join(num),
             ),
         )
@@ -174,8 +174,8 @@ async def get_myself_btn(client, query):
         )
     else:
         text = text.replace(
-            'Phone number: `{}`\n'.format(''.join(num)),
-            f'Phone number: `{me.phone_number}`\n',
+            ' - **Phone number**: `{}`\n'.format(''.join(num)),
+            f' - **Phone number**: `{me.phone_number}`\n',
         )
         button.add(
             InlineKeyboardButton(
