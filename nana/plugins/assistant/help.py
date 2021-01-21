@@ -142,22 +142,24 @@ async def help_button(_, query):
     & (filters.group | filters.private),
 )
 async def stats(_, message):
-    text = '**Here is your current stats**\n'
+    text = '**Current stats**\n'
     if DB_AVAILABLE:
-        text += '<b>Notes:</b> `{} notes`\n'.format(
+        text += ' - **Notes**: `{} notes`\n'.format(
             len(get_all_selfnotes(message.from_user.id) or ''),
         )
-        text += '<b>Group joined:</b> `{} groups`\n'.format(
+        text += ' - **Group joined**: `{} groups`\n'.format(
             len(get_all_chats()),
         )
     stk = await app.send(functions.messages.GetAllStickers(hash=0))
     all_sets = stk.sets
     count = sum(x.count for x in all_sets)
-    text += '<b>Stickers Count:</b> <code>{} across {} sets</code>\n'.format(
+    text += ' - **Stickers Count**: <code>{} over {} packs</code>\n'.format(
         count,
         len(all_sets),
     )
-    text += f'<b>Message received:</b> `{get_msgc()} messages`\n'
+    text += ' - **Message received**: `{} messages`\n'.format(
+        get_msgc(),
+    )
     uptime = get_readable_time(time.time() - StartTime)
-    text += f'<b>Nana uptime:</b> <code>{uptime}</code>'
+    text += f' - **Nana uptime**: `{uptime}`'
     await message.reply_text(text, quote=True)
