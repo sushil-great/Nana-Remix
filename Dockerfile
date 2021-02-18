@@ -68,4 +68,4 @@ COPY . .
 RUN make install
 
 # Starting Worker
-CMD ["make","run"]
+CMD ["python3","-m","nana"]
